@@ -93,6 +93,90 @@ Flux, Argo, and continuous-delivery documentation.
 | version-controlled approach to operations | keep whole; do not calque |
 | reconciliation, drift, source controller | field nouns |
 
+## observability
+
+Prometheus, Grafana, OpenTelemetry, and monitoring runbooks. Not a
+generic DevOps pack: `metric` is a field noun here and ordinary prose
+in a statistics paper.
+
+| Term | Also covers |
+| --- | --- |
+| metric, trace, span | never سنجه / ردیابی / دهانه in this lexicon |
+| exporter | Prometheus / OpenTelemetry exporter |
+| scrape target | `scrape`, `scrape interval` |
+| service level objective | `SLO`; never هدف سطح خدمت |
+| service level indicator | `SLI`; never شاخص سطح خدمت |
+| cardinality | label cardinality in a time-series store; never کثرت برچسب |
+| dashboard | Grafana / Prometheus dashboard; never تابلوی کنترل |
+
+`metric` is this pack's most error-prone row: it reads like ordinary
+prose and drifts to سنجه. Enforced by the `observability` scope in
+`term-pairs.tsv`. Lint with `--domains observability`.
+
+## containers
+
+Docker, containerd, and OCI runtime documentation. Kubernetes cluster
+vocabulary stays in the `kubernetes` pack; Helm chart/release/values
+belong there too.
+
+| Term | Also covers |
+| --- | --- |
+| container | never ظرف in this lexicon |
+| container image | never تصویر ظرف or تصویر کانتینر; not a bare «تصویر» |
+| image registry | `registry`; never انباره تصویر |
+| overlay filesystem | `overlayfs` |
+| container runtime | `runtime`; never زمان اجرای ظرف |
+
+`container` is this pack's most error-prone row. Enforced by the
+`containers` scope in `term-pairs.tsv`. Lint with `--domains containers`.
+
+## ci
+
+GitHub Actions, GitLab CI, Jenkins — build and test, not delivery.
+The `gitops` pack covers Flux/Argo CD.
+
+| Term | Also covers |
+| --- | --- |
+| pipeline | never خط لوله in this lexicon |
+| runner | `GitHub-hosted runner`, `self-hosted runner` |
+| artifact | `build artifact`; never مصنوع |
+| workflow | GitHub Actions / GitLab CI workflow, not a GitOps reconciliation loop |
+
+`pipeline` is this pack's most error-prone row. Enforced by the `ci`
+scope in `term-pairs.tsv`. Lint with `--domains ci`. Do not pass
+`--domains gitops` instead of this pack.
+
+## iac
+
+Terraform, OpenTofu, Pulumi, and Ansible. `state` as ordinary
+«وضعیت» is not a row — only the labeled IaC phrases.
+
+| Term | Also covers |
+| --- | --- |
+| playbook | Ansible playbook; never کتابچه اجرا |
+| inventory | Ansible inventory; never سیاهه موجودی |
+| module | Terraform / Pulumi module; never پیمانه |
+| provider | Terraform provider; never ارائه‌دهنده |
+| state file | Terraform state file; never فایل وضعیت |
+| remote state | Terraform remote state; never وضعیت راه‌دور |
+
+`playbook` and `state file` are the error-prone rows. Enforced by the
+`iac` scope in `term-pairs.tsv`. Lint with `--domains iac`.
+
+## linux
+
+systemd, journald, and cgroup documentation. `unit` and `journal` as
+ordinary Persian واحد / ژورنال are not rows — only the labeled phrases.
+
+| Term | Also covers |
+| --- | --- |
+| cgroup | never گروه کنترل in this lexicon |
+| systemd unit | never واحد سیستم‌دی |
+| systemd journal | `journald`; never ژورنال سیستم‌دی |
+
+`cgroup` is this pack's most error-prone row. Enforced by the `linux`
+scope in `term-pairs.tsv`. Lint with `--domains linux`.
+
 ## ml
 
 Machine-learning papers. Usually read at `journal` level, where one-word

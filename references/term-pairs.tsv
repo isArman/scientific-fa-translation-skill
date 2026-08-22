@@ -63,3 +63,35 @@ miner	استخراج‌کننده	bitcoin	system-docs
 consensus	اجماع	bitcoin	system-docs
 activation	فعال‌سازی	bitcoin	system-docs
 dataset	مجموعه داده	ml	system-docs
+metric	سنجه	observability	system-docs
+metric	سنجه‌ها	observability	system-docs
+trace	ردیابی	observability	system-docs
+span	دهانه	observability	system-docs
+exporter	صادرکننده	observability	system-docs
+scrape target	هدف جمع‌آوری	observability	all
+service level objective	هدف سطح خدمت	observability	all
+service level indicator	شاخص سطح خدمت	observability	all
+cardinality	کثرت برچسب	observability	all
+dashboard	تابلوی کنترل	observability	all
+container	ظرف	containers	system-docs
+container	ظرف‌ها	containers	system-docs
+container image	تصویر ظرف	containers	all
+container image	تصویر کانتینر	containers	all
+image registry	انباره تصویر	containers	all
+overlay filesystem	سیستم‌فایل پوششی	containers	all
+container runtime	زمان اجرای ظرف	containers	all
+pipeline	خط لوله	ci	system-docs
+pipeline	خط لوله‌ها	ci	system-docs
+runner	اجراکننده	ci	system-docs
+artifact	مصنوع	ci	system-docs
+artifact	مصنوع‌ها	ci	system-docs
+workflow	جریان کاری	ci	system-docs
+playbook	کتابچه اجرا	iac	system-docs
+inventory	سیاهه موجودی	iac	all
+module	پیمانه	iac	system-docs
+provider	ارائه‌دهنده	iac	system-docs
+state file	فایل وضعیت	iac	all
+remote state	وضعیت راه‌دور	iac	all
+cgroup	گروه کنترل	linux	system-docs
+systemd unit	واحد سیستم‌دی	linux	all
+systemd journal	ژورنال سیستم‌دی	linux	all
