@@ -31,3 +31,38 @@ Do not use that skill for coding, commits, UI copy, or casual chat.
   `--level journal` when the fixture is a paper, not a sysadmin guide.
 - Keep `SKILL.md` short. It is loaded in full whenever the skill
   triggers; detail belongs in `references/`.
+
+## Cursor Cloud specific instructions
+
+This repo is tooling for a Cursor skill, not a running service. The dev
+loop is lint → test → build a PDF; there is nothing to keep running.
+
+- Lint / test / build commands live in `README.md` and
+  `.github/workflows/ci.yml`; use those rather than reinventing them.
+  Lint is `shellcheck -S warning $(git ls-files '*.sh')` plus
+  `python3 -m py_compile $(git ls-files '*.py')`; tests are
+  `bash tests/run.sh`; the deliverable is built with
+  `scripts/build-pdf.sh <file.tex|file.html> <slug> --verify` after
+  `scripts/check-fa.py <file> --strict`. Run `scripts/preflight.sh` to
+  see which engines/fonts/tools the machine has.
+- No repository-level package deps: everything is Python 3 stdlib or
+  system packages baked into the environment (`shellcheck`,
+  `python3-pil`/Pillow, `poppler-utils`, `fonts-vazirmatn`,
+  `texlive-xetex` + `texlive-lang-arabic` for xepersian, `latexmk`,
+  `google-chrome`). The boot-time update script is intentionally a no-op.
+- Preferred `.tex`/XeLaTeX path is currently blocked by a toolchain
+  mismatch, not a missing dependency: the shipped `assets/rtl-document.tex`
+  sets a Latin `\setdigitfont` (Western digits, by design), which TeX
+  Live 2023's xepersian 25.0 rejects with
+  `xepersian-mathdigitspec Error: The font "TeX Gyre Termes" does not
+  contain U+06F0`. Build via the documented HTML path instead
+  (`scripts/build-pdf.sh doc.html <slug> --verify`, Chromium engine) to
+  produce a print-ready RTL PDF. Only touch the template's digit-font
+  handling if the `.tex` path itself is the task.
+- Headless `google-chrome` prints harmless `dbus`/`UPower` errors to
+  stderr in this VM; the PDF is still written — look for the
+  "bytes written to file …" line, not the noise.
+- `scripts/fetch-vazirmatn.sh fonts/` reuses the installed Vazirmatn
+  system face offline (no network needed) to drop the TTFs beside an
+  HTML build. `--verify` rasterises sample pages to PNG; judge RTL from
+  those images, never from `pdftotext`.
