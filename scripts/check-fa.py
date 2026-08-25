@@ -3,7 +3,7 @@
 
 Usage:
     check-fa.py FILE [FILE ...] [--level system-docs|journal]
-                [--pairs FILE] [--strict] [--manifest FILE]
+                [--pairs FILE] [--terms FILE] [--strict] [--manifest FILE]
 
 Accepts `.tex` and `.html`/`.htm` sources. Every rule here is one of the
 mechanical items from the skill's quality checklist, so the checklist that
@@ -12,8 +12,10 @@ stays in SKILL.md is only the part a machine cannot judge.
 `--level journal` drops one-word field-noun bans (`گره`, `پیاده‌سازی`,
 `مجموعه داده`, …) so a paper that follows terminology.md does not fail.
 `--pairs FILE` is added on top of `references/term-pairs.tsv`, never a
-replacement. English `-s` plurals of kept terms (`services`, `APIs`) fail;
-the stem plus ها after the isolate is the surviving form.
+replacement. `--terms FILE` reads a job `terms.tsv` and forbids the
+optional calque column on keep-English rows. English `-s` plurals of
+kept terms (`services`, `APIs`) fail; the stem plus ها after the isolate
+is the surviving form.
 
 Exit codes: 0 clean, 1 findings at error level, 2 usage error.
 
@@ -53,6 +55,8 @@ HALF_TRANSLATION_HEADS = [
     "نیازمندی‌های",
     "جریان‌های",
     "دیوارهای",
+    "بلوک",
+    "بلوک‌های",
 ]
 
 # ZWNJ-less spellings of common verb forms. An explicit list avoids the false
@@ -344,6 +348,36 @@ def load_pairs(paths: list[Path], level: str
     return [(en, fa, "universal") for en, fa in DEFAULT_PAIRS]
 
 
+def load_terms_pairs(path: Path) -> list[tuple[str, str, str]]:
+    """Keep-English rows from a job terms.tsv, with an optional calque.
+
+    Columns: source, output, step, count, forbidden_fa.
+    A row is used only when output is English and forbidden_fa is set.
+    """
+    rows: list[tuple[str, str, str]] = []
+    if not path.exists():
+        return rows
+    seen: set[tuple[str, str]] = set()
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [p.strip() for p in line.split("\t")]
+        if not parts or parts[0] in ("source", "english"):
+            continue
+        if len(parts) < 5 or not parts[4]:
+            continue
+        en, output, forbidden = parts[0], parts[1], parts[4]
+        if not re.search(r"[A-Za-z]", output):
+            continue
+        key = (en, forbidden)
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append((en, forbidden, "job"))
+    return rows
+
+
 def fa_pattern(word: str) -> str:
     """Match a Persian term whether it uses ZWNJ or a plain space.
 
@@ -610,6 +644,8 @@ def main(argv: list[str]) -> int:
                     help="terminology.md level (default system-docs)")
     ap.add_argument("--pairs", type=Path, default=None,
                     help="extra TSV merged on top of term-pairs.tsv")
+    ap.add_argument("--terms", type=Path, default=None,
+                    help="job terms.tsv; keep-English calques are merged")
     ap.add_argument("--manifest", type=Path,
                     help="file listing expected image basenames, one per line")
     ap.add_argument("--strict", action="store_true",
@@ -622,6 +658,16 @@ def main(argv: list[str]) -> int:
     if args.pairs is not None:
         pair_paths.append(args.pairs)
     pairs = load_pairs(pair_paths, args.level)
+    if args.terms is not None:
+        if not args.terms.exists():
+            print(f"check-fa: no such file: {args.terms}", file=sys.stderr)
+            return 2
+        seen = {(en, fa) for en, fa, _ in pairs}
+        for row in load_terms_pairs(args.terms):
+            key = (row[0], row[1])
+            if key not in seen:
+                pairs.append(row)
+                seen.add(key)
     manifest = None
     if args.manifest:
         manifest = [l.strip() for l in

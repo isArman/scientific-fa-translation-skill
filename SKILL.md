@@ -36,7 +36,7 @@ Override only when the user says so.
 | --- | --- |
 | Direction | English → فارسی علمی |
 | Register | Formal فارسی معیار. Clear and readable, not ornate. No colloquial forms. |
-| Terminology | `journal` for papers, theses, review articles; `system-docs` for install guides, specs, RFCs, runbooks. Announce the level and the specialty inferred from the source. Checker `--level` must match. |
+| Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level plus the inferred **job** and **subject**. Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
 | PDF engine | XeLaTeX + `xepersian`; Chromium then WeasyPrint on the HTML template when TeX is absent |
@@ -55,7 +55,8 @@ Override only when the user says so.
 
 1. **Preflight.** `scripts/preflight.sh` — know which engine and fonts
    exist before promising a build. Confirm source, target, and level.
-   Specialty is inferred from the source in step 3, not chosen from a list.
+   Job and subject are inferred from the source in step 3, not chosen
+   from a list.
 2. **Ingest.** `references/source-ingest.md`: fetch the source, extract
    figures, run `scripts/crop-source-figures.py` then
    `scripts/prepare-figures.py figures/ --check`, write
@@ -64,21 +65,26 @@ Override only when the user says so.
    pdfimages dump. Never ship a full source-page raster as a figure.
    A book `contents` / `brief contents` page is inventory chrome, not
    optional: translate it and print it.
-3. **Terminology first.** Read enough of the source to name the specialty
-   in one sentence and announce it with the level. Scan candidate terms
-   and apply `references/terminology.md`. Do not write `glossary.local.md`
-   and do not append to `glossary.md`. For a long document, write
-   `terms.tsv` in the working tree only (discarded with the job)
-   **before** drafting, and show the close calls to the user first. For a
-   short document, keep those choices in session and start drafting.
+3. **Terminology first.** Read enough of the source to name the **job**
+   (the practice: DevOps, …) and the **subject** (the product or protocol:
+   nginx, …). Announce both with the level. Keep that job's and subject's
+   lexicon English (`location`, `proxy_pass`, `deployment` — not مکان /
+   گذرگاه پیش‌رو / استقرار). Ordinary prose stays Persian. Apply
+   `references/terminology.md`. Do not write `glossary.local.md` and do
+   not append to `glossary.md`. For a long document, write `terms.tsv` in
+   the working tree only (discarded with the job) **before** drafting,
+   show the close calls to the user first, and lint with `--terms
+   terms.tsv`. For a short document, keep those choices in session and
+   start drafting.
 4. **Read** `references/scientific-style.md` and `references/rtl-bidi.md`.
    For anything past ~15 pages also `references/long-documents.md`.
 5. **Translate** section by section. Do not add, omit, or soften claims;
    preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
 6. **Isolate** every LTR run in the print source — whole clusters, one
    isolate each (`references/rtl-bidi.md`).
-7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --strict` and
-   clear every error. Lint each part as you finish it, not at the end.
+7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --terms terms.tsv
+   --strict` (omit `--terms` when that file does not exist) and clear
+   every error. Lint each part as you finish it, not at the end.
    `--pairs FILE` *adds* rows; it does not replace `term-pairs.tsv`.
 8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`,
    then look at the rasterised pages. Run the judgement checklist below.
@@ -91,24 +97,24 @@ terms in English.
 
 ## Terminology in one paragraph
 
-Full policy and the field-term test: `references/terminology.md`. Infer the
-specialty from the source; there is no domain pack. Ordered, first match
-wins: generic document chrome (`Abstract`, `Figure`) is always
+Full policy and the field-term test: `references/terminology.md`. Infer
+**job** and **subject** from the source; there is no domain pack. Ordered,
+first match wins: generic document chrome (`Abstract`, `Figure`) is always
 Persian; named artifacts and acronyms are English; a 2–5 word technical
-label is English as **one whole isolate**; a field term of art is English at
-`system-docs` level, including its operation verb (`node`, `deployment`,
-`configure` — never گره / استقرار / پیکربندی); at `journal` those one-word
-field nouns are Persian (`پیاده‌سازی`, `رمزنگاری`, `گره`). Everything else
-is Persian. Never half-translate (`خوشه Kubernetes`, `سرویس‌های OpenStack`).
+label is English as **one whole isolate**; the inferred subject's lexicon
+is English at every level (`nginx`, `location`, `proxy_pass`); the job's
+lexicon is English at `system-docs` (`deployment`, `reverse proxy`) and
+Persian at `journal` unless it is also the subject. Everything else is
+Persian. Never half-translate (`خوشه Kubernetes`, `بلوک location`).
 A kept-term plural is the singular stem plus `ها` (`\en{service}ها`,
-`\en{platform}ها`, `\en{API}ها`), never `services` / `platforms` / `APIs`;
+`\en{location}ها`, `\en{API}ها`), never `services` / `locations` / `APIs`;
 ezafe on Latin is still forbidden (`Goی`). Never mix two forms of one
 concept in a document. Forbidden calques are enforced from
-`references/term-pairs.tsv` at the matching `--level`.
+`references/term-pairs.tsv` plus this job's `terms.tsv`.
 
-Example (`system-docs`): «برای \en{configure} هر \en{node} باید از یک
-\en{account with administrative privilege}ها استفاده کنید.» — not «برای
-پیکربندی هر گره».
+Example (`system-docs`, job DevOps, subject nginx): «برای \en{proxy_pass}
+در هر \en{location} از یک \en{upstream} استفاده کنید.» — not «برای گذرگاه
+پیش‌رو در هر مکان».
 
 Example (`journal`): «این پیاده‌سازی از \en{gradient descent} برای کمینه
 کردن تابع هزینه استفاده می‌کند.»
@@ -158,21 +164,23 @@ page count, and the engine used.
 
 ## Quality gate
 
-**Machine-checked** — `scripts/check-fa.py --level <level> --strict` must
-exit 0. It covers orthography (`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
+**Machine-checked** — `scripts/check-fa.py --level <level> --terms terms.tsv
+--strict` must exit 0 (omit `--terms` when that file does not exist). It
+covers orthography (`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
 Western digits, Persian punctuation), forbidden calques at that level,
 half-translated noun phrases, English `-s` plurals of kept terms, leftover
 Latin ezafe (`Goی`), split
 isolates, un-isolated Latin runs, un-isolated number clusters (ranges and
 dates reverse on an RTL page), listing direction, mirrored artwork,
 missing images, figure direction, full-page figure rasters, and terminology drift inside isolates.
-Do not re-check these by hand. `--pairs` merges onto the house list.
+Do not re-check these by hand. `--pairs` and `--terms` merge onto the house list.
 
 **Judgement** — only these five, and they are the whole point:
 
 - [ ] No added, omitted, or softened scientific claim; hedges intact
-- [ ] Terminology consistent: one form per concept; for a long document,
-      consistent with `terms.tsv`
+- [ ] Terminology consistent: one form per concept; inferred job and
+      subject lexicon stayed English; for a long document, consistent
+      with `terms.tsv`
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)

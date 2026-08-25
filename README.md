@@ -44,29 +44,29 @@ Preferred engine XeLaTeX + `xepersian`; Chromium then WeasyPrint on the
 RTL HTML template when TeX is absent. Run `scripts/preflight.sh` to see
 which of those exist on the machine before planning a build.
 
-**Terminology.** Named artifacts, acronyms, formulas, multi-word technical
-collocations, and — at `system-docs` level — one-word field terms of art
-and their operation verbs stay English in an LTR isolate. Generic document
-chrome, narrative verbs, and conceptual explanation are Persian. Infer the
-specialty from the source; do not select a domain pack. The ordered
-decision procedure, the field-term test, and the two levels are in
-[`references/terminology.md`](references/terminology.md); the house lists
-are in `glossary.md`. Nothing restates the policy, so there is one place
-to change it.
+**Terminology.** Infer **job** and **subject** from the source (DevOps +
+nginx, not a pack). Named artifacts, acronyms, formulas, the subject's
+lexicon at every level, and — at `system-docs` — the job's field terms
+and their operation verbs stay English in an LTR isolate. Generic
+document chrome, narrative verbs, and conceptual explanation are Persian.
+The ordered decision procedure, the field-term test, and the two levels
+are in [`references/terminology.md`](references/terminology.md); the
+house lists are in `glossary.md`. Nothing restates the policy, so there
+is one place to change it.
 
 **Enforcement.** `scripts/check-fa.py --level <level> --strict` fails the
 build on the mechanical rules — orthography, forbidden calques at that
 level, half-translated noun phrases, English `-s` plurals of kept terms,
 split isolates, un-isolated Latin runs and number clusters, RTL listings,
 mirrored artwork, missing images, figure direction, full-page rasters, terminology drift.
-`--pairs` merges onto the house list. The checklist left in `SKILL.md` is
+`--pairs` and `--terms` merge onto the house list. The checklist left in `SKILL.md` is
 only the five items a machine cannot judge.
 `tests/run.sh` keeps the checker honest with clean and deliberately
 broken fixtures.
 
 ```bash
 scripts/preflight.sh
-scripts/check-fa.py doc.tex --level system-docs --strict
+scripts/check-fa.py doc.tex --level system-docs --terms terms.tsv --strict
 scripts/build-pdf.sh doc.tex my-slug --verify
 bash tests/run.sh
 ```

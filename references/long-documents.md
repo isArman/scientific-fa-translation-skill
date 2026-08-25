@@ -10,22 +10,28 @@ set of decisions. Everything here exists to make those three impossible.
 
 Before drafting any body text:
 
-1. Read enough of the source to name the specialty in one sentence.
-   Announce it with the level. There is no domain pack to select.
+1. Read enough of the source to name the **job** and the **subject**
+   (DevOps + nginx). Announce both with the level. There is no domain
+   pack to select.
 2. Scan the whole source for candidate terms. Classify each with the
-   decision procedure in `terminology.md`.
+   decision procedure in `terminology.md`. The inferred job and subject
+   lexicon stays English.
 3. Write `terms.tsv` in the working tree — source term, chosen output
-   form, decision step that produced it, occurrence count:
+   form, decision step, occurrence count, optional forbidden calque:
 
    ```text
-   password	password	3 field-term	118
-   security	امنیت	5 prose	 41
-   node	node	3 field-term	 96
-   Introduction	مقدمه	0 chrome	  1
+   source	output	step	count	forbidden_fa
+   location	location	3 subject-lexicon	84	مکان
+   proxy_pass	proxy_pass	3 subject-lexicon	40
+   deployment	deployment	3 job-lexicon	22	استقرار
+   security	امنیت	5 prose	41
+   Introduction	مقدمه	0 chrome	1
    ```
 
-   Do not write `glossary.local.md`. Do not append to `glossary.md`.
-   `terms.tsv` is job memory and is discarded with the working tree.
+   Fill `forbidden_fa` when a Persian calque of a keep-English term is
+   obvious, so `--terms` can fail the build on it. Do not write
+   `glossary.local.md`. Do not append to `glossary.md`. `terms.tsv` is
+   job memory and is discarded with the working tree.
 4. Show the user the rows that were close calls, then translate.
 
 This step is the fix for the recorded `password` / گذرواژه drift: the body
@@ -58,7 +64,7 @@ because “the PDF outline is enough”; the printed page is the deliverable.
 Lint each part as it is finished, not at the end:
 
 ```bash
-scripts/check-fa.py parts/03-*.tex --level system-docs --strict
+scripts/check-fa.py parts/03-*.tex --level system-docs --terms terms.tsv --strict
 ```
 
 A part that lints clean stays clean. A 174-page document linted once at the

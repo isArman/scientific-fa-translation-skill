@@ -5,11 +5,12 @@ lives in `terminology.md`; do not re-derive it here. The forbidden Persian
 calques live in `term-pairs.tsv` where the checker can read them.
 
 This file is the only glossary in the skill. There are no per-field packs.
-Infer a document's specialty from the source. Append a row here **only** if
-it generalises past the document in hand (chrome, a keep-English class, or
-a recurring infrastructure noun). A state name, opcode, or byline from one
-book does not belong here — lock it in that job's `terms.tsv` if the
-document is long, then discard the file with the job.
+Infer a document's **job** and **subject** from the source (DevOps + nginx,
+not a pack id). Append a row here **only** if it generalises past the
+document in hand (chrome, a keep-English class, or a recurring
+infrastructure noun). A directive, opcode, or byline from one book does
+not belong here — lock it in that job's `terms.tsv` if the document is
+long, then discard the file with the job.
 
 ## Always Persian
 
@@ -118,6 +119,10 @@ named artifact or a multi-word label.
 
 Do not create `glossary.local.md`. For a long document, the working tree
 holds `terms.tsv` (`long-documents.md`) so chapter three and chapter nine
-use the same form. That file is discarded with the job. Never copy it into
-this skill. `--pairs FILE` on the checker merges extra forbidden forms
-onto `term-pairs.tsv` for one run; it does not replace the house list.
+use the same form. Keep-English rows for the inferred job and subject
+lexicon belong there, with an optional calque column for the checker.
+That file is discarded with the job. Never copy it into this skill.
+
+```bash
+scripts/check-fa.py doc.tex --level system-docs --terms terms.tsv --strict
+```

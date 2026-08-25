@@ -15,7 +15,7 @@ One directory per job, outside the deliverable path:
   figures/           images copied or extracted from the source
   inventory.md       structure count, written during ingestion
   manifest.txt       one image basename per line
-  terms.tsv          long jobs only: source term → chosen form → count
+   terms.tsv          long jobs only: source → form → step → count → calque
   progress.md        section ledger (see long-documents.md)
   doc.tex / doc.html the translation being built
 ```
@@ -134,7 +134,8 @@ When the user gives more than one URL and wants a single PDF (a common ask):
 - Do not merge or deduplicate overlapping prose; each source keeps its own
   section even when they repeat each other.
 - One shared `terms.tsv` across all sources when the merged document is
-  long, so terminology is consistent. Do not write a glossary file.
+  long, so the inferred job and subject lexicon stays consistent. Do not
+  write a glossary file.
 
 ## Licence and provenance
 

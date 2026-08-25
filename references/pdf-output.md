@@ -64,8 +64,10 @@ fc-list :lang=fa family | sort -u
 ```
 
 Prefer Vazirmatn, then Shabnam, Sahel, Amiri, DejaVu Sans. Latin serif for
-`\setlatintextfont` and `\setdigitfont` so digits stay Western; a monospace
-face for listings.
+`\setlatintextfont` (isolates). Digit font is the **Persian** text face:
+xepersian 25+ requires U+06F0 in `\setdigitfont`, which TeX Gyre Termes
+and other Latin serifs lack. Western digits still come from `\lr{…}` /
+`\en{…}` (latin text font). Never `\setdigitfont` to a Latin-only face.
 
 ### Bidi mapping
 
@@ -79,10 +81,10 @@ face for listings.
 | Bibliography | `latin` environment, source language |
 | Figure | `\includegraphics` inside `LTR`, Persian caption with `\en` on terms; flatten PNG alpha first |
 
-Numbers inside Persian sentences get `\lr{3}` / `\lr{3.14}` even with a
-Latin `\setdigitfont`; the wrap is what makes the result independent of the
-digit-font setting. Verify once per document with the digit smoke test
-below rather than trusting the setting.
+Numbers inside Persian sentences get `\lr{3}` / `\lr{3.14}`. The wrap is
+what keeps digits Western; `\setdigitfont` only has to satisfy xepersian
+(U+06F0). Verify once per document with the digit smoke test below rather
+than trusting the font setting.
 
 Two traps the template already handles, worth knowing why:
 

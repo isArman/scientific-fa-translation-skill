@@ -1,0 +1,15 @@
+% !TEX program = xelatex
+% Fixture: nginx/DevOps calques. Must lint clean without --terms, and
+% must report forbidden-fa with --terms tests/fixtures/terms-nginx.tsv.
+\documentclass[a4paper,12pt]{article}
+\usepackage{fontspec}
+\usepackage{xepersian}
+\settextfont{Vazirmatn}
+\newcommand{\en}[1]{\lr{#1}}
+\pdfstringdefDisableCommands{\def\lr#1{#1}\def\en#1{#1}}
+
+\begin{document}
+
+مکان و بالادست را تنظیم کنید.
+
+\end{document}

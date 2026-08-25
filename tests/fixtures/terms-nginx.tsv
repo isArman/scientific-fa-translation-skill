@@ -1,0 +1,4 @@
+source	output	step	count	forbidden_fa
+location	location	3 subject-lexicon	2	مکان
+upstream	upstream	3 subject-lexicon	2	بالادست
+security	امنیت	5 prose	1

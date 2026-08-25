@@ -105,6 +105,28 @@ else
   fail=1
 fi
 
+# --terms reads keep-English calques from a job terms.tsv; prose rows are ignored.
+expect_clean "$fixtures/nginx-calque.tex" --strict
+terms_out=$(python3 "$lint" "$fixtures/nginx-calque.tex" \
+  --terms "$fixtures/terms-nginx.tsv" 2>&1) || true
+if grep -q forbidden-fa <<<"$terms_out" && grep -q مکان <<<"$terms_out" \
+    && grep -q بالادست <<<"$terms_out"; then
+  echo "ok   --terms reports job lexicon calques"
+else
+  echo "FAIL --terms missed nginx calques"
+  echo "$terms_out" | sed 's/^/    /'
+  fail=1
+fi
+house_out=$(python3 "$lint" "$fixtures/journal.tex" \
+  --terms "$fixtures/terms-nginx.tsv" 2>&1) || true
+if grep -q گره <<<"$house_out"; then
+  echo "ok   --terms keeps house term-pairs.tsv"
+else
+  echo "FAIL --terms dropped house rows"
+  echo "$house_out" | sed 's/^/    /'
+  fail=1
+fi
+
 # prepare-figures.py: flatten alpha onto white so the print PDF matches the source.
 if python3 -c "import PIL.Image" 2>/dev/null; then
   alpha="$fixtures/figures/alpha.png"
@@ -172,6 +194,27 @@ else
   echo "FAIL extract-pdf-pages.py --help"
   echo "$help_out" | sed 's/^/    /'
   fail=1
+fi
+
+# Template must compile: digit font is a Persian face, not TeX Gyre Termes.
+if command -v xelatex >/dev/null 2>&1 \
+    && command -v kpsewhich >/dev/null 2>&1 \
+    && kpsewhich xepersian.sty >/dev/null 2>&1; then
+  smoke=$(mktemp -d)
+  cp "$here/../assets/rtl-document.tex" "$smoke/smoke.tex"
+  if (cd "$smoke" && xelatex -interaction=nonstopmode -halt-on-error \
+        smoke.tex >/dev/null 2>&1); then
+    echo "ok   rtl-document.tex compiles with XeLaTeX"
+  else
+    echo "FAIL rtl-document.tex did not compile"
+    if [[ -f $smoke/smoke.log ]]; then
+      grep -E '^!|U\+06F0' "$smoke/smoke.log" | head -20 | sed 's/^/    /'
+    fi
+    fail=1
+  fi
+  rm -rf "$smoke"
+else
+  echo "skip rtl-document.tex compile (no xelatex/xepersian)"
 fi
 
 if [[ $fail -eq 0 ]]; then

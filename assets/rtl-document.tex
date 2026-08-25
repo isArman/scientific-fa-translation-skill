@@ -28,12 +28,20 @@
     \IfFontExistsTF{Sahel}{\settextfont[Ligatures=TeX]{Sahel}}{%
       \IfFontExistsTF{Amiri}{\settextfont[Ligatures=TeX]{Amiri}}{%
         \settextfont[Ligatures=TeX]{DejaVu Sans}}}}}
-% Latin text and digit face — Latin, so digits stay Western.
+% Latin text face for English runs inside \lr / \en.
 \IfFontExistsTF{TeX Gyre Termes}{%
-  \setlatintextfont{TeX Gyre Termes}\setdigitfont{TeX Gyre Termes}}{%
+  \setlatintextfont{TeX Gyre Termes}}{%
   \IfFontExistsTF{Liberation Serif}{%
-    \setlatintextfont{Liberation Serif}\setdigitfont{Liberation Serif}}{%
-    \setlatintextfont{DejaVu Serif}\setdigitfont{DejaVu Serif}}}
+    \setlatintextfont{Liberation Serif}}{%
+    \setlatintextfont{DejaVu Serif}}}
+% Digit font must contain U+06F0 (xepersian 25+). Latin serifs do not —
+% TeX Gyre Termes here used to abort the build. Western digits still
+% come from \lr / \en (latin text font), which the checker requires.
+\IfFontExistsTF{Vazirmatn}{\setdigitfont{Vazirmatn}}{%
+  \IfFontExistsTF{Shabnam}{\setdigitfont{Shabnam}}{%
+    \IfFontExistsTF{Sahel}{\setdigitfont{Sahel}}{%
+      \IfFontExistsTF{Amiri}{\setdigitfont{Amiri}}{%
+        \setdigitfont{DejaVu Sans}}}}}
 % Monospace for listings.
 \IfFontExistsTF{TeX Gyre Cursor}{\setmonofont[Scale=0.92]{TeX Gyre Cursor}}{%
   \IfFontExistsTF{DejaVu Sans Mono}{\setmonofont[Scale=0.90]{DejaVu Sans Mono}}{%

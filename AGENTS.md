@@ -23,9 +23,9 @@ Do not use that skill for coding, commits, UI copy, or casual chat.
 
 - The terminology policy has one owner: `references/terminology.md`.
   Lists live in `glossary.md`; forbidden Persian calques live in
-  `references/term-pairs.tsv`. Infer a document's specialty from the
-  source; do not add a domain pack. Do not restate the policy in a
-  second file.
+  `references/term-pairs.tsv`. Infer a document's **job** and **subject**
+  from the source; do not add a domain pack. Do not restate the policy
+  in a second file.
 - A new rule that a machine could check belongs in `scripts/check-fa.py`
   with a fixture in `tests/fixtures/`, not only in prose. Run
   `bash tests/run.sh` after touching the checker or a fixture. Pass
@@ -51,15 +51,13 @@ loop is lint → test → build a PDF; there is nothing to keep running.
   `python3-pil`/Pillow, `poppler-utils`, `fonts-vazirmatn`,
   `texlive-xetex` + `texlive-lang-arabic` for xepersian, `latexmk`,
   `google-chrome`). The boot-time update script is intentionally a no-op.
-- Preferred `.tex`/XeLaTeX path is currently blocked by a toolchain
-  mismatch, not a missing dependency: the shipped `assets/rtl-document.tex`
-  sets a Latin `\setdigitfont` (Western digits, by design), which TeX
-  Live 2023's xepersian 25.0 rejects with
-  `xepersian-mathdigitspec Error: The font "TeX Gyre Termes" does not
-  contain U+06F0`. Build via the documented HTML path instead
-  (`scripts/build-pdf.sh doc.html <slug> --verify`, Chromium engine) to
-  produce a print-ready RTL PDF. Only touch the template's digit-font
-  handling if the `.tex` path itself is the task.
+- Preferred engine is still XeLaTeX + `xepersian` when both exist.
+  `\setdigitfont` must be a Persian face (Vazirmatn), not TeX Gyre
+  Termes: xepersian 25+ errors if that font lacks U+06F0. Western
+  digits come from `\lr` / `\en` isolates. If XeLaTeX is missing or
+  the `.tex` build fails, use the HTML path
+  (`scripts/build-pdf.sh doc.html <slug> --verify`, Chromium). Do not
+  treat a digit-font error as a missing TeX install.
 - Headless `google-chrome` prints harmless `dbus`/`UPower` errors to
   stderr in this VM; the PDF is still written — look for the
   "bytes written to file …" line, not the noise.
