@@ -30,7 +30,7 @@ expect_checks() {
   local file=$1
   shift
   local out rc missing=()
-  out=$(python3 "$lint" "$file" --domains all 2>&1)
+  out=$(python3 "$lint" "$file" 2>&1)
   rc=$?
   if [[ $rc -eq 0 ]]; then
     echo "FAIL $(basename "$file"): expected a non-zero exit"
@@ -50,7 +50,7 @@ expect_checks() {
 
 expect_no_errors() {
   local file=$1 out errs
-  out=$(python3 "$lint" "$file" --domains all 2>&1)
+  out=$(python3 "$lint" "$file" 2>&1)
   errs=$(sed -n 's/^check-fa: \([0-9]*\) error.*/\1/p' <<<"$out")
   if [[ ${errs:-1} -ne 0 ]]; then
     echo "FAIL $(basename "$file"): expected 0 errors, got ${errs:-?}"
@@ -63,7 +63,7 @@ expect_no_errors() {
 
 expect_clean "$fixtures/good.tex" --strict
 expect_clean "$fixtures/good.html" --strict
-expect_clean "$fixtures/journal.tex" --level journal --domains all --strict
+expect_clean "$fixtures/journal.tex" --level journal --strict
 
 # The shipped templates must not trigger errors. Placeholder TITLE sits in
 # an isolate (TeX) or in <title> (HTML).
@@ -83,7 +83,7 @@ expect_checks "$fixtures/bad.html" \
   figure-direction full-page-figure
 
 # Journal-correct field nouns must fail at the default system-docs level.
-journal_out=$(python3 "$lint" "$fixtures/journal.tex" --domains all 2>&1) || true
+journal_out=$(python3 "$lint" "$fixtures/journal.tex" 2>&1) || true
 if grep -q forbidden-fa <<<"$journal_out"; then
   echo "ok   journal.tex reports forbidden-fa at system-docs"
 else
@@ -102,36 +102,6 @@ if grep -q forbidden-fa <<<"$merge_out" && grep -q گره <<<"$merge_out"; then
 else
   echo "FAIL --pairs dropped house rows"
   echo "$merge_out" | sed 's/^/    /'
-  fail=1
-fi
-
-# Domain packs: calques are silent unless that pack (or --domains all) is on.
-expect_clean "$fixtures/domains.tex" --strict
-expect_checks "$fixtures/domains.tex" forbidden-fa
-
-obs_out=$(python3 "$lint" "$fixtures/domains.tex" --domains observability 2>&1) || true
-if grep -q سنجه <<<"$obs_out" && grep -q "خط لوله" <<<"$obs_out"; then
-  echo "FAIL observability pack leaked ci rows"
-  echo "$obs_out" | sed 's/^/    /'
-  fail=1
-elif grep -q سنجه <<<"$obs_out"; then
-  echo "ok   observability pack does not leak ci rows"
-else
-  echo "FAIL observability pack missed metric calque"
-  echo "$obs_out" | sed 's/^/    /'
-  fail=1
-fi
-
-ci_out=$(python3 "$lint" "$fixtures/domains.tex" --domains ci 2>&1) || true
-if grep -q "خط لوله" <<<"$ci_out" && grep -q سنجه <<<"$ci_out"; then
-  echo "FAIL ci pack leaked observability rows"
-  echo "$ci_out" | sed 's/^/    /'
-  fail=1
-elif grep -q "خط لوله" <<<"$ci_out"; then
-  echo "ok   ci pack does not leak observability rows"
-else
-  echo "FAIL ci pack missed pipeline calque"
-  echo "$ci_out" | sed 's/^/    /'
   fail=1
 fi
 

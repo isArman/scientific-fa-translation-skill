@@ -18,7 +18,7 @@ that the check was visual and therefore partial.
 1. **Mechanical pass.** Run the checker over every source file:
 
    ```bash
-   scripts/check-fa.py parts/*.tex --level system-docs --domains openstack --strict
+   scripts/check-fa.py parts/*.tex --level system-docs --strict
    ```
 
    This settles orthography, forbidden calques, half-translated noun

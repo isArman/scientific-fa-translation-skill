@@ -22,9 +22,10 @@ Do not use that skill for coding, commits, UI copy, or casual chat.
 ## Working on the skill itself
 
 - The terminology policy has one owner: `references/terminology.md`.
-  Lists live in `glossary.md` and `glossary-domains.md`; forbidden
-  Persian calques live in `references/term-pairs.tsv`. Do not restate
-  the policy in a second file.
+  Lists live in `glossary.md`; forbidden Persian calques live in
+  `references/term-pairs.tsv`. Infer a document's specialty from the
+  source; do not add a domain pack. Do not restate the policy in a
+  second file.
 - A new rule that a machine could check belongs in `scripts/check-fa.py`
   with a fixture in `tests/fixtures/`, not only in prose. Run
   `bash tests/run.sh` after touching the checker or a fixture. Pass

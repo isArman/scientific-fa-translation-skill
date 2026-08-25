@@ -1,10 +1,15 @@
 # Terminology policy
 
-Single owner of the keep-English / write-Persian split. `scientific-style.md`
-owns register and orthography, `glossary.md` holds the house lists,
-`glossary-domains.md` holds per-field packs, and `term-pairs.tsv` is the
-machine-readable half that `scripts/check-fa.py` enforces. Do not restate
-this policy anywhere else.
+Single owner of the keep-English / write-Persian split.
+`scientific-style.md` owns register and orthography, `glossary.md` holds
+the house lists (document chrome, keep-English classes, recurring
+infrastructure nouns), and `term-pairs.tsv` is the machine-readable half
+that `scripts/check-fa.py` enforces. Do not restate this policy anywhere
+else.
+
+There is no per-field glossary in this skill. Infer the specialty from
+the source in hand. Do not look up a pack name, and do not write terms
+into `glossary.md`.
 
 ## Level
 
@@ -20,6 +25,20 @@ Both levels keep named artifacts, acronyms, formulas, and multi-word
 technical labels in English. The level only moves the boundary for ordinary
 one-word field nouns and their operation verbs. The user switches with
 «سطح journal» or «سطح system-docs».
+
+## Infer the specialty
+
+Before classifying tokens, read enough of the source to name the field in
+one sentence and announce it with the level. That name is not a pack id
+and is not looked up in this repository.
+
+Then scan for candidate terms: the source's own glossary, defined-on-first-
+use marks, repeated technical noun phrases. Classify each with the
+decision procedure. Do not append rows to `glossary.md`. Do not create
+`glossary.local.md`. For a long document, lock the choices in the working
+tree as `terms.tsv` (`long-documents.md`) and discard that file with the
+job. For a short document, hold the same choices in session and do not
+write a glossary file.
 
 ## Decision procedure
 
@@ -48,9 +67,10 @@ Ordered. First match wins. Apply to each source token or noun phrase.
 5. **Otherwise** ordinary scholarly prose → Persian.
 
 Tie-break when steps 1–3 are genuinely uncertain: at `system-docs` keep the
-whole noun phrase English and add a row to the glossary; at `journal` write
-Persian and gloss the English once. Never resolve uncertainty by
-half-translating.
+whole noun phrase English; at `journal` write Persian and gloss the English
+once. Record the choice in `terms.tsv` when that file exists. Never resolve
+uncertainty by half-translating. Never write the choice into the skill's
+glossary.
 
 ## The field-term test
 
@@ -92,28 +112,28 @@ allowed the first time a Persian term carries an English concept.
 One form per concept for the whole document, in both directions: never mix
 `node` and گره, and never mix `node` with an unisolated bare `node`. For
 anything longer than a few pages, produce the `terms.tsv` described in
-`long-documents.md` **before** translating the body — the recorded
-`password` / گذرواژه drift came from deciding terminology while drafting.
+`long-documents.md` **before** translating the body — deciding twice,
+seventy pages apart, is how `password` / گذرواژه drift happens. That file
+is job memory, not a skill glossary.
 
 ## Forbidden output
 
-The canonical list is `term-pairs.tsv`, not prose. Each row pairs a source
-term with the Persian calque that must never replace it, a scope
-(`universal` or a domain pack), and a `levels` column: `system-docs` for
-one-word field nouns (skipped at `--level journal`) or `all` for
-multi-word labels kept English at both levels. Add a row there in the
-same commit as any new Keep-English note, then confirm with:
+The canonical house list is `term-pairs.tsv`, not prose. Each row pairs a
+source term with the Persian calque that must never replace it, and a
+`levels` column: `system-docs` for one-word field nouns (skipped at
+`--level journal`) or `all` for multi-word labels kept English at both
+levels. The checker reads the whole file; there is no `--domains` switch.
+Add a row there in the same commit as any new Keep-English note in
+`glossary.md`, then confirm with:
 
 ```bash
-scripts/check-fa.py path/to/doc.tex --level system-docs --domains openstack --strict
+scripts/check-fa.py path/to/doc.tex --level system-docs --strict
 ```
 
-Common `system-docs` rows today: `node`, `deployment`, `configuration`,
+House `system-docs` rows today: `node`, `deployment`, `configuration`,
 `implementation`, `integration`, `firewall`, `encryption`, `command`,
 `server`, `partition`, `filter`. At `journal` those one-word forms are
-Persian. Domain rows cover `password` (OpenStack install guides),
-`cluster` (Kubernetes), `transaction` / `block` / `fee` (Bitcoin),
-`dataset` (ML). Scoping matters: `block` is the Bitcoin lexicon but
-ordinary prose in a materials-science paper, so it must not be a
-universal rule. A kept-term plural is `\en{node}ها`, not `nodes` and
-not گره‌ها.
+Persian. A kept-term plural is `\en{node}ها`, not `nodes` and not گره‌ها.
+
+`--pairs FILE` merges extra rows onto that house list for one run. Do not
+use it as a reason to write a glossary file into the skill or the job.

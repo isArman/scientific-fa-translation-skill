@@ -1,22 +1,15 @@
 # House glossary
 
 Domain-agnostic lists. The policy that decides which list a token belongs to
-lives in `terminology.md`; do not re-derive it here. Field-specific
-vocabulary lives in `glossary-domains.md`, and the forbidden Persian calques
-live in `term-pairs.tsv` where the checker can read them.
+lives in `terminology.md`; do not re-derive it here. The forbidden Persian
+calques live in `term-pairs.tsv` where the checker can read them.
 
-Three tiers, deliberately:
-
-| File | Scope | Lifetime |
-| --- | --- | --- |
-| `glossary.md` | any scientific document | permanent |
-| `glossary-domains.md` | one field, reusable across documents | permanent |
-| `glossary.local.md` in the working tree | one document | discarded with the job |
-
-Append a row here **only** if it generalises past the document in hand. A
-`LOCKED_IN` state name or an author's byline belongs in `glossary.local.md`;
-putting it here dilutes the file the agent has to read on every job and
-creates cross-domain false positives.
+This file is the only glossary in the skill. There are no per-field packs.
+Infer a document's specialty from the source. Append a row here **only** if
+it generalises past the document in hand (chrome, a keep-English class, or
+a recurring infrastructure noun). A state name, opcode, or byline from one
+book does not belong here — lock it in that job's `terms.tsv` if the
+document is long, then discard the file with the job.
 
 ## Always Persian
 
@@ -121,16 +114,10 @@ the checker fails the build on the Persian calque unless `--level journal`.
 At `journal` level these become Persian unless the surrounding phrase is a
 named artifact or a multi-word label.
 
-## Per-document glossary
+## Job terms
 
-Create `glossary.local.md` next to the working `.tex` or `.html`, with the
-same two-tier shape, and record the document's own names: state constants,
-opcode lists, author bylines, deployment identifiers, table captions kept
-whole. Emit `terms.tsv` alongside it (`long-documents.md`) so the choice is
-reviewable before the body is drafted, and pass a local pairs file to the
-checker when the document needs extra forbidden forms. `--pairs` is merged
-onto `term-pairs.tsv`; it does not replace the house list:
-
-```bash
-scripts/check-fa.py doc.tex --level system-docs --pairs glossary.local.tsv --domains openstack --strict
-```
+Do not create `glossary.local.md`. For a long document, the working tree
+holds `terms.tsv` (`long-documents.md`) so chapter three and chapter nine
+use the same form. That file is discarded with the job. Never copy it into
+this skill. `--pairs FILE` on the checker merges extra forbidden forms
+onto `term-pairs.tsv` for one run; it does not replace the house list.

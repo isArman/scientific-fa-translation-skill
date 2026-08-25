@@ -8,15 +8,16 @@
 #   english          form that must survive in the output (singular stem
 #                    of a kept term; regular plurals are stem + ها, not -s)
 #   forbidden_fa     Persian form that is wrong for this source term
-#   scope            `universal`, or a domain pack from glossary-domains.md
+#   scope            always `universal` (kept for TSV compatibility)
 #   levels           `system-docs` = one-word field noun, skipped at journal
 #                    `all` = multi-word label / named phrase, both levels
 #
-# `universal` rows are enforced on every document. Domain rows are enforced
-# only with `--domains <name>` (or `--domains all`). `--level journal`
-# skips `system-docs` rows so a paper may use پیاده‌سازی / گره / مجموعه داده.
-# Add a row here at the same time you add a Keep-English note in
-# glossary.md; this file is the single source of truth for the checker.
+# The checker reads every row. There is no `--domains` switch and no
+# per-field pack. `--level journal` skips `system-docs` rows so a paper
+# may use پیاده‌سازی / گره. Add a row here at the same time you add a
+# Keep-English note in glossary.md; this file is the single source of
+# truth for the checker. Document-specific field terms are inferred from
+# the source and locked in the job's terms.tsv, not here.
 
 english	forbidden_fa	scope	levels
 node	گره	universal	system-docs
@@ -42,58 +43,3 @@ reference implementation	پیاده‌سازی مرجع	universal	all
 underlying infrastructure	زیرساخت زیربنایی	universal	all
 account with administrative privilege	حسابی با امتیازهای مدیریتی	universal	all
 performance and redundancy requirement	نیازمندی‌های کارایی و افزونگی	universal	all
-interrelated service	سرویس‌های مرتبط	openstack	all
-supporting service	سرویس‌های پشتیبان	openstack	all
-complementary service	سرویس‌های مکمل	openstack	all
-advanced service	سرویس‌های پیشرفته	openstack	all
-password	گذرواژه	openstack	system-docs
-password	گذرواژه‌ها	openstack	system-docs
-Network layout	طرح شبکه	openstack	all
-single disk partition	افراز دیسک واحد	openstack	all
-physical server	کارساز فیزیکی	openstack	all
-cluster	خوشه	kubernetes	system-docs
-cluster	خوشه‌ها	kubernetes	system-docs
-cloud provider	ارائه‌دهندهٔ ابر	kubernetes	all
-cloud provider	ارائه‌دهندگان ابر	kubernetes	all
-Continuous Delivery workflow	جریان‌های کاری پیوسته	gitops	all
-fee	کارمزد	bitcoin	system-docs
-transaction	تراکنش	bitcoin	system-docs
-transaction	تراکنش‌ها	bitcoin	system-docs
-block	بلوک	bitcoin	system-docs
-block	بلوک‌ها	bitcoin	system-docs
-miner	استخراج‌کننده	bitcoin	system-docs
-consensus	اجماع	bitcoin	system-docs
-activation	فعال‌سازی	bitcoin	system-docs
-dataset	مجموعه داده	ml	system-docs
-metric	سنجه	observability	system-docs
-metric	سنجه‌ها	observability	system-docs
-trace	ردیابی	observability	system-docs
-span	دهانه	observability	system-docs
-exporter	صادرکننده	observability	system-docs
-scrape target	هدف جمع‌آوری	observability	all
-service level objective	هدف سطح خدمت	observability	all
-service level indicator	شاخص سطح خدمت	observability	all
-cardinality	کثرت برچسب	observability	all
-dashboard	تابلوی کنترل	observability	all
-container	ظرف	containers	system-docs
-container	ظرف‌ها	containers	system-docs
-container image	تصویر ظرف	containers	all
-container image	تصویر کانتینر	containers	all
-image registry	انباره تصویر	containers	all
-overlay filesystem	سیستم‌فایل پوششی	containers	all
-container runtime	زمان اجرای ظرف	containers	all
-pipeline	خط لوله	ci	system-docs
-pipeline	خط لوله‌ها	ci	system-docs
-runner	اجراکننده	ci	system-docs
-artifact	مصنوع	ci	system-docs
-artifact	مصنوع‌ها	ci	system-docs
-workflow	جریان کاری	ci	system-docs
-playbook	کتابچه اجرا	iac	system-docs
-inventory	سیاهه موجودی	iac	all
-module	پیمانه	iac	system-docs
-provider	ارائه‌دهنده	iac	system-docs
-state file	فایل وضعیت	iac	all
-remote state	وضعیت راه‌دور	iac	all
-cgroup	گروه کنترل	linux	system-docs
-systemd unit	واحد سیستم‌دی	linux	all
-systemd journal	ژورنال سیستم‌دی	linux	all

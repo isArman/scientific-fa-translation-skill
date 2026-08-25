@@ -10,10 +10,12 @@ set of decisions. Everything here exists to make those three impossible.
 
 Before drafting any body text:
 
-1. Scan the whole source for candidate terms. Classify each with the
+1. Read enough of the source to name the specialty in one sentence.
+   Announce it with the level. There is no domain pack to select.
+2. Scan the whole source for candidate terms. Classify each with the
    decision procedure in `terminology.md`.
-2. Write `terms.tsv` — source term, chosen output form, decision step that
-   produced it, occurrence count:
+3. Write `terms.tsv` in the working tree — source term, chosen output
+   form, decision step that produced it, occurrence count:
 
    ```text
    password	password	3 field-term	118
@@ -22,14 +24,14 @@ Before drafting any body text:
    Introduction	مقدمه	0 chrome	  1
    ```
 
-3. Add the document's own names to `glossary.local.md`, and any calque you
-   want the checker to forbid to a local pairs file.
+   Do not write `glossary.local.md`. Do not append to `glossary.md`.
+   `terms.tsv` is job memory and is discarded with the working tree.
 4. Show the user the rows that were close calls, then translate.
 
 This step is the fix for the recorded `password` / گذرواژه drift: the body
-kept `password` while the glossary and a screenshot caption used گذرواژه,
-because the decision was made twice, seventy pages apart. Deciding once, in
-a file, costs minutes; repairing it after a 174-page build costs a rebuild.
+kept `password` while a caption used گذرواژه, because the decision was
+made twice, seventy pages apart. Deciding once, in a file, costs minutes;
+repairing it after a 174-page build costs a rebuild.
 
 ## Sectioning
 
@@ -56,7 +58,7 @@ because “the PDF outline is enough”; the printed page is the deliverable.
 Lint each part as it is finished, not at the end:
 
 ```bash
-scripts/check-fa.py parts/03-*.tex --level system-docs --domains openstack --strict
+scripts/check-fa.py parts/03-*.tex --level system-docs --strict
 ```
 
 A part that lints clean stays clean. A 174-page document linted once at the
@@ -96,10 +98,9 @@ leave a `TODO` marker in the compiled PDF text.
 
 ## Context budget
 
-Read the source part you are translating, `terms.tsv`, and
-`glossary.local.md` — not the whole source and not previously finished
-parts. If a decision needs an earlier part, look it up in `terms.tsv` first;
-that is what the file is for.
+Read the source part you are translating and `terms.tsv` — not the whole
+source and not previously finished parts. If a decision needs an earlier
+part, look it up in `terms.tsv` first; that is what the file is for.
 
 ## Assembly and verification
 

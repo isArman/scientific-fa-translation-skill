@@ -36,8 +36,8 @@ Override only when the user says so.
 | --- | --- |
 | Direction | English → فارسی علمی |
 | Register | Formal فارسی معیار. Clear and readable, not ornate. No colloquial forms. |
-| Terminology | `journal` for papers, theses, review articles; `system-docs` for install guides, specs, RFCs, runbooks. Announce. Checker `--level` must match. |
-| First mention | No gloss for English terms unless the level or glossary says otherwise |
+| Terminology | `journal` for papers, theses, review articles; `system-docs` for install guides, specs, RFCs, runbooks. Announce the level and the specialty inferred from the source. Checker `--level` must match. |
+| First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
 | PDF engine | XeLaTeX + `xepersian`; Chromium then WeasyPrint on the HTML template when TeX is absent |
 | HTML | Only on request, or as that fallback |
@@ -55,6 +55,7 @@ Override only when the user says so.
 
 1. **Preflight.** `scripts/preflight.sh` — know which engine and fonts
    exist before promising a build. Confirm source, target, and level.
+   Specialty is inferred from the source in step 3, not chosen from a list.
 2. **Ingest.** `references/source-ingest.md`: fetch the source, extract
    figures, run `scripts/crop-source-figures.py` then
    `scripts/prepare-figures.py figures/ --check`, write
@@ -63,20 +64,22 @@ Override only when the user says so.
    pdfimages dump. Never ship a full source-page raster as a figure.
    A book `contents` / `brief contents` page is inventory chrome, not
    optional: translate it and print it.
-3. **Terminology first.** Scan domain terms, apply
-   `references/terminology.md`, and write `terms.tsv` plus
-   `glossary.local.md` **before** drafting. For a long document show the
-   close calls to the user first.
+3. **Terminology first.** Read enough of the source to name the specialty
+   in one sentence and announce it with the level. Scan candidate terms
+   and apply `references/terminology.md`. Do not write `glossary.local.md`
+   and do not append to `glossary.md`. For a long document, write
+   `terms.tsv` in the working tree only (discarded with the job)
+   **before** drafting, and show the close calls to the user first. For a
+   short document, keep those choices in session and start drafting.
 4. **Read** `references/scientific-style.md` and `references/rtl-bidi.md`.
    For anything past ~15 pages also `references/long-documents.md`.
 5. **Translate** section by section. Do not add, omit, or soften claims;
    preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
 6. **Isolate** every LTR run in the print source — whole clusters, one
    isolate each (`references/rtl-bidi.md`).
-7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --domains <pack>
-   --strict` and clear every error. Lint each part as you finish it, not
-   at the end. `--pairs glossary.local.tsv` *adds* rows; it does not
-   replace `term-pairs.tsv`.
+7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --strict` and
+   clear every error. Lint each part as you finish it, not at the end.
+   `--pairs FILE` *adds* rows; it does not replace `term-pairs.tsv`.
 8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`,
    then look at the rasterised pages. Run the judgement checklist below.
 
@@ -88,8 +91,9 @@ terms in English.
 
 ## Terminology in one paragraph
 
-Full policy and the field-term test: `references/terminology.md`. Ordered,
-first match wins: generic document chrome (`Abstract`, `Figure`) is always
+Full policy and the field-term test: `references/terminology.md`. Infer the
+specialty from the source; there is no domain pack. Ordered, first match
+wins: generic document chrome (`Abstract`, `Figure`) is always
 Persian; named artifacts and acronyms are English; a 2–5 word technical
 label is English as **one whole isolate**; a field term of art is English at
 `system-docs` level, including its operation verb (`node`, `deployment`,
@@ -167,7 +171,8 @@ Do not re-check these by hand. `--pairs` merges onto the house list.
 **Judgement** — only these five, and they are the whole point:
 
 - [ ] No added, omitted, or softened scientific claim; hedges intact
-- [ ] Terminology consistent with `terms.tsv`, one form per concept
+- [ ] Terminology consistent: one form per concept; for a long document,
+      consistent with `terms.tsv`
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)

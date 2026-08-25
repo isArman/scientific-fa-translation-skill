@@ -47,11 +47,12 @@ which of those exist on the machine before planning a build.
 **Terminology.** Named artifacts, acronyms, formulas, multi-word technical
 collocations, and — at `system-docs` level — one-word field terms of art
 and their operation verbs stay English in an LTR isolate. Generic document
-chrome, narrative verbs, and conceptual explanation are Persian. The
-ordered decision procedure, the field-term test, and the two levels are
-in [`references/terminology.md`](references/terminology.md); the lists
-are in `glossary.md` and `glossary-domains.md`. Nothing restates the
-policy, so there is one place to change it.
+chrome, narrative verbs, and conceptual explanation are Persian. Infer the
+specialty from the source; do not select a domain pack. The ordered
+decision procedure, the field-term test, and the two levels are in
+[`references/terminology.md`](references/terminology.md); the house lists
+are in `glossary.md`. Nothing restates the policy, so there is one place
+to change it.
 
 **Enforcement.** `scripts/check-fa.py --level <level> --strict` fails the
 build on the mechanical rules — orthography, forbidden calques at that
@@ -65,7 +66,7 @@ broken fixtures.
 
 ```bash
 scripts/preflight.sh
-scripts/check-fa.py doc.tex --level system-docs --domains openstack --strict
+scripts/check-fa.py doc.tex --level system-docs --strict
 scripts/build-pdf.sh doc.tex my-slug --verify
 bash tests/run.sh
 ```
@@ -77,7 +78,6 @@ SKILL.md
 assets/rtl-document.tex        assets/rtl-document.html
 references/terminology.md      policy: keep English vs write Persian
 references/glossary.md         house lists
-references/glossary-domains.md per-field packs
 references/term-pairs.tsv      forbidden calques, machine-readable
 references/scientific-style.md register, orthography, mechanics
 references/rtl-bidi.md         isolation rules

@@ -3,7 +3,7 @@
 
 Usage:
     check-fa.py FILE [FILE ...] [--level system-docs|journal]
-                [--domains a,b] [--pairs FILE] [--strict] [--manifest FILE]
+                [--pairs FILE] [--strict] [--manifest FILE]
 
 Accepts `.tex` and `.html`/`.htm` sources. Every rule here is one of the
 mechanical items from the skill's quality checklist, so the checklist that
@@ -316,7 +316,7 @@ class Source:
             self._protect(m.start(), m.end())
 
 
-def load_pairs(paths: list[Path], domains: set[str], level: str
+def load_pairs(paths: list[Path], level: str
                ) -> list[tuple[str, str, str]]:
     rows: list[tuple[str, str, str]] = []
     seen: set[tuple[str, str]] = set()
@@ -333,8 +333,6 @@ def load_pairs(paths: list[Path], domains: set[str], level: str
             en, fa, scope = parts[0], parts[1], parts[2]
             levels = parts[3] if len(parts) > 3 else "all"
             if levels == "system-docs" and level == "journal":
-                continue
-            if scope != "universal" and "all" not in domains and scope not in domains:
                 continue
             key = (en, fa)
             if key in seen:
@@ -612,8 +610,6 @@ def main(argv: list[str]) -> int:
                     help="terminology.md level (default system-docs)")
     ap.add_argument("--pairs", type=Path, default=None,
                     help="extra TSV merged on top of term-pairs.tsv")
-    ap.add_argument("--domains", default="",
-                    help="comma-separated domain packs, or 'all'")
     ap.add_argument("--manifest", type=Path,
                     help="file listing expected image basenames, one per line")
     ap.add_argument("--strict", action="store_true",
@@ -622,11 +618,10 @@ def main(argv: list[str]) -> int:
                     help="findings printed per check (default 40)")
     args = ap.parse_args(argv)
 
-    domains = {d.strip() for d in args.domains.split(",") if d.strip()}
     pair_paths = [house]
     if args.pairs is not None:
         pair_paths.append(args.pairs)
-    pairs = load_pairs(pair_paths, domains, args.level)
+    pairs = load_pairs(pair_paths, args.level)
     manifest = None
     if args.manifest:
         manifest = [l.strip() for l in
