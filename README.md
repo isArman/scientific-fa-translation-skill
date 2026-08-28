@@ -48,9 +48,9 @@ Preferred engine XeLaTeX + `xepersian`; Chromium then WeasyPrint on the
 RTL HTML template when TeX is absent. Run `scripts/preflight.sh` to see
 which of those exist on the machine before planning a build.
 
-**Terminology.** Infer **job** and **subject** from the source (DevOps +
-nginx, not a pack). Named artifacts, acronyms, formulas, the subject's
-lexicon at every level, and — at `system-docs` — the job's field terms
+**Terminology.** Infer **three jobs** and one **subject** from the source
+(DevOps, networking, Linux + nginx, not a pack). Named artifacts, acronyms, formulas, the subject's
+lexicon at every level, and — at `system-docs` — those jobs' field terms
 and their operation verbs stay English in an LTR isolate. Generic
 document chrome, narrative verbs, and conceptual explanation are Persian.
 The ordered decision procedure, the field-term test, and the two levels

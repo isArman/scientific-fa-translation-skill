@@ -5,8 +5,8 @@ lives in `terminology.md`; do not re-derive it here. The forbidden Persian
 calques live in `term-pairs.tsv` where the checker can read them.
 
 This file is the only glossary in the skill. There are no per-field packs.
-Infer a document's **job** and **subject** from the source (DevOps + nginx,
-not a pack id). Append a row here **only** if it generalises past the
+Infer a document's **three jobs** and **subject** from the source
+(DevOps, networking, Linux + nginx, not a pack id). Append a row here **only** if it generalises past the
 document in hand (chrome, a keep-English class, or a recurring
 infrastructure noun). A directive, opcode, or byline from one book does
 not belong here — lock it in that job's `terms.tsv` if the document is

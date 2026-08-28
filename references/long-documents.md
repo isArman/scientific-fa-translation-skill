@@ -10,9 +10,9 @@ set of decisions. Everything here exists to make those three impossible.
 
 Before drafting any body text:
 
-1. Read enough of the source to name the **job** and the **subject**
-   (DevOps + nginx). Announce both with the level. There is no domain
-   pack to select.
+1. Read enough of the source to name **three jobs** and the **subject**
+   (DevOps, networking, Linux + nginx). Announce all four with the
+   level. There is no domain pack to select.
 2. Scan the whole source for candidate terms. Classify each with the
    decision procedure in `terminology.md`. The inferred job and subject
    lexicon stays English.
