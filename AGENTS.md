@@ -31,7 +31,9 @@ Do not use that skill for coding, commits, UI copy, or casual chat.
   `bash tests/run.sh` after touching the checker or a fixture. Pass
   `--level journal` when the fixture is a paper, not a sysadmin guide.
 - Keep `SKILL.md` short. It is loaded in full whenever the skill
-  triggers; detail belongs in `references/`.
+  triggers; detail belongs in `references/`. Ensemble roles (Composer
+  and Grok translate, Luna judges) live in `references/ensemble.md`;
+  do not restate them here.
 
 ## Cursor Cloud specific instructions
 

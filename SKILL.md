@@ -79,8 +79,9 @@ Override only when the user says so.
    always with `--terms terms.tsv`.
 4. **Read** `references/scientific-style.md` and `references/rtl-bidi.md`.
    For anything past ~15 pages also `references/long-documents.md`.
-5. **Translate** section by section. Do not add, omit, or soften claims;
-   preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
+5. **Translate** with the ensemble in `references/ensemble.md`: Composer
+   and Grok draft, Luna judges diffs only. Do not add, omit, or soften
+   claims; preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
 6. **Isolate** every LTR run in the print source — whole clusters, one
    isolate each (`references/rtl-bidi.md`).
 7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --terms terms.tsv

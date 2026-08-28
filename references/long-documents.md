@@ -33,7 +33,9 @@ Before drafting any body text:
    Do not write
    `glossary.local.md`. Do not append to `glossary.md`. `terms.tsv` is
    job memory and is discarded with the working tree.
-4. Show the user the rows that were close calls, then translate.
+4. Show the user the rows that were close calls, then translate with
+   the ensemble in `ensemble.md` (Composer and Grok draft; Luna judges
+   diffs).
 
 This step is the fix for the recorded `password` / گذرواژه drift: the body
 kept `password` while a caption used گذرواژه, because the decision was
