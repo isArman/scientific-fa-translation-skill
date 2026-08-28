@@ -1,5 +1,9 @@
 # scientific-fa-translation-skill
 
+This repository is for Linux and macOS. On **Windows**, use
+[KiaroSama/scientific-fa-translation-skill](https://github.com/KiaroSama/scientific-fa-translation-skill)
+instead — that fork carries the PowerShell toolchain.
+
 A [Cursor Agent Skill](https://cursor.com/docs/skills) for academic
 English → scientific Persian, with print-ready RTL.
 
