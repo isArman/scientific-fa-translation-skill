@@ -58,19 +58,23 @@ are in [`references/terminology.md`](references/terminology.md); the
 house lists are in `glossary.md`. Nothing restates the policy, so there
 is one place to change it.
 
-**Enforcement.** `scripts/check-fa.py --level <level> --strict` fails the
+**Enforcement.** `scripts/check-fa.py --level <level> --terms terms.tsv
+--manifest manifest.txt --strict` fails the
 build on the mechanical rules — orthography, forbidden calques at that
 level, half-translated noun phrases, English `-s` plurals of kept terms,
 split isolates, un-isolated Latin runs and number clusters, RTL listings,
 mirrored artwork, missing images, figure direction, full-page rasters, terminology drift.
-`--pairs` and `--terms` merge onto the house list. The checklist left in `SKILL.md` is
+`--pairs` and `--terms` merge onto the house list. `--strict` requires
+the terms ledger and the figure manifest. `scripts/build-pdf.sh` runs
+that lint (and `prepare-figures.py --check` when `figures/` exists)
+before it will copy a PDF. The checklist left in `SKILL.md` is
 only the five items a machine cannot judge.
 `tests/run.sh` keeps the checker honest with clean and deliberately
 broken fixtures.
 
 ```bash
 scripts/preflight.sh
-scripts/check-fa.py doc.tex --level system-docs --terms terms.tsv --strict
+scripts/check-fa.py doc.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
 scripts/build-pdf.sh doc.tex my-slug --verify
 bash tests/run.sh
 ```
@@ -94,7 +98,7 @@ scripts/check-fa.py            mechanical checker
 scripts/prepare-figures.py     flatten alpha; catch pdfimages negatives
 scripts/crop-source-figures.py crop artwork; never embed a full PDF page
 scripts/extract-pdf-pages.py   page-range PDF without duplicating XObjects
-scripts/build-pdf.sh           compile and verify
+scripts/build-pdf.sh           lint, compile, and verify (fails closed)
 scripts/fetch-vazirmatn.sh     font for the HTML path
 tests/                         checker regression tests
 ```

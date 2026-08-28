@@ -43,8 +43,11 @@ loop is lint → test → build a PDF; there is nothing to keep running.
   Lint is `shellcheck -S warning $(git ls-files '*.sh')` plus
   `python3 -m py_compile $(git ls-files '*.py')`; tests are
   `bash tests/run.sh`; the deliverable is built with
-  `scripts/build-pdf.sh <file.tex|file.html> <slug> --verify` after
-  `scripts/check-fa.py <file> --strict`. Run `scripts/preflight.sh` to
+  `scripts/build-pdf.sh <file.tex|file.html> <slug> --verify`, which
+  runs `check-fa.py --strict --terms --manifest` first and will not copy
+  a PDF if lint, figure check, or `--verify` fail. A working tree needs
+  `terms.tsv` and `manifest.txt` next to the source. Run
+  `scripts/preflight.sh` to
   see which engines/fonts/tools the machine has.
 - No repository-level package deps: everything is Python 3 stdlib or
   system packages baked into the environment (`shellcheck`,

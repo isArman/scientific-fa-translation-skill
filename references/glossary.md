@@ -117,12 +117,12 @@ named artifact or a multi-word label.
 
 ## Job terms
 
-Do not create `glossary.local.md`. For a long document, the working tree
-holds `terms.tsv` (`long-documents.md`) so chapter three and chapter nine
+Do not create `glossary.local.md`. The working tree holds `terms.tsv`
+(`long-documents.md`) so chapter three and chapter nine
 use the same form. Keep-English rows for the inferred job and subject
-lexicon belong there, with an optional calque column for the checker.
+lexicon belong there, with a required `forbidden_fa` calque for the checker.
 That file is discarded with the job. Never copy it into this skill.
 
 ```bash
-scripts/check-fa.py doc.tex --level system-docs --terms terms.tsv --strict
+scripts/check-fa.py doc.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
 ```

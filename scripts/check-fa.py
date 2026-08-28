@@ -12,10 +12,12 @@ stays in SKILL.md is only the part a machine cannot judge.
 `--level journal` drops one-word field-noun bans (`گره`, `پیاده‌سازی`,
 `مجموعه داده`, …) so a paper that follows terminology.md does not fail.
 `--pairs FILE` is added on top of `references/term-pairs.tsv`, never a
-replacement. `--terms FILE` reads a job `terms.tsv` and forbids the
-optional calque column on keep-English rows. English `-s` plurals of
-kept terms (`services`, `APIs`) fail; the stem plus ها after the isolate
-is the surviving form.
+replacement. `--terms FILE` reads a job `terms.tsv`. Keep-English rows
+must name a `forbidden_fa` calque; an empty calque column is an error,
+not a skip. `--strict` requires `--terms` and `--manifest` (or
+`terms.tsv` / `manifest.txt` next to the source). English `-s` plurals
+of kept terms (`services`, `APIs`) fail; the stem plus ها after the
+isolate is the surviving form.
 
 Exit codes: 0 clean, 1 findings at error level, 2 usage error.
 
@@ -348,34 +350,52 @@ def load_pairs(paths: list[Path], level: str
     return [(en, fa, "universal") for en, fa in DEFAULT_PAIRS]
 
 
-def load_terms_pairs(path: Path) -> list[tuple[str, str, str]]:
-    """Keep-English rows from a job terms.tsv, with an optional calque.
+def load_terms_pairs(path: Path) -> tuple[list[tuple[str, str, str]], list[str]]:
+    """Keep-English rows from a job terms.tsv.
 
     Columns: source, output, step, count, forbidden_fa.
-    A row is used only when output is English and forbidden_fa is set.
+    A keep-English row (Latin in *output*) must set *forbidden_fa*;
+    otherwise this is a contract error, not a silent skip. Persian-output
+    rows (prose / chrome) are not calque pairs.
     """
     rows: list[tuple[str, str, str]] = []
-    if not path.exists():
-        return rows
+    errors: list[str] = []
+    if not path.is_file():
+        return rows, [f"no such file: {path}"]
     seen: set[tuple[str, str]] = set()
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for lineno, raw in enumerate(
+            path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
         parts = [p.strip() for p in line.split("\t")]
         if not parts or parts[0] in ("source", "english"):
             continue
-        if len(parts) < 5 or not parts[4]:
+        if len(parts) < 2:
+            errors.append(f"{path}:{lineno}: need source and output columns")
             continue
-        en, output, forbidden = parts[0], parts[1], parts[4]
+        en, output = parts[0], parts[1]
         if not re.search(r"[A-Za-z]", output):
+            continue
+        forbidden = parts[4] if len(parts) > 4 else ""
+        if not forbidden:
+            errors.append(
+                f"{path}:{lineno}: keep-English {en!r} has empty "
+                "forbidden_fa (terms-calque)")
             continue
         key = (en, forbidden)
         if key in seen:
             continue
         seen.add(key)
         rows.append((en, forbidden, "job"))
-    return rows
+    return rows, errors
+
+
+def _sidecar(files: list[Path], name: str) -> Path | None:
+    if not files:
+        return None
+    candidate = files[0].resolve().parent / name
+    return candidate if candidate.is_file() else None
 
 
 def fa_pattern(word: str) -> str:
@@ -645,11 +665,12 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--pairs", type=Path, default=None,
                     help="extra TSV merged on top of term-pairs.tsv")
     ap.add_argument("--terms", type=Path, default=None,
-                    help="job terms.tsv; keep-English calques are merged")
+                    help="job terms.tsv; keep-English rows need forbidden_fa")
     ap.add_argument("--manifest", type=Path,
                     help="file listing expected image basenames, one per line")
     ap.add_argument("--strict", action="store_true",
-                    help="treat remaining warnings as errors")
+                    help="warnings become errors; requires --terms and "
+                         "--manifest (or sidecars next to the source)")
     ap.add_argument("--max", type=int, default=40,
                     help="findings printed per check (default 40)")
     args = ap.parse_args(argv)
@@ -658,18 +679,38 @@ def main(argv: list[str]) -> int:
     if args.pairs is not None:
         pair_paths.append(args.pairs)
     pairs = load_pairs(pair_paths, args.level)
+    if args.terms is None:
+        args.terms = _sidecar(args.files, "terms.tsv")
+    if args.manifest is None:
+        args.manifest = _sidecar(args.files, "manifest.txt")
+    if args.strict and args.terms is None:
+        print("check-fa: --strict requires --terms FILE "
+              "(or terms.tsv next to the source)", file=sys.stderr)
+        return 2
+    if args.strict and args.manifest is None:
+        print("check-fa: --strict requires --manifest FILE "
+              "(or manifest.txt next to the source)", file=sys.stderr)
+        return 2
     if args.terms is not None:
-        if not args.terms.exists():
+        if not args.terms.is_file():
             print(f"check-fa: no such file: {args.terms}", file=sys.stderr)
             return 2
+        extra_pairs, terms_errors = load_terms_pairs(args.terms)
+        if terms_errors:
+            for err in terms_errors:
+                print(f"check-fa: terms-calque: {err}", file=sys.stderr)
+            return 2
         seen = {(en, fa) for en, fa, _ in pairs}
-        for row in load_terms_pairs(args.terms):
+        for row in extra_pairs:
             key = (row[0], row[1])
             if key not in seen:
                 pairs.append(row)
                 seen.add(key)
     manifest = None
-    if args.manifest:
+    if args.manifest is not None:
+        if not args.manifest.is_file():
+            print(f"check-fa: no such file: {args.manifest}", file=sys.stderr)
+            return 2
         manifest = [l.strip() for l in
                     args.manifest.read_text(encoding="utf-8").splitlines()
                     if l.strip() and not l.startswith("#")]

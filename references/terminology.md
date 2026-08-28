@@ -147,7 +147,7 @@ levels. The checker reads the whole file. Add a row there in the same
 commit as any new Keep-English note in `glossary.md`, then confirm with:
 
 ```bash
-scripts/check-fa.py path/to/doc.tex --level system-docs --terms terms.tsv --strict
+scripts/check-fa.py path/to/doc.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
 ```
 
 House `system-docs` rows today: `node`, `deployment`, `configuration`,
@@ -156,7 +156,8 @@ House `system-docs` rows today: `node`, `deployment`, `configuration`,
 Persian unless they are in the inferred subject lexicon. A kept-term
 plural is `\en{node}ها`, not `nodes` and not گره‌ها.
 
-`--terms FILE` reads this job's `terms.tsv` and forbids the optional
-calque column on keep-English rows. `--pairs FILE` merges extra rows in
+`--terms FILE` reads this job's `terms.tsv` and forbids the required
+calque column on keep-English rows. An empty `forbidden_fa` on those
+rows is an error. `--pairs FILE` merges extra rows in
 term-pairs format. Neither is a reason to write a glossary file into the
 skill.

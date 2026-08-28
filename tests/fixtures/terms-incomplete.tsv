@@ -1,0 +1,2 @@
+source	output	step	count	forbidden_fa
+proxy_pass	proxy_pass	3 subject-lexicon	1

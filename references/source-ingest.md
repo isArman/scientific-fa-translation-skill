@@ -99,6 +99,7 @@ figure**, not the whole source page around it.
 pdfimages -png -p source/doc.pdf figures/img      # last-resort rasters
 pdftoppm -png -r 150 -f 12 -l 12 source/doc.pdf /tmp/page-12  # check only
 scripts/crop-source-figures.py source/doc.pdf --out figures/artwork --map figures-map.tsv
+scripts/prepare-figures.py figures/artwork
 scripts/prepare-figures.py figures/artwork --check
 ```
 
@@ -117,7 +118,7 @@ is a missing section. It costs a minute and it is the only way to answer
 
 ```bash
 ls figures/ | sed 's/.*\///' > manifest.txt
-scripts/check-fa.py doc.tex --level <level> --manifest manifest.txt --strict
+scripts/check-fa.py doc.tex --level <level> --terms terms.tsv --manifest manifest.txt --strict
 ```
 
 The checker reports any manifest image that never made it into the

@@ -58,8 +58,9 @@ Override only when the user says so.
    Job and subject are inferred from the source in step 3, not chosen
    from a list.
 2. **Ingest.** `references/source-ingest.md`: fetch the source, extract
-   figures, run `scripts/crop-source-figures.py` then
-   `scripts/prepare-figures.py figures/ --check`, write
+   figures, run `scripts/crop-source-figures.py`, flatten with
+   `scripts/prepare-figures.py figures/`, then
+   `scripts/prepare-figures.py figures/ --check`. Write
    `inventory.md` and `manifest.txt` in the working tree.
    Never translate from memory when a fetch fails. Never ship a black
    pdfimages dump. Never ship a full source-page raster as a figure.
@@ -71,11 +72,10 @@ Override only when the user says so.
    lexicon English (`location`, `proxy_pass`, `deployment` — not مکان /
    گذرگاه پیش‌رو / استقرار). Ordinary prose stays Persian. Apply
    `references/terminology.md`. Do not write `glossary.local.md` and do
-   not append to `glossary.md`. For a long document, write `terms.tsv` in
-   the working tree only (discarded with the job) **before** drafting,
-   show the close calls to the user first, and lint with `--terms
-   terms.tsv`. For a short document, keep those choices in session and
-   start drafting.
+   not append to `glossary.md`. Write `terms.tsv` in the working tree
+   (discarded with the job) **before** drafting — keep-English rows must
+   include `forbidden_fa`. Show close calls to the user first. Lint
+   always with `--terms terms.tsv`.
 4. **Read** `references/scientific-style.md` and `references/rtl-bidi.md`.
    For anything past ~15 pages also `references/long-documents.md`.
 5. **Translate** section by section. Do not add, omit, or soften claims;
@@ -83,11 +83,14 @@ Override only when the user says so.
 6. **Isolate** every LTR run in the print source — whole clusters, one
    isolate each (`references/rtl-bidi.md`).
 7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --terms terms.tsv
-   --strict` (omit `--terms` when that file does not exist) and clear
-   every error. Lint each part as you finish it, not at the end.
-   `--pairs FILE` *adds* rows; it does not replace `term-pairs.tsv`.
-8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`,
-   then look at the rasterised pages. Run the judgement checklist below.
+   --manifest manifest.txt --strict` and clear every error. `--strict`
+   will not run without those two files. Lint each part as you finish it,
+   not at the end. `--pairs FILE` *adds* rows; it does not replace
+   `term-pairs.tsv`.
+8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`
+   lints again, checks `figures/` when that directory exists, and will
+   not copy a PDF if lint, figure check, or `--verify` fail. Look at the
+   rasterised pages. Run the judgement checklist below.
 
 If the user asks for HTML only, use `assets/rtl-document.html`. If they ask
 for Markdown, wrap the body in `<div lang="fa" dir="rtl">`, still isolate
@@ -165,8 +168,8 @@ page count, and the engine used.
 ## Quality gate
 
 **Machine-checked** — `scripts/check-fa.py --level <level> --terms terms.tsv
---strict` must exit 0 (omit `--terms` when that file does not exist). It
-covers orthography (`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
+--manifest manifest.txt --strict` must exit 0. It covers orthography
+(`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
 Western digits, Persian punctuation), forbidden calques at that level,
 half-translated noun phrases, English `-s` plurals of kept terms, leftover
 Latin ezafe (`Goی`), split
@@ -179,8 +182,7 @@ Do not re-check these by hand. `--pairs` and `--terms` merge onto the house list
 
 - [ ] No added, omitted, or softened scientific claim; hedges intact
 - [ ] Terminology consistent: one form per concept; inferred job and
-      subject lexicon stayed English; for a long document, consistent
-      with `terms.tsv`
+      subject lexicon stayed English; consistent with `terms.tsv`
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regression tests for scripts/check-fa.py.
+# Regression tests for scripts/check-fa.py and the build-pdf lint gate.
 #
 # The `good` fixtures must lint clean; the `bad` fixtures must report every
 # check id listed below. Run before changing a rule so a loosened regex
@@ -61,9 +61,16 @@ expect_no_errors() {
   fi
 }
 
-expect_clean "$fixtures/good.tex" --strict
-expect_clean "$fixtures/good.html" --strict
-expect_clean "$fixtures/journal.tex" --level journal --strict
+empty_terms="$fixtures/terms-empty.tsv"
+empty_manifest="$fixtures/manifest-empty.txt"
+good_manifest="$fixtures/manifest-good.txt"
+strict_good=(--strict --terms "$empty_terms" --manifest "$good_manifest")
+strict_journal=(--level journal --strict --terms "$empty_terms"
+                --manifest "$empty_manifest")
+
+expect_clean "$fixtures/good.tex" "${strict_good[@]}"
+expect_clean "$fixtures/good.html" "${strict_good[@]}"
+expect_clean "$fixtures/journal.tex" "${strict_journal[@]}"
 
 # The shipped templates must not trigger errors. Placeholder TITLE sits in
 # an isolate (TeX) or in <title> (HTML).
@@ -105,10 +112,47 @@ else
   fail=1
 fi
 
-# --terms reads keep-English calques from a job terms.tsv; prose rows are ignored.
-expect_clean "$fixtures/nginx-calque.tex" --strict
+# --strict without a terms ledger (or sidecar) is a usage error.
+strict_rc=0
+strict_out=$(python3 "$lint" "$fixtures/nginx-calque.tex" --strict 2>&1) \
+  || strict_rc=$?
+if [[ $strict_rc -eq 2 ]] && grep -q -- '--terms' <<<"$strict_out"; then
+  echo "ok   --strict requires --terms"
+else
+  echo "FAIL --strict without --terms: expected exit 2"
+  echo "$strict_out" | sed 's/^/    /'
+  fail=1
+fi
+
+strict_man_rc=0
+strict_man_out=$(python3 "$lint" "$fixtures/nginx-calque.tex" --strict \
+  --terms "$empty_terms" 2>&1) || strict_man_rc=$?
+if [[ $strict_man_rc -eq 2 ]] && grep -q -- '--manifest' <<<"$strict_man_out"; then
+  echo "ok   --strict requires --manifest"
+else
+  echo "FAIL --strict without --manifest: expected exit 2"
+  echo "$strict_man_out" | sed 's/^/    /'
+  fail=1
+fi
+
+# Keep-English rows with empty forbidden_fa fail closed, they are not skipped.
+inc_rc=0
+inc_out=$(python3 "$lint" "$fixtures/nginx-calque.tex" \
+  --terms "$fixtures/terms-incomplete.tsv" \
+  --manifest "$empty_manifest" 2>&1) || inc_rc=$?
+if [[ $inc_rc -eq 2 ]] && grep -q terms-calque <<<"$inc_out" \
+    && grep -q proxy_pass <<<"$inc_out"; then
+  echo "ok   keep-English row without forbidden_fa is terms-calque"
+else
+  echo "FAIL incomplete terms.tsv: expected terms-calque exit 2"
+  echo "$inc_out" | sed 's/^/    /'
+  fail=1
+fi
+
+# --terms reads keep-English calques; Persian-output rows stay ignored.
 terms_out=$(python3 "$lint" "$fixtures/nginx-calque.tex" \
-  --terms "$fixtures/terms-nginx.tsv" 2>&1) || true
+  --terms "$fixtures/terms-nginx.tsv" \
+  --manifest "$empty_manifest" --strict 2>&1) || true
 if grep -q forbidden-fa <<<"$terms_out" && grep -q مکان <<<"$terms_out" \
     && grep -q بالادست <<<"$terms_out"; then
   echo "ok   --terms reports job lexicon calques"
@@ -127,8 +171,21 @@ else
   fail=1
 fi
 
+# Manifest names that never appear in the translation are missing-image.
+man_out=$(python3 "$lint" "$fixtures/journal.tex" --level journal \
+  --terms "$empty_terms" --manifest "$fixtures/manifest-missing.txt" \
+  --strict 2>&1) || true
+if grep -q missing-image <<<"$man_out" && grep -q fig-never.png <<<"$man_out"; then
+  echo "ok   --manifest reports omitted figures"
+else
+  echo "FAIL --manifest missed omitted figure"
+  echo "$man_out" | sed 's/^/    /'
+  fail=1
+fi
+
 # prepare-figures.py: flatten alpha onto white so the print PDF matches the source.
 if python3 -c "import PIL.Image" 2>/dev/null; then
+  mkdir -p "$fixtures/figures"
   alpha="$fixtures/figures/alpha.png"
   python3 - "$alpha" <<'PY'
 import struct, zlib, sys
@@ -176,6 +233,32 @@ PY
   rm -f "$alpha" "$alpha.orig"
 else
   echo "skip prepare-figures (no Pillow)"
+fi
+
+# build-pdf.sh must not copy a PDF when lint fails.
+build="$here/../scripts/build-pdf.sh"
+build_rc=0
+build_out=$("$build" "$fixtures/nginx-calque.tex" lint-gate-must-not-write \
+  --terms "$fixtures/terms-nginx.tsv" \
+  --manifest "$empty_manifest" 2>&1) || build_rc=$?
+if [[ $build_rc -ne 0 ]] && grep -q forbidden-fa <<<"$build_out" \
+    && grep -q 'lint failed' <<<"$build_out" \
+    && [[ ! -f ${HOME}/Documents/books/lint-gate-must-not-write.pdf ]]; then
+  echo "ok   build-pdf refuses a document that fails lint"
+else
+  echo "FAIL build-pdf lint gate"
+  echo "$build_out" | sed 's/^/    /'
+  fail=1
+fi
+missing_terms_rc=0
+missing_terms_out=$("$build" "$fixtures/nginx-calque.tex" \
+  --manifest "$empty_manifest" 2>&1) || missing_terms_rc=$?
+if [[ $missing_terms_rc -ne 0 ]] && grep -q terms.tsv <<<"$missing_terms_out"; then
+  echo "ok   build-pdf requires terms.tsv"
+else
+  echo "FAIL build-pdf without terms.tsv"
+  echo "$missing_terms_out" | sed 's/^/    /'
+  fail=1
 fi
 
 help_out=$(python3 "$here/../scripts/crop-source-figures.py" --help 2>&1) || help_rc=$?

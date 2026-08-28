@@ -17,19 +17,20 @@ Before drafting any body text:
    decision procedure in `terminology.md`. The inferred job and subject
    lexicon stays English.
 3. Write `terms.tsv` in the working tree — source term, chosen output
-   form, decision step, occurrence count, optional forbidden calque:
+   form, decision step, occurrence count, forbidden calque. Keep-English
+   rows must fill `forbidden_fa`; the checker rejects an empty calque
+   column.
 
    ```text
    source	output	step	count	forbidden_fa
    location	location	3 subject-lexicon	84	مکان
-   proxy_pass	proxy_pass	3 subject-lexicon	40
+   proxy_pass	proxy_pass	3 subject-lexicon	40	گذرگاه پیش‌رو
    deployment	deployment	3 job-lexicon	22	استقرار
    security	امنیت	5 prose	41
    Introduction	مقدمه	0 chrome	1
    ```
 
-   Fill `forbidden_fa` when a Persian calque of a keep-English term is
-   obvious, so `--terms` can fail the build on it. Do not write
+   Do not write
    `glossary.local.md`. Do not append to `glossary.md`. `terms.tsv` is
    job memory and is discarded with the working tree.
 4. Show the user the rows that were close calls, then translate.
@@ -64,7 +65,7 @@ because “the PDF outline is enough”; the printed page is the deliverable.
 Lint each part as it is finished, not at the end:
 
 ```bash
-scripts/check-fa.py parts/03-*.tex --level system-docs --terms terms.tsv --strict
+scripts/check-fa.py parts/03-*.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
 ```
 
 A part that lints clean stays clean. A 174-page document linted once at the
@@ -111,12 +112,14 @@ part, look it up in `terms.tsv` first; that is what the file is for.
 ## Assembly and verification
 
 1. Lint every part, then the assembled document.
-2. Build once with `scripts/build-pdf.sh`.
-3. Verify the artifact, not the source: page count against `inventory.md`,
-   embedded fonts, and rasterised sample pages (`build-pdf.sh --verify`
-   does all three).
-4. Check the figure count against `manifest.txt`.
-5. Report the path, the page count, and the queued questions.
+2. Build with `scripts/build-pdf.sh doc.tex <slug> --verify`. It lints
+   first, runs `prepare-figures.py --check` when `figures/` exists, and
+   will not copy a PDF if lint, figure check, or `--verify` fail.
+   `--verify` fails closed: missing poppler tools, no embedded font, or
+   a raster that was not written. Compare page count to `inventory.md`
+   yourself; the script reports the count, it does not read the inventory.
+3. Look at the rasterised sample pages (first, last, and a middle page).
+4. Report the path, the page count, and the queued questions.
 
 If the user asked for a page range, not the whole PDF, extract it with
 `scripts/extract-pdf-pages.py in.pdf out.pdf 1-20` after the build. That
