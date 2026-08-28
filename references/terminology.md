@@ -7,7 +7,7 @@ infrastructure nouns), and `term-pairs.tsv` is the machine-readable half
 that `scripts/check-fa.py` enforces. Do not restate this policy anywhere
 else.
 
-There is no per-field glossary in this skill. Infer the **job** and the
+There is no per-field glossary in this skill. Infer the **jobs** and the
 **subject** from the source in hand. Do not look up a pack name, and do
 not write terms into `glossary.md`.
 
@@ -28,17 +28,24 @@ verbs. The user switches with «سطح journal» or «سطح system-docs».
 
 ## Infer job and subject
 
-Before classifying tokens, read enough of the source to name two things,
-and announce them with the level:
+Before classifying tokens, read enough of the source to name these, and
+announce them with the level:
 
-- **Job** — the practice or discipline (`DevOps`, clinical research, …)
-- **Subject** — the product, protocol, or corpus the document is about
-  (`nginx`, Bitcoin, ImageNet, …)
+- **Jobs** — exactly **three** short practice labels, ranked by how much
+  of the source they cover (`DevOps`, `networking`, `Linux`). A book
+  often spans more than one profession; three is both the target and the
+  cap. Each label must be a real thread in the source (a chapter,
+  audience, or repeated terms of art). Do not invent a practice the
+  source does not use, and do not add a fourth. The **job lexicon** is
+  the union of those three.
+- **Subject** — one product, protocol, or corpus (`nginx`, Bitcoin,
+  ImageNet, …)
 
 Those names are not pack ids and are not looked up in this repository.
-Example: job DevOps, subject nginx, level `system-docs`.
+Example: jobs DevOps, networking, Linux; subject nginx; level
+`system-docs`.
 
-Then every term that belongs to that job's lexicon **or** that subject's
+Then every term that belongs to that job lexicon **or** that subject's
 lexicon stays English: directives, modules, CLI flags, config keys,
 named blocks, operation verbs of those terms, and multi-word labels in
 that lexicon.
@@ -47,8 +54,8 @@ A token belongs to the inferred lexicon when at least one of these holds:
 
 - it is a name, directive, module, flag, API, or config key of the subject
   (`nginx`, `location`, `proxy_pass`, `worker_processes`);
-- it is a term of art of the job as this document uses it (the field-term
-  test below);
+- it is a term of art of one of the three jobs as this document uses it
+  (the field-term test below);
 - it appears in the source's own glossary, or in that subject's man page,
   `--help`, or spec index.
 
@@ -59,10 +66,8 @@ In «increase security using firewalls», `security` is امنیت and
 `firewalls` stays English.
 
 Do not append rows to `glossary.md`. Do not create `glossary.local.md`.
-For a long document, lock the choices in the working tree as `terms.tsv`
-(`long-documents.md`) and discard that file with the job. For a short
-document, hold the same choices in session and do not write a glossary
-file.
+Lock the choices in the working tree as `terms.tsv` (`long-documents.md`)
+and discard that file with the job.
 
 ## Decision procedure
 
@@ -100,8 +105,8 @@ glossary.
 
 ## The field-term test
 
-A token is a field term of art of the **job** when at least one of these
-holds:
+A token is a field term of art of one of the three **jobs** when at least
+one of these holds:
 
 - it appears in the source document's own glossary or terminology section;
 - it appears in the upstream project's official glossary, man page,
@@ -147,7 +152,7 @@ levels. The checker reads the whole file. Add a row there in the same
 commit as any new Keep-English note in `glossary.md`, then confirm with:
 
 ```bash
-scripts/check-fa.py path/to/doc.tex --level system-docs --terms terms.tsv --strict
+scripts/check-fa.py path/to/doc.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
 ```
 
 House `system-docs` rows today: `node`, `deployment`, `configuration`,
@@ -156,7 +161,8 @@ House `system-docs` rows today: `node`, `deployment`, `configuration`,
 Persian unless they are in the inferred subject lexicon. A kept-term
 plural is `\en{node}ها`, not `nodes` and not گره‌ها.
 
-`--terms FILE` reads this job's `terms.tsv` and forbids the optional
-calque column on keep-English rows. `--pairs FILE` merges extra rows in
+`--terms FILE` reads this job's `terms.tsv` and forbids the required
+calque column on keep-English rows. An empty `forbidden_fa` on those
+rows is an error. `--pairs FILE` merges extra rows in
 term-pairs format. Neither is a reason to write a glossary file into the
 skill.

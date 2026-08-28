@@ -18,7 +18,7 @@ that the check was visual and therefore partial.
 1. **Mechanical pass.** Run the checker over every source file:
 
    ```bash
-   scripts/check-fa.py parts/*.tex --level system-docs --terms terms.tsv --strict
+   scripts/check-fa.py parts/*.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
    ```
 
    This settles orthography, forbidden calques, half-translated noun
@@ -46,7 +46,7 @@ that the check was visual and therefore partial.
    or an English body paragraph, the crop is wrong.
 
 3. **Terminology consistency.** Compare the output against `terms.tsv` if
-   it exists, and confirm the announced job and subject lexicon stayed
+   it exists, and confirm the announced jobs and subject lexicon stayed
    English. Without `terms.tsv`, extract every isolate and look for two
    forms of one concept, and for any term that appears both English and
    Persian. This is where real reviews find their findings.

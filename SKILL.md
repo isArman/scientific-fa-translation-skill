@@ -36,7 +36,7 @@ Override only when the user says so.
 | --- | --- |
 | Direction | English → فارسی علمی |
 | Register | Formal فارسی معیار. Clear and readable, not ornate. No colloquial forms. |
-| Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level plus the inferred **job** and **subject**. Checker `--level` must match. |
+| Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level, **three jobs**, and the **subject**. Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
 | PDF engine | XeLaTeX + `xepersian`; Chromium then WeasyPrint on the HTML template when TeX is absent |
@@ -55,39 +55,44 @@ Override only when the user says so.
 
 1. **Preflight.** `scripts/preflight.sh` — know which engine and fonts
    exist before promising a build. Confirm source, target, and level.
-   Job and subject are inferred from the source in step 3, not chosen
+   Jobs and subject are inferred from the source in step 3, not chosen
    from a list.
 2. **Ingest.** `references/source-ingest.md`: fetch the source, extract
-   figures, run `scripts/crop-source-figures.py` then
-   `scripts/prepare-figures.py figures/ --check`, write
+   figures, run `scripts/crop-source-figures.py`, flatten with
+   `scripts/prepare-figures.py figures/`, then
+   `scripts/prepare-figures.py figures/ --check`. Write
    `inventory.md` and `manifest.txt` in the working tree.
    Never translate from memory when a fetch fails. Never ship a black
    pdfimages dump. Never ship a full source-page raster as a figure.
    A book `contents` / `brief contents` page is inventory chrome, not
    optional: translate it and print it.
-3. **Terminology first.** Read enough of the source to name the **job**
-   (the practice: DevOps, …) and the **subject** (the product or protocol:
-   nginx, …). Announce both with the level. Keep that job's and subject's
-   lexicon English (`location`, `proxy_pass`, `deployment` — not مکان /
+3. **Terminology first.** Read enough of the source to name **three jobs**
+   (practices the source actually covers: DevOps, networking, Linux, …)
+   and the **subject** (the product or protocol: nginx, …). Announce all
+   four with the level. Keep those jobs' and that subject's lexicon
+   English (`location`, `proxy_pass`, `deployment` — not مکان /
    گذرگاه پیش‌رو / استقرار). Ordinary prose stays Persian. Apply
    `references/terminology.md`. Do not write `glossary.local.md` and do
-   not append to `glossary.md`. For a long document, write `terms.tsv` in
-   the working tree only (discarded with the job) **before** drafting,
-   show the close calls to the user first, and lint with `--terms
-   terms.tsv`. For a short document, keep those choices in session and
-   start drafting.
+   not append to `glossary.md`. Write `terms.tsv` in the working tree
+   (discarded with the job) **before** drafting — keep-English rows must
+   include `forbidden_fa`. Show close calls to the user first. Lint
+   always with `--terms terms.tsv`.
 4. **Read** `references/scientific-style.md` and `references/rtl-bidi.md`.
    For anything past ~15 pages also `references/long-documents.md`.
-5. **Translate** section by section. Do not add, omit, or soften claims;
-   preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
+5. **Translate** with the ensemble in `references/ensemble.md`: Composer
+   and Grok draft, Luna judges diffs only. Do not add, omit, or soften
+   claims; preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
 6. **Isolate** every LTR run in the print source — whole clusters, one
    isolate each (`references/rtl-bidi.md`).
 7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --terms terms.tsv
-   --strict` (omit `--terms` when that file does not exist) and clear
-   every error. Lint each part as you finish it, not at the end.
-   `--pairs FILE` *adds* rows; it does not replace `term-pairs.tsv`.
-8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`,
-   then look at the rasterised pages. Run the judgement checklist below.
+   --manifest manifest.txt --strict` and clear every error. `--strict`
+   will not run without those two files. Lint each part as you finish it,
+   not at the end. `--pairs FILE` *adds* rows; it does not replace
+   `term-pairs.tsv`.
+8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`
+   lints again, checks `figures/` when that directory exists, and will
+   not copy a PDF if lint, figure check, or `--verify` fail. Look at the
+   rasterised pages. Run the judgement checklist below.
 
 If the user asks for HTML only, use `assets/rtl-document.html`. If they ask
 for Markdown, wrap the body in `<div lang="fa" dir="rtl">`, still isolate
@@ -98,11 +103,11 @@ terms in English.
 ## Terminology in one paragraph
 
 Full policy and the field-term test: `references/terminology.md`. Infer
-**job** and **subject** from the source; there is no domain pack. Ordered,
+**three jobs** and one **subject** from the source; there is no domain pack. Ordered,
 first match wins: generic document chrome (`Abstract`, `Figure`) is always
 Persian; named artifacts and acronyms are English; a 2–5 word technical
 label is English as **one whole isolate**; the inferred subject's lexicon
-is English at every level (`nginx`, `location`, `proxy_pass`); the job's
+is English at every level (`nginx`, `location`, `proxy_pass`); the jobs'
 lexicon is English at `system-docs` (`deployment`, `reverse proxy`) and
 Persian at `journal` unless it is also the subject. Everything else is
 Persian. Never half-translate (`خوشه Kubernetes`, `بلوک location`).
@@ -112,7 +117,7 @@ ezafe on Latin is still forbidden (`Goی`). Never mix two forms of one
 concept in a document. Forbidden calques are enforced from
 `references/term-pairs.tsv` plus this job's `terms.tsv`.
 
-Example (`system-docs`, job DevOps, subject nginx): «برای \en{proxy_pass}
+Example (`system-docs`, jobs DevOps / networking / Linux, subject nginx): «برای \en{proxy_pass}
 در هر \en{location} از یک \en{upstream} استفاده کنید.» — not «برای گذرگاه
 پیش‌رو در هر مکان».
 
@@ -165,8 +170,8 @@ page count, and the engine used.
 ## Quality gate
 
 **Machine-checked** — `scripts/check-fa.py --level <level> --terms terms.tsv
---strict` must exit 0 (omit `--terms` when that file does not exist). It
-covers orthography (`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
+--manifest manifest.txt --strict` must exit 0. It covers orthography
+(`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
 Western digits, Persian punctuation), forbidden calques at that level,
 half-translated noun phrases, English `-s` plurals of kept terms, leftover
 Latin ezafe (`Goی`), split
@@ -178,9 +183,8 @@ Do not re-check these by hand. `--pairs` and `--terms` merge onto the house list
 **Judgement** — only these five, and they are the whole point:
 
 - [ ] No added, omitted, or softened scientific claim; hedges intact
-- [ ] Terminology consistent: one form per concept; inferred job and
-      subject lexicon stayed English; for a long document, consistent
-      with `terms.tsv`
+- [ ] Terminology consistent: one form per concept; inferred jobs and
+      subject lexicon stayed English; consistent with `terms.tsv`
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)

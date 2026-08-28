@@ -23,15 +23,17 @@ Do not use that skill for coding, commits, UI copy, or casual chat.
 
 - The terminology policy has one owner: `references/terminology.md`.
   Lists live in `glossary.md`; forbidden Persian calques live in
-  `references/term-pairs.tsv`. Infer a document's **job** and **subject**
-  from the source; do not add a domain pack. Do not restate the policy
-  in a second file.
+  `references/term-pairs.tsv`. Infer a document's **three jobs** and
+  **subject** from the source; do not add a domain pack. Do not restate
+  the policy in a second file.
 - A new rule that a machine could check belongs in `scripts/check-fa.py`
   with a fixture in `tests/fixtures/`, not only in prose. Run
   `bash tests/run.sh` after touching the checker or a fixture. Pass
   `--level journal` when the fixture is a paper, not a sysadmin guide.
 - Keep `SKILL.md` short. It is loaded in full whenever the skill
-  triggers; detail belongs in `references/`.
+  triggers; detail belongs in `references/`. Ensemble roles (Composer
+  and Grok translate, Luna judges) live in `references/ensemble.md`;
+  do not restate them here.
 
 ## Cursor Cloud specific instructions
 
@@ -43,8 +45,11 @@ loop is lint → test → build a PDF; there is nothing to keep running.
   Lint is `shellcheck -S warning $(git ls-files '*.sh')` plus
   `python3 -m py_compile $(git ls-files '*.py')`; tests are
   `bash tests/run.sh`; the deliverable is built with
-  `scripts/build-pdf.sh <file.tex|file.html> <slug> --verify` after
-  `scripts/check-fa.py <file> --strict`. Run `scripts/preflight.sh` to
+  `scripts/build-pdf.sh <file.tex|file.html> <slug> --verify`, which
+  runs `check-fa.py --strict --terms --manifest` first and will not copy
+  a PDF if lint, figure check, or `--verify` fail. A working tree needs
+  `terms.tsv` and `manifest.txt` next to the source. Run
+  `scripts/preflight.sh` to
   see which engines/fonts/tools the machine has.
 - No repository-level package deps: everything is Python 3 stdlib or
   system packages baked into the environment (`shellcheck`,

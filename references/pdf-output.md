@@ -186,8 +186,13 @@ directory as cwd — the build script does this.
 
 ## Verify the artifact
 
-A PDF that exists is not a PDF that is correct. `build-pdf.sh --verify` runs
-all of this; do it every time.
+A PDF that exists is not a PDF that is correct. `build-pdf.sh --verify`
+runs all of this and **exits non-zero** if poppler tools are missing, the
+page count cannot be read, no font is embedded, or a raster file was not
+written. First, last, and (when there are more than two pages) a middle
+page are sampled. Do it every time. The script will not copy the PDF to
+`$HOME/Documents/books` until lint, figure check, compile, and this
+verification have succeeded.
 
 ```bash
 pdfinfo out.pdf | grep -E 'Pages|Page size'
