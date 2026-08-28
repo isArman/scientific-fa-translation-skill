@@ -1,11 +1,14 @@
 # scientific-fa-translation-skill
 
-This repository is for Linux and macOS. On **Windows**, use
+A [Cursor Agent Skill](https://cursor.com/docs/skills) for academic
+English → scientific Persian, with a print-ready RTL PDF.
+
+This repository is the Linux/macOS skill. On **Windows**, use
 [KiaroSama/scientific-fa-translation-skill](https://github.com/KiaroSama/scientific-fa-translation-skill)
 instead — that fork carries the PowerShell toolchain.
 
-A [Cursor Agent Skill](https://cursor.com/docs/skills) for academic
-English → scientific Persian, with print-ready RTL.
+Canonical clone:
+[isArman/scientific-fa-translation-skill](https://github.com/isArman/scientific-fa-translation-skill).
 
 Cursor discovers skills at `/home/$USER/.cursor/skills/<skill-name>/SKILL.md`,
 exactly one level deep. This repository **is** that skill: `SKILL.md`
@@ -17,11 +20,10 @@ directory — not *as* it.
 ```bash
 mkdir -p /home/$USER/.cursor/skills
 cd /home/$USER/.cursor/skills
-git clone https://github.com/<owner>/scientific-fa-translation-skill.git
+git clone https://github.com/isArman/scientific-fa-translation-skill.git
 ```
 
-`<owner>` is the GitHub account that hosts this repository (see the
-address on the repo page). That yields:
+That yields:
 
 ```text
 /home/$USER/.cursor/skills/scientific-fa-translation-skill/SKILL.md
@@ -48,29 +50,31 @@ Preferred engine XeLaTeX + `xepersian`; Chromium then WeasyPrint on the
 RTL HTML template when TeX is absent. Run `scripts/preflight.sh` to see
 which of those exist on the machine before planning a build.
 
-**Terminology.** Infer **three jobs** and one **subject** from the source
-(DevOps, networking, Linux + nginx, not a pack). Named artifacts, acronyms, formulas, the subject's
+**A job.** Infer **three jobs** and one **subject** from the source
+(DevOps, networking, Linux + nginx — not a pack). Lock keep-English
+calques in that tree's `terms.tsv` before drafting. Composer and Grok
+draft; Luna judges diffs only
+([`references/ensemble.md`](references/ensemble.md)). Then
+`scripts/build-pdf.sh` lints and will not copy a PDF if check, figure
+prep, or `--verify` fail.
+
+**Terminology.** Named artifacts, acronyms, formulas, the subject's
 lexicon at every level, and — at `system-docs` — those jobs' field terms
 and their operation verbs stay English in an LTR isolate. Generic
 document chrome, narrative verbs, and conceptual explanation are Persian.
-The ordered decision procedure, the field-term test, and the two levels
-are in [`references/terminology.md`](references/terminology.md); the
-house lists are in `glossary.md`. Nothing restates the policy, so there
-is one place to change it.
+The ordered decision procedure is
+[`references/terminology.md`](references/terminology.md); house lists
+are in `glossary.md`. Nothing restates the policy, so there is one place
+to change it.
 
 **Enforcement.** `scripts/check-fa.py --level <level> --terms terms.tsv
---manifest manifest.txt --strict` fails the
-build on the mechanical rules — orthography, forbidden calques at that
-level, half-translated noun phrases, English `-s` plurals of kept terms,
-split isolates, un-isolated Latin runs and number clusters, RTL listings,
-mirrored artwork, missing images, figure direction, full-page rasters, terminology drift.
-`--pairs` and `--terms` merge onto the house list. `--strict` requires
-the terms ledger and the figure manifest. `scripts/build-pdf.sh` runs
-that lint (and `prepare-figures.py --check` when `figures/` exists)
-before it will copy a PDF. The checklist left in `SKILL.md` is
-only the five items a machine cannot judge.
-`tests/run.sh` keeps the checker honest with clean and deliberately
-broken fixtures.
+--manifest manifest.txt --strict` fails the build on the mechanical
+rules (orthography, calques, half-translations, English `-s` plurals,
+split isolates, un-isolated Latin and number clusters, listing
+direction, missing images, figure direction, full-page rasters,
+terminology drift). `--strict` requires the terms ledger and the figure
+manifest. The checklist in `SKILL.md` is only the five items a machine
+cannot judge. `tests/run.sh` keeps the checker honest.
 
 ```bash
 scripts/preflight.sh
@@ -79,7 +83,47 @@ scripts/build-pdf.sh doc.tex my-slug --verify
 bash tests/run.sh
 ```
 
-Layout:
+## Cursor token estimate
+
+These numbers are for **Cursor Agent** usage with this skill (input +
+output tokens Cursor counts in the editor). They are not OpenAI API
+pricing, not a ChatGPT session, and not a quote. Tool calls that only
+run `check-fa.py` or XeLaTeX cost **CPU, not tokens**. Retries, a second
+agent after `git pull`, or pasting the whole source into chat will push
+the real figure up; the Cursor usage dashboard is the source of truth.
+
+**Unit.** English **source words** in the body that will be translated
+(skip the bibliography count; it is copied, not rewritten). Pages are a
+rough check only: technical prose is about **400 English words per
+source page** (figures, listings, and whitespace make pages a worse
+meter than `wc -w` on the extracted text).
+
+**Rule of thumb**, following [`references/ensemble.md`](references/ensemble.md)
+(Composer + Grok bake-off on ~700 words, one primary for the rest,
+runner-up on ~10 % deltas, Luna on diffs only, parent agent loads
+`SKILL.md` once):
+
+```text
+Cursor tokens ≈ 7 × (English source words) + 15,000
+```
+
+The `15,000` is roughly skill load + the bake-off. The `7×` covers
+reading the source, writing Persian + TeX/`<span dir="ltr">` markup,
+orchestrator notes, and the small second-pass. A short piece (under
+~800 words) is **only** the bake-off: both translators run on the whole
+span, so use about **10 × words + 8,000** instead.
+
+| Source (order of magnitude) | Words | Pages (~400 w/p) | Cursor tokens |
+| --- | ---: | ---: | ---: |
+| Short paper / chapter | 3,000 | ~8 | ~40,000 |
+| Install guide / long article | 16,000 | ~40 | ~130,000 |
+| Book (e.g. ~174 pp) | 70,000 | ~175 | ~500,000 |
+
+Expect a band of roughly **0.6× to 1.5×** that column: dense code and
+tables inflate markup; a clean narrative sits lower; Cloud Agent
+follow-ups that reload the skill sit higher.
+
+## Layout
 
 ```text
 SKILL.md
@@ -97,7 +141,7 @@ references/review.md           reviewing a finished translation
 scripts/preflight.sh           what this machine can build
 scripts/check-fa.py            mechanical checker
 scripts/prepare-figures.py     flatten alpha; catch pdfimages negatives
-scripts/crop-source-figures.py crop artwork; never embed a full PDF page
+scripts/crop-source-figures.py crop artwork; never embed a full source page
 scripts/extract-pdf-pages.py   page-range PDF without duplicating XObjects
 scripts/build-pdf.sh           lint, compile, and verify (fails closed)
 scripts/fetch-vazirmatn.sh     font for the HTML path
