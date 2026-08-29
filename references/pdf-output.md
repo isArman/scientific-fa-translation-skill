@@ -36,12 +36,14 @@ tell the user which engine will be used and what that costs.
 
 | Priority | Engine | When |
 | --- | --- | --- |
-| 1 | XeLaTeX + `xepersian` | best Persian print RTL; needs a TeX install |
-| 2 | Headless Chromium print of the RTL HTML | no TeX; full CSS bidi support |
-| 3 | WeasyPrint on the same HTML | no TeX and no Chrome |
+| 1 | XeLaTeX + `xepersian` | best Persian print RTL; **logical** text order (copy-paste works); needs a TeX install |
+| 2 | Headless Chromium print of the RTL HTML | no TeX; display RTL is correct; **visual** text order (copy-paste reverses Persian) |
+| 3 | WeasyPrint on the same HTML | no TeX and no Chrome; same visual-order copy-paste limit |
 
 Do not use pdfLaTeX. Do not use pandoc's default PDF engine without
-`xepersian` / `bidi`.
+`xepersian` / `bidi`. Do not ship a Chromium/WeasyPrint PDF when XeLaTeX
+is installed — `--verify` will refuse it. CSS `dir="rtl"`, tagged-PDF
+flags, and `unicode-bidi` do not fix extraction.
 
 Debian/Ubuntu install for the preferred path:
 
@@ -128,6 +130,19 @@ preference, it is the difference between right and wrong output. The
 checker's `split-isolate` rule exists for this, and Chromium is preferred
 over WeasyPrint when both are present.
 
+**Copy-paste is a separate property from display.** Chromium
+`--print-to-pdf` (and typical WeasyPrint) paint Persian on the page in
+the right direction, then write the *visual* glyph order into the PDF
+text stream. Selecting a line and pasting into an editor yields reversed
+characters (`پیش از آنکه` → `هکنآ زا شیپ`). The caret can also jump from
+the right of one line to the left of the next. XeLaTeX + xepersian writes
+logical order; that is the only selectable-text engine this skill uses.
+`scripts/check-pdf-text-order.py` compares Persian phrases from the print
+source with `pdftotext -raw` (content-stream order). `--verify` runs it
+and fails a visual-order PDF when XeLaTeX is installed — rebuild from
+the `.tex`. When TeX is missing, verify still copies the PDF after the
+raster checks but logs a warning; tell the user copy-paste will reverse.
+
 Surface WeasyPrint's warnings instead of discarding them; `build-pdf.sh`
 keeps them.
 
@@ -188,8 +203,9 @@ directory as cwd — the build script does this.
 
 A PDF that exists is not a PDF that is correct. `build-pdf.sh --verify`
 runs all of this and **exits non-zero** if poppler tools are missing, the
-page count cannot be read, no font is embedded, or a raster file was not
-written. First, last, and (when there are more than two pages) a middle
+page count cannot be read, no font is embedded, a raster file was not
+written, or (when XeLaTeX is installed) the text stream is visual-order
+Persian. First, last, and (when there are more than two pages) a middle
 page are sampled. Do it every time. The script will not copy the PDF to
 `$HOME/Documents/books` until lint, figure check, compile, and this
 verification have succeeded.
@@ -200,8 +216,10 @@ pdffonts out.pdf | head                    # a real fa face, no fallback
 pdftoppm -png -r 110 -f 1 -l 2 out.pdf /tmp/check-p
 ```
 
-Then **look at the PNG**. Do not treat `pdftotext` as visual truth on an RTL
-PDF; it reorders. What to look for is in `review.md`. Figures must match
+Then **look at the PNG**. Do not treat default `pdftotext` as visual
+truth on an RTL PDF; it reorders. Use `pdftotext -raw` only to check
+*extraction* order (`scripts/check-pdf-text-order.py`). What to look for
+on the raster is in `review.md`. Figures must match
 the **artwork** on the source page — a black rectangle is a failed extract
 or unflattened alpha; a whole English book page (header, body, folio) is
 a failed crop, not “the figure”.

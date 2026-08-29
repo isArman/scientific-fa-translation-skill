@@ -46,8 +46,8 @@ same rules. Cursor chat is only a short status note plus the output path;
 it is not the RTL surface.
 
 **Deliverable.** A printable PDF at `/home/$USER/Documents/books/<slug>.pdf`.
-Preferred engine XeLaTeX + `xepersian`; Chromium then WeasyPrint on the
-RTL HTML template when TeX is absent. Run `scripts/preflight.sh` to see
+Preferred engine XeLaTeX + `xepersian` (selectable text); Chromium then WeasyPrint on the
+RTL HTML template when TeX is absent (display-correct; copy-paste reverses Persian). Run `scripts/preflight.sh` to see
 which of those exist on the machine before planning a build.
 
 **A job.** Infer **three jobs** and one **subject** from the source
@@ -140,6 +140,7 @@ references/ensemble.md         Composer + Grok draft; Luna judges diffs
 references/review.md           reviewing a finished translation
 scripts/preflight.sh           what this machine can build
 scripts/check-fa.py            mechanical checker
+scripts/check-pdf-text-order.py  copy-paste order (pdftotext -raw)
 scripts/prepare-figures.py     flatten alpha; catch pdfimages negatives
 scripts/crop-source-figures.py crop artwork; never embed a full source page
 scripts/extract-pdf-pages.py   page-range PDF without duplicating XObjects

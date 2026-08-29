@@ -39,7 +39,7 @@ Override only when the user says so.
 | Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level, **three jobs**, and the **subject**. Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
-| PDF engine | XeLaTeX + `xepersian`; Chromium then WeasyPrint on the HTML template when TeX is absent |
+| PDF engine | XeLaTeX + `xepersian` (selectable text). Chromium then WeasyPrint only when TeX is absent — those engines store visual order, so copy-paste reverses Persian |
 | HTML | Only on request, or as that fallback |
 | Digits | Western (`3.14`, not `۳٫۱۴`) |
 | Dates | Source calendar and format, one isolate. No Jalali conversion unless asked. |
@@ -91,8 +91,10 @@ Override only when the user says so.
    `term-pairs.tsv`.
 8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`
    lints again, checks `figures/` when that directory exists, and will
-   not copy a PDF if lint, figure check, or `--verify` fail. Look at the
-   rasterised pages. Run the judgement checklist below.
+   not copy a PDF if lint, figure check, or `--verify` fail. `--verify`
+   also rejects an HTML-engine PDF when XeLaTeX is installed (copy-paste
+   would reverse Persian). Look at the rasterised pages. Run the
+   judgement checklist below.
 
 If the user asks for HTML only, use `assets/rtl-document.html`. If they ask
 for Markdown, wrap the body in `<div lang="fa" dir="rtl">`, still isolate
@@ -164,7 +166,8 @@ page count, and the engine used.
 6. `scripts/build-pdf.sh path/to/doc.tex <slug> --verify`. Without TeX the
    same script takes the filled-in `assets/rtl-document.html`; embed
    Vazirmatn with `scripts/fetch-vazirmatn.sh` and never the UI-FD cut.
-   A page-range PDF is `scripts/extract-pdf-pages.py in.pdf out.pdf 1-20`
+   That HTML PDF displays correctly but copy-paste reverses Persian —
+   say so. A page-range PDF is `scripts/extract-pdf-pages.py in.pdf out.pdf 1-20`
    — one range, never a per-page loop (`references/pdf-output.md`).
 
 ## Quality gate
