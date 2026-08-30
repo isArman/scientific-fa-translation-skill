@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Regression tests for scripts/check-fa.py and the build-pdf lint gate.
+# Regression tests for scripts/check-fa.py, check-pdf-text-order.py, and
+# the build-pdf lint gate.
 #
 # The `good` fixtures must lint clean; the `bad` fixtures must report every
 # check id listed below. Run before changing a rule so a loosened regex
@@ -279,6 +280,38 @@ else
   fail=1
 fi
 
+order="$here/../scripts/check-pdf-text-order.py"
+order_rc=0
+order_out=$(python3 "$order" --extracted "$fixtures/pdf-text-logical.txt" \
+  --source "$fixtures/good.tex" 2>&1) || order_rc=$?
+if [[ $order_rc -eq 0 ]] && grep -q 'check-pdf-text-order: logical' <<<"$order_out"; then
+  echo "ok   check-pdf-text-order reports logical dump"
+else
+  echo "FAIL check-pdf-text-order logical dump (rc=$order_rc)"
+  echo "$order_out" | sed 's/^/    /'
+  fail=1
+fi
+order_rc=0
+order_out=$(python3 "$order" --extracted "$fixtures/pdf-text-visual.txt" \
+  --source "$fixtures/good.tex" 2>&1) || order_rc=$?
+if [[ $order_rc -eq 2 ]] && grep -q 'check-pdf-text-order: visual' <<<"$order_out"; then
+  echo "ok   check-pdf-text-order reports visual dump"
+else
+  echo "FAIL check-pdf-text-order visual dump (rc=$order_rc)"
+  echo "$order_out" | sed 's/^/    /'
+  fail=1
+fi
+order_rc=0
+order_out=$(python3 "$order" --extracted "$fixtures/pdf-text-visual-words.txt" \
+  --source "$fixtures/good.tex" 2>&1) || order_rc=$?
+if [[ $order_rc -eq 2 ]] && grep -q 'check-pdf-text-order: visual' <<<"$order_out"; then
+  echo "ok   check-pdf-text-order reports visual word order"
+else
+  echo "FAIL check-pdf-text-order visual word order (rc=$order_rc)"
+  echo "$order_out" | sed 's/^/    /'
+  fail=1
+fi
+
 # Template must compile: digit font is a Persian face, not TeX Gyre Termes.
 if command -v xelatex >/dev/null 2>&1 \
     && command -v kpsewhich >/dev/null 2>&1 \
@@ -288,6 +321,21 @@ if command -v xelatex >/dev/null 2>&1 \
   if (cd "$smoke" && xelatex -interaction=nonstopmode -halt-on-error \
         smoke.tex >/dev/null 2>&1); then
     echo "ok   rtl-document.tex compiles with XeLaTeX"
+    if command -v pdftotext >/dev/null 2>&1; then
+      order_rc=0
+      order_out=$(python3 "$order" "$smoke/smoke.pdf" \
+        --source "$smoke/smoke.tex" 2>&1) || order_rc=$?
+      if [[ $order_rc -eq 0 ]] \
+          && grep -q 'check-pdf-text-order: logical' <<<"$order_out"; then
+        echo "ok   XeLaTeX PDF text stream is logical order"
+      else
+        echo "FAIL XeLaTeX PDF was not logical order (rc=$order_rc)"
+        echo "$order_out" | sed 's/^/    /'
+        fail=1
+      fi
+    else
+      echo "skip XeLaTeX text-order check (no pdftotext)"
+    fi
   else
     echo "FAIL rtl-document.tex did not compile"
     if [[ -f $smoke/smoke.log ]]; then
@@ -298,6 +346,45 @@ if command -v xelatex >/dev/null 2>&1 \
   rm -rf "$smoke"
 else
   echo "skip rtl-document.tex compile (no xelatex/xepersian)"
+fi
+
+# Chromium --print-to-pdf stores visual order; the checker must catch it.
+chrome=""
+for c in chromium chromium-browser google-chrome google-chrome-stable; do
+  if command -v "$c" >/dev/null 2>&1; then chrome=$c; break; fi
+done
+if [[ -n $chrome ]] && command -v pdftotext >/dev/null 2>&1; then
+  cdir=$(mktemp -d)
+  cat > "$cdir/t.html" <<'HTML'
+<!doctype html>
+<html lang="fa" dir="rtl"><meta charset="utf-8"><title>t</title>
+<p>این کنگره سالانه برگزار شد.</p>
+<p>در این روش برای کمینه کردن تابع هزینه استفاده می‌شود.</p>
+</html>
+HTML
+  timeout 25 "$chrome" --headless=new --no-sandbox --disable-dev-shm-usage \
+    --no-pdf-header-footer --virtual-time-budget=10000 \
+    --run-all-compositor-stages-before-draw \
+    --print-to-pdf="$cdir/t.pdf" "file://${cdir}/t.html" \
+    >/dev/null 2>&1 || true
+  if [[ -s $cdir/t.pdf ]]; then
+    order_rc=0
+    order_out=$(python3 "$order" "$cdir/t.pdf" \
+      --source "$fixtures/good.tex" 2>&1) || order_rc=$?
+    if [[ $order_rc -eq 2 ]] \
+        && grep -q 'check-pdf-text-order: visual' <<<"$order_out"; then
+      echo "ok   Chromium PDF text stream is visual order"
+    else
+      echo "FAIL Chromium PDF was not flagged visual (rc=$order_rc)"
+      echo "$order_out" | sed 's/^/    /'
+      fail=1
+    fi
+  else
+    echo "skip Chromium text-order (print-to-pdf failed)"
+  fi
+  rm -rf "$cdir"
+else
+  echo "skip Chromium text-order (no chrome/pdftotext)"
 fi
 
 if [[ $fail -eq 0 ]]; then

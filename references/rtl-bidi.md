@@ -26,6 +26,11 @@ and warns about it on every run. The `dir="ltr"` **attribute** is what
 actually does the work there; keep the CSS property as well for Chromium
 and browsers. See the measured cases in `pdf-output.md`.
 
+HTML engines also store Persian in **visual** order in the PDF text
+stream: the page looks right, copy-paste comes out reversed. Selectable
+text requires XeLaTeX. `build-pdf.sh --verify` fails an HTML-engine PDF
+when XeLaTeX is installed.
+
 ## Document root
 
 Use `assets/rtl-document.html`. The root must be:

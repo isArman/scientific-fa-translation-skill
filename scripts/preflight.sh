@@ -85,12 +85,14 @@ fi
 echo
 echo "Verdict"
 if [[ $tex -eq 1 ]]; then
-  echo "  build .tex with XeLaTeX — best print RTL"
+  echo "  build .tex with XeLaTeX — best print RTL, selectable text"
 elif [[ $chrome -eq 1 ]]; then
-  echo "  no TeX: build .html with Chromium (full CSS bidi support)"
+  echo "  no TeX: build .html with Chromium (display RTL only;"
+  echo "  copy-paste will reverse Persian)"
 elif [[ $weasy -eq 1 ]]; then
   echo "  no TeX and no Chromium: build .html with WeasyPrint, and keep"
   echo "  every English cluster in a single dir=\"ltr\" isolate"
+  echo "  (copy-paste will reverse Persian)"
 else
   echo "  no engine can produce a PDF — stop and tell the user"
 fi

@@ -11,6 +11,10 @@
 # Chromium, then WeasyPrint. A missing engine falls back; a *failing* engine
 # does not — it reports the error and stops, so a broken build is never
 # quietly downgraded.
+#
+# Chromium and WeasyPrint paint RTL correctly but store visual order in the
+# text stream; copy-paste reverses Persian. Selectable text requires XeLaTeX.
+# --verify fails an HTML-engine PDF when XeLaTeX is installed.
 set -uo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -28,6 +32,7 @@ src=""
 slug=""
 verify=0
 engine=""
+used_engine=""
 level=system-docs
 terms=""
 manifest=""
@@ -117,6 +122,11 @@ find_chrome() {
   return 1
 }
 
+warn_html_copy_order() {
+  log "HTML engine stores RTL in visual order; copy-paste will reverse Persian"
+  log "  Selectable text requires XeLaTeX + xepersian"
+}
+
 show_tex_error() {
   local logfile=$1
   [[ -f $logfile ]] || return 0
@@ -143,31 +153,52 @@ compile_tex() {
       >/dev/null 2>&1 || { show_tex_error "${stem_src}.log"; return 2; }
   fi
   [[ -f $pdf ]] || { log "expected PDF missing: ${src_dir}/${pdf}"; return 2; }
+  used_engine=xelatex
   return 0
 }
 
 html_to_pdf() {
-  local html=$1 out=$2 chrome
+  local html=$1 out=$2 chrome crc
   if [[ $engine != weasyprint ]] && chrome=$(find_chrome); then
     log "engine: $chrome --print-to-pdf"
     # Without a virtual-time budget Chromium can print before the webfonts
     # finish loading, which produces fallback boxes for Persian.
     # --disable-gpu paints raster images as black rectangles; do not pass it.
-    "$chrome" --headless=new --no-pdf-header-footer \
-      --virtual-time-budget=10000 \
-      --run-all-compositor-stages-before-draw \
-      --print-to-pdf="$out" "file://$(realpath "$html")" || return 2
+    # Headless Chrome often hangs after writing the PDF; accept a non-empty
+    # file even when timeout kills the process.
+    crc=0
+    if command -v timeout >/dev/null 2>&1; then
+      timeout 90 "$chrome" --headless=new --no-pdf-header-footer \
+        --virtual-time-budget=10000 \
+        --run-all-compositor-stages-before-draw \
+        --print-to-pdf="$out" "file://$(realpath "$html")" || crc=$?
+    else
+      "$chrome" --headless=new --no-pdf-header-footer \
+        --virtual-time-budget=10000 \
+        --run-all-compositor-stages-before-draw \
+        --print-to-pdf="$out" "file://$(realpath "$html")" || crc=$?
+    fi
+    if [[ ! -s $out ]]; then
+      log "chromium produced no PDF (exit ${crc})"
+      return 2
+    fi
+    used_engine=chromium
+    warn_html_copy_order
     return 0
   fi
   if command -v weasyprint >/dev/null 2>&1; then
     log "engine: weasyprint (keeps its bidi warnings; read them)"
     weasyprint "$html" "$out" || return 2
+    used_engine=weasyprint
+    warn_html_copy_order
     return 0
   fi
   if python3 -c "import weasyprint" >/dev/null 2>&1; then
     log "engine: weasyprint (python module)"
     python3 -c 'from weasyprint import HTML; import sys;
 HTML(sys.argv[1]).write_pdf(sys.argv[2])' "$html" "$out" || return 2
+    used_engine=weasyprint
+    warn_html_copy_order
     return 0
   fi
   log "no HTML engine: install Chromium, or WeasyPrint in a venv"
@@ -254,7 +285,40 @@ verify_pdf() {
     fi
   fi
   log "rasterised samples: ${out_prefix}-*.png — look at them, do not"
-  log "  judge RTL from pdftotext"
+  log "  judge *display* RTL from pdftotext"
+
+  local order_rc=0 order_out="" visual=0 logical=0
+  if command -v pdftotext >/dev/null 2>&1; then
+    order_out=$(python3 "$here/check-pdf-text-order.py" "$pdf" \
+      --source "${src_dir}/${src_base}" 2>&1) || order_rc=$?
+    if [[ -n $order_out ]]; then
+      while IFS= read -r line; do
+        log "$line"
+      done <<<"$order_out"
+    fi
+  else
+    log "VERIFY WARN: pdftotext missing; cannot check copy-paste text order"
+  fi
+  if [[ $order_rc -eq 1 ]]; then
+    log "VERIFY FAIL: check-pdf-text-order could not run"
+    return 1
+  fi
+  grep -q 'check-pdf-text-order: visual' <<<"$order_out" && visual=1
+  grep -q 'check-pdf-text-order: logical' <<<"$order_out" && logical=1
+
+  if [[ $visual -eq 1 ]]; then
+    if have_xelatex; then
+      log "VERIFY FAIL: PDF text stream is visual order (copy-paste reverses Persian)"
+      log "  Rebuild from the .tex with XeLaTeX. HTML engines cannot store logical RTL."
+      return 1
+    fi
+    log "VERIFY WARN: copy-paste will reverse Persian (HTML engine, no XeLaTeX)"
+  elif [[ $logical -eq 0 && ( $used_engine == chromium || $used_engine == weasyprint ) ]] \
+      && have_xelatex; then
+    log "VERIFY FAIL: HTML-engine PDF while XeLaTeX is installed"
+    log "  Chromium/WeasyPrint store visual order. Build the .tex instead."
+    return 1
+  fi
   return 0
 }
 
