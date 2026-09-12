@@ -47,11 +47,13 @@ three times.
 Translate this English span into academic Persian for a print .tex
 (or .html) part. Follow terms.tsv exactly: keep-English output stays
 in one \en{…} / dir=ltr isolate; forbidden_fa strings must not appear.
-Do not add, omit, or soften claims; keep hedges (may, might, suggest,
-remain unknown). Western digits. Write only the translation for this
-span, not a glossary and not a chat essay. If a claim-changing
-ambiguity would change the meaning, leave % TODO(ambiguity): … and
-do not guess.
+Register: clear فارسی معیار — short everyday scholarly verbs, not
+ornate literary synonyms (نگاه کنید not بنگرید; لازم است not ایجاب
+می‌کند; می‌دهد not فراهم می‌کند). Do not add, omit, or soften claims;
+keep hedges (may, might, suggest, remain unknown). Western digits.
+Write only the translation for this span, not a glossary and not a
+chat essay. If a claim-changing ambiguity would change the meaning,
+leave % TODO(ambiguity): … and do not guess.
 ```
 
 ## Brief for Luna (paste as-is)
@@ -60,10 +62,11 @@ do not guess.
 You are the judge, not a translator. Do not write a new Persian draft.
 Each row is English plus Composer vs Grok (only the rows that differ,
 and only candidates that already passed check-fa.py). For this
-document's five judgement items, pick winner: composer, grok, or mix
+document's six judgement items, pick winner: composer, grok, or mix
 with explicit sentence ranges. Prefer the reading that does not add,
-drop, or harden a claim and that keeps terms.tsv. One short reason
-per contested row. Output only the decision.
+drop, or harden a claim, that keeps terms.tsv, and that uses clearer
+everyday Persian when both readings are equally faithful. One short
+reason per contested row. Output only the decision.
 ```
 
 ## Procedure

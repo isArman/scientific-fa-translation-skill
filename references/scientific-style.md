@@ -6,11 +6,27 @@ here — `terminology.md` owns the keep-English split, and bidi is
 
 ## Register
 
-- Formal written Persian. No spoken reductions: not `میشه`, `می‌خواد`,
-  `چونکه` as a default, `اصلاً` as filler.
-- Prefer clear scientific prose over ornate or heavy diction. Short
-  verbs (`می‌دهد`, `نگاه کنید`, `لازم است`) beat elevated calques
-  (`فراهم می‌کنند`, `بنگرید`, `ایجاب می‌کند`) when both are accurate.
+- Formal written Persian (`فارسی معیار`). No spoken reductions: not
+  `میشه`, `می‌خواد`, `چونکه` as a default, `اصلاً` as filler.
+- Clear and readable, not ornate. Formal means no colloquial forms —
+  not heavy literary synonyms that make ordinary prose hard to read.
+  Prefer the everyday scholarly word when two readings are equally
+  accurate. Hard Persian for ordinary dictionary meanings is a register
+  failure; field terms of art stay English under `terminology.md`, not
+  as invented Persian calques.
+- Short verbs beat elevated calques when both are accurate:
+
+  | Prefer | Avoid |
+  | --- | --- |
+  | می‌دهد / می‌دهند | فراهم می‌کند / فراهم می‌کنند |
+  | نگاه کنید | بنگرید، ملاحظه نمایید، ملاحظه فرمایید |
+  | لازم است | ایجاب می‌کند |
+  | مهم است | حائز اهمیت |
+  | باید گفت | لازم به ذکر است |
+  | ارزیابی می‌کنیم | انجام یک ارزیابی از |
+
+  `scripts/check-fa.py` warns on the Avoid column (`elevated-diction`);
+  `--strict` fails the build on those warnings.
 - Prefer clear scientific prose over sentence-level calques. Do not copy
   English *clause* order when it produces unreadable Persian.
 - Keep the author's epistemic stance. `may` / `might` / `suggest` /
@@ -18,6 +34,14 @@ here — `terminology.md` owns the keep-English split, and bidi is
 - Do not add background, examples, or conclusions the source lacks.
 - Do not drop hedges, limitations, negative results, or sample-size
   caveats to sound smoother.
+
+### Fluency pass
+
+After terminology is locked in `terms.tsv` and the body is drafted, do
+one pass that only asks: would a careful non-specialist reader stumble
+on a Persian *word* that could have been simpler without changing the
+claim? Fix those words and the five EN→FA structure failures below.
+Do not use that pass to soften hedges or invent glosses.
 
 ## Common EN→FA failures
 
@@ -60,8 +84,10 @@ is technically accurate and still unreadable.
 
 `scripts/check-fa.py` fails the build on the letters, ZWNJ verbs and
 plurals, Latin comma/semicolon/question mark, Eastern digits, and Arabic
-decimal separators in this section. SI unit conversion, hedges, and
-register are judgement — `review.md`.
+decimal separators in this section. Listed elevated forms warn as
+`elevated-diction` (and fail under `--strict`). SI unit conversion,
+hedges, ezafe chains, and the rest of register are judgement —
+`review.md`.
 
 ## Dates and numerals
 

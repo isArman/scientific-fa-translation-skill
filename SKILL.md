@@ -35,7 +35,7 @@ Override only when the user says so.
 | Decision | Default |
 | --- | --- |
 | Direction | English → فارسی علمی |
-| Register | Formal فارسی معیار. Clear and readable, not ornate. No colloquial forms. |
+| Register | Formal فارسی معیار. Clear and readable, not ornate or heavy. Everyday scholarly words over literary synonyms; no colloquial forms. |
 | Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level, **three jobs**, and the **subject**. Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
@@ -130,9 +130,10 @@ Example (`journal`): «این پیاده‌سازی از \en{gradient descent} �
 
 Full rules: `references/scientific-style.md`. UTF-8; `ک` not `ك`, `ی` not
 `ي`; نیم‌فاصله in `می‌شود`, `می‌توان`, `نمی‌کند`, `داده‌ها`; punctuation
-`،` `؛` `؟` `«»`. Formal verb forms only (register is judgement). Letters,
-ZWNJ on the listed verbs and plurals, Western digits, Latin punct, and
-unisolated number clusters are machine-checked.
+`،` `؛` `؟` `«»`. Clear فارسی معیار, not ornate (listed elevated forms
+are machine-warned). Letters, ZWNJ on the listed verbs and plurals,
+Western digits, Latin punct, and unisolated number clusters are
+machine-checked.
 
 ## RTL
 
@@ -175,7 +176,8 @@ page count, and the engine used.
 **Machine-checked** — `scripts/check-fa.py --level <level> --terms terms.tsv
 --manifest manifest.txt --strict` must exit 0. It covers orthography
 (`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
-Western digits, Persian punctuation), forbidden calques at that level,
+Western digits, Persian punctuation), listed elevated diction (warn →
+fail under `--strict`), forbidden calques at that level,
 half-translated noun phrases, English `-s` plurals of kept terms, leftover
 Latin ezafe (`Goی`), split
 isolates, un-isolated Latin runs, un-isolated number clusters (ranges and
@@ -183,11 +185,14 @@ dates reverse on an RTL page), listing direction, mirrored artwork,
 missing images, figure direction, full-page figure rasters, and terminology drift inside isolates.
 Do not re-check these by hand. `--pairs` and `--terms` merge onto the house list.
 
-**Judgement** — only these five, and they are the whole point:
+**Judgement** — only these six, and they are the whole point:
 
 - [ ] No added, omitted, or softened scientific claim; hedges intact
 - [ ] Terminology consistent: one form per concept; inferred jobs and
       subject lexicon stayed English; consistent with `terms.tsv`
+- [ ] Register is clear فارسی معیار: no ornate or heavy Persian for
+      ordinary prose; short verbs over elevated calques
+      (`references/scientific-style.md`); field terms stayed English
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)

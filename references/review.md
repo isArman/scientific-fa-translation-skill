@@ -51,12 +51,19 @@ that the check was visual and therefore partial.
    forms of one concept, and for any term that appears both English and
    Persian. This is where real reviews find their findings.
 
-4. **Fidelity spot-check.** Sample sections — abstract, one methods-heavy
+4. **Register / fluency.** Sample running prose (not only headings) for
+   ornate or heavy Persian where an everyday scholarly word would do —
+   `references/scientific-style.md` Register and Fluency pass. The
+   checker already warns on the listed elevated forms
+   (`elevated-diction`); still judge ezafe chains, over-nominalisation,
+   and passive piles by eye. Do not "fix" fluency by softening hedges.
+
+5. **Fidelity spot-check.** Sample sections — abstract, one methods-heavy
    section, one section with hedging, the conclusion — and compare against
    the source for added, dropped, or hardened claims. Hedges and negative
    results are the usual casualties.
 
-5. **Completeness.** Figure count against `manifest.txt`, section list
+6. **Completeness.** Figure count against `manifest.txt`, section list
    against `inventory.md`, page count sanity, and the deliverable actually
    at `/home/$USER/Documents/books/<slug>.pdf`. For a book, the printed
    pages must include `فهرست مطالب` matching the source contents — not
