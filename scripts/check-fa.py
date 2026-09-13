@@ -7,8 +7,9 @@ Usage:
 
 Accepts `.tex` and `.html`/`.htm` sources. Every rule here is one of the
 mechanical items from the skill's quality checklist, so the checklist that
-stays in SKILL.md is only the part a machine cannot judge. Listed ornate
-Persian forms warn as `elevated-diction` (fail under `--strict`).
+stays in SKILL.md is only the part a machine cannot judge. Register
+fluency (does the Persian read like normal formal prose?) is a model
+judgement in `references/ensemble.md`, not a pattern list here.
 
 `--level journal` drops one-word field-noun bans (`گره`, `پیاده‌سازی`,
 `مجموعه داده`, …) so a paper that follows terminology.md does not fail.
@@ -42,22 +43,6 @@ FA_RANGE = "\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff"
 FA_CHAR = re.compile(f"[{FA_RANGE}]")
 
 ERROR, WARN = "error", "warn"
-
-# Ornate Persian that scientific-style.md prefers to replace with everyday
-# scholarly wording. Warning only; --strict still fails the build.
-# Preferred form is the message hint, not an auto-rewrite.
-ELEVATED_DICTIONS = [
-    ("بنگرید", "نگاه کنید"),
-    ("ملاحظه نمایید", "نگاه کنید"),
-    ("ملاحظه فرمایید", "نگاه کنید"),
-    ("ایجاب می‌کند", "لازم است"),
-    ("ایجاب می‌کنند", "لازم است"),
-    ("فراهم می‌کند", "می‌دهد"),
-    ("فراهم می‌کنند", "می‌دهند"),
-    ("حائز اهمیت", "مهم است"),
-    ("لازم به ذکر است", "باید گفت"),
-    ("انجام یک", "فعل را برگردانید (ارزیابی می‌کنیم، نه انجام یک ارزیابی از)"),
-]
 
 # Persian head nouns that, immediately followed by a Latin run, mean the
 # source noun phrase was half-translated. Deliberately narrow: heads like
@@ -481,12 +466,6 @@ def check(src: Source, pairs: list[tuple[str, str, str]],
     for m in prose_finditer(rf"[{FA_RANGE}]\s?\?"):
         add(ERROR, "latin-punct", m.start(),
             "Latin question mark in Persian prose; use ؟")
-
-    for elevated, preferred in sorted(ELEVATED_DICTIONS,
-                                      key=lambda r: -len(r[0])):
-        for m in prose_finditer(fa_pattern(elevated)):
-            add(WARN, "elevated-diction", m.start(),
-                f"{m.group(0)!r} is ornate register; prefer {preferred!r}")
 
     # 2. Terminology -----------------------------------------------------
     # Longest form first, so «دیوارهای آتش» is reported once rather than also

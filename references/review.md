@@ -51,12 +51,11 @@ that the check was visual and therefore partial.
    forms of one concept, and for any term that appears both English and
    Persian. This is where real reviews find their findings.
 
-4. **Register / fluency.** Sample running prose (not only headings) for
-   ornate or heavy Persian where an everyday scholarly word would do —
-   `references/scientific-style.md` Register and Fluency pass. The
-   checker already warns on the listed elevated forms
-   (`elevated-diction`); still judge ezafe chains, over-nominalisation,
-   and passive piles by eye. Do not "fix" fluency by softening hedges.
+4. **Register / fluency.** Run (or re-run) the fluency-reader brief in
+   `ensemble.md` on a sample of running prose — default Grok when
+   Composer wrote the text. Do not rely on a fixed word list in
+   `check-fa.py`. Still glance at ezafe chains, over-nominalisation, and
+   passive piles. Do not "fix" fluency by softening hedges.
 
 5. **Fidelity spot-check.** Sample sections — abstract, one methods-heavy
    section, one section with hedging, the conclusion — and compare against

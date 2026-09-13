@@ -32,7 +32,8 @@ Do not use that skill for coding, commits, UI copy, or casual chat.
   `--level journal` when the fixture is a paper, not a sysadmin guide.
 - Keep `SKILL.md` short. It is loaded in full whenever the skill
   triggers; detail belongs in `references/`. Ensemble roles (Composer
-  and Grok translate, Luna judges) live in `references/ensemble.md`;
+  and Grok translate, Luna judges, fluency reader flags unnatural
+  Persian) live in `references/ensemble.md`;
   do not restate them here.
 
 ## Cursor Cloud specific instructions

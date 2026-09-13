@@ -35,7 +35,7 @@ Before drafting any body text:
    job memory and is discarded with the working tree.
 4. Show the user the rows that were close calls, then translate with
    the ensemble in `ensemble.md` (Composer and Grok draft; Luna judges
-   diffs).
+   diffs; fluency reader flags unnatural Persian).
 
 This step is the fix for the recorded `password` / گذرواژه drift: the body
 kept `password` while a caption used گذرواژه, because the decision was
@@ -79,14 +79,16 @@ end produces a finding list nobody works through.
 must be able to resume without re-deriving anything:
 
 ```text
-| part | state | lint | notes |
-| 01-overview | done | clean | — |
-| 02-environment | done | clean | 2 ambiguities queued |
-| 03-identity | drafting | — | stopped mid-section, line 240 |
-| 04-image | todo | — | — |
+| part | state | lint | fluency | notes |
+| 01-overview | done | clean | ok | — |
+| 02-environment | done | clean | revised | 2 ambiguities queued |
+| 03-identity | drafting | — | — | stopped mid-section, line 240 |
+| 04-image | todo | — | — | — |
 ```
 
-States: `todo`, `drafting`, `done`, `needs-review`. On resume, read
+States: `todo`, `drafting`, `done`, `needs-review`. Fluency:
+`—` until the part is chosen, then `ok` or `revised` per `ensemble.md`
+(a part is not `done` without one of those). On resume, read
 `progress.md` and `terms.tsv` first, then the part in `drafting`. Never
 restart a `done` part; never re-decide a term already in `terms.tsv`.
 

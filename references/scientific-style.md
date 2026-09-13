@@ -14,7 +14,9 @@ here — `terminology.md` owns the keep-English split, and bidi is
   accurate. Hard Persian for ordinary dictionary meanings is a register
   failure; field terms of art stay English under `terminology.md`, not
   as invented Persian calques.
-- Short verbs beat elevated calques when both are accurate:
+- Short verbs and everyday scholarly phrasing beat elevated or
+  translationese wording when both are accurate. Examples of the *kind*
+  of contrast (not a checklist for `check-fa.py`):
 
   | Prefer | Avoid |
   | --- | --- |
@@ -25,8 +27,9 @@ here — `terminology.md` owns the keep-English split, and bidi is
   | باید گفت | لازم به ذکر است |
   | ارزیابی می‌کنیم | انجام یک ارزیابی از |
 
-  `scripts/check-fa.py` warns on the Avoid column (`elevated-diction`);
-  `--strict` fails the build on those warnings.
+  Do **not** enforce register by grepping a fixed word list. A model
+  fluency reader in `ensemble.md` judges whether the prose reads like
+  normal formal Persian.
 - Prefer clear scientific prose over sentence-level calques. Do not copy
   English *clause* order when it produces unreadable Persian.
 - Keep the author's epistemic stance. `may` / `might` / `suggest` /
@@ -37,11 +40,12 @@ here — `terminology.md` owns the keep-English split, and bidi is
 
 ### Fluency pass
 
-After terminology is locked in `terms.tsv` and the body is drafted, do
-one pass that only asks: would a careful non-specialist reader stumble
-on a Persian *word* that could have been simpler without changing the
-claim? Fix those words and the five EN→FA structure failures below.
-Do not use that pass to soften hedges or invent glosses.
+After terminology is locked in `terms.tsv` and a part is drafted and
+lint-clean, run the **fluency reader** step in `ensemble.md` (default
+Grok when Composer wrote the part). The model decides whether the
+Persian sounds like ordinary formal writing; the primary revises only
+flagged spans. Also fix the five EN→FA structure failures below when
+they show up. Do not use that pass to soften hedges or invent glosses.
 
 ## Common EN→FA failures
 
@@ -84,10 +88,10 @@ is technically accurate and still unreadable.
 
 `scripts/check-fa.py` fails the build on the letters, ZWNJ verbs and
 plurals, Latin comma/semicolon/question mark, Eastern digits, and Arabic
-decimal separators in this section. Listed elevated forms warn as
-`elevated-diction` (and fail under `--strict`). SI unit conversion,
-hedges, ezafe chains, and the rest of register are judgement —
-`review.md`.
+decimal separators in this section. Register fluency is a model
+judgement (`ensemble.md` fluency reader), not a pattern match. SI unit
+conversion, hedges, ezafe chains, and the rest of register beyond that
+pass are judgement — `review.md`.
 
 ## Dates and numerals
 

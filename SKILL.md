@@ -80,8 +80,10 @@ Override only when the user says so.
 4. **Read** `references/scientific-style.md` and `references/rtl-bidi.md`.
    For anything past ~15 pages also `references/long-documents.md`.
 5. **Translate** with the ensemble in `references/ensemble.md`: Composer
-   and Grok draft, Luna judges diffs only. Do not add, omit, or soften
-   claims; preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
+   and Grok draft, Luna judges diffs only, then a fluency reader (Grok
+   by default when Composer wrote the part) flags unnatural Persian for
+   the primary to revise. Do not add, omit, or soften claims; preserve
+   hedges (`may`, `might`, `suggest`, `remain unknown`).
 6. **Isolate** every LTR run in the print source — whole clusters, one
    isolate each (`references/rtl-bidi.md`).
 7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --terms terms.tsv
@@ -130,9 +132,9 @@ Example (`journal`): «این پیاده‌سازی از \en{gradient descent} �
 
 Full rules: `references/scientific-style.md`. UTF-8; `ک` not `ك`, `ی` not
 `ي`; نیم‌فاصله in `می‌شود`, `می‌توان`, `نمی‌کند`, `داده‌ها`; punctuation
-`،` `؛` `؟` `«»`. Clear فارسی معیار, not ornate (listed elevated forms
-are machine-warned). Letters, ZWNJ on the listed verbs and plurals,
-Western digits, Latin punct, and unisolated number clusters are
+`،` `؛` `؟` `«»`. Clear فارسی معیار, judged by the ensemble fluency
+reader (not a word-list grep). Letters, ZWNJ on the listed verbs and
+plurals, Western digits, Latin punct, and unisolated number clusters are
 machine-checked.
 
 ## RTL
@@ -176,23 +178,24 @@ page count, and the engine used.
 **Machine-checked** — `scripts/check-fa.py --level <level> --terms terms.tsv
 --manifest manifest.txt --strict` must exit 0. It covers orthography
 (`ک`/`ی`, نیم‌فاصله on listed verbs/plurals,
-Western digits, Persian punctuation), listed elevated diction (warn →
-fail under `--strict`), forbidden calques at that level,
+Western digits, Persian punctuation), forbidden calques at that level,
 half-translated noun phrases, English `-s` plurals of kept terms, leftover
 Latin ezafe (`Goی`), split
 isolates, un-isolated Latin runs, un-isolated number clusters (ranges and
 dates reverse on an RTL page), listing direction, mirrored artwork,
 missing images, figure direction, full-page figure rasters, and terminology drift inside isolates.
 Do not re-check these by hand. `--pairs` and `--terms` merge onto the house list.
+Register fluency is **not** machine-checked — see judgement and
+`ensemble.md`.
 
 **Judgement** — only these six, and they are the whole point:
 
 - [ ] No added, omitted, or softened scientific claim; hedges intact
 - [ ] Terminology consistent: one form per concept; inferred jobs and
       subject lexicon stayed English; consistent with `terms.tsv`
-- [ ] Register is clear فارسی معیار: no ornate or heavy Persian for
-      ordinary prose; short verbs over elevated calques
-      (`references/scientific-style.md`); field terms stayed English
+- [ ] Register reads like natural formal فارسی معیار: fluency reader
+      in `ensemble.md` returned `OK` or flagged spans were revised
+      without softening claims; field terms stayed English
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)
