@@ -7,9 +7,12 @@ infrastructure nouns), and `term-pairs.tsv` is the machine-readable half
 that `scripts/check-fa.py` enforces. Do not restate this policy anywhere
 else.
 
-There is no per-field glossary in this skill. Infer the **jobs** and the
-**subject** from the source in hand. Do not look up a pack name, and do
-not write terms into `glossary.md`.
+There is no per-field glossary in this skill. It covers **any** scientific
+or technical book—especially software—not a single product stack. Infer
+the **jobs** and the **subjects** from the source in hand (library
+manuals, database guides, ML texts, compilers, papers, web-server books,
+…). Counts are not fixed — choose how many of each the source needs. Do
+not look up a pack name, and do not write terms into `glossary.md`.
 
 ## Level
 
@@ -21,47 +24,115 @@ the same treatment. Announce the level in the first chat message.
 | `system-docs` (default) | books, install guides, protocol specs, product docs, RFC/BIP, runbooks | English (`deployment`, `upstream`, `configure`) |
 | `journal` | papers, theses, review articles for a general scientific audience | Persian, unless the token is in the subject lexicon |
 
-The **subject** lexicon (product, protocol, tool the document is about) stays
-English at both levels. The level only moves the boundary for the **job**
-lexicon — ordinary one-word terms of the practice — and their operation
-verbs. The user switches with «سطح journal» or «سطح system-docs».
+The **subject** lexicon (products, protocols, tools the document is about)
+stays English at both levels. The level only moves the boundary for the
+**job** lexicon — ordinary one-word terms of the practice — and their
+operation verbs. The user switches with «سطح journal» or «سطح system-docs».
 
-## Infer job and subject
+### Audience (do not collapse these)
+
+- **`system-docs`.** Write for practitioners who already live in the
+  English tooling lexicon. Prefer the community designation (`deployment`,
+  `source code`, `request`) over Academy neologisms that specialists do
+  not actually use. Unfamiliar coined Persian that forces the reader to
+  re-translate mentally is a terminology failure, not a patriotic success.
+- **`journal`.** Write for a general scientific reader. Where a Persian
+  designation is **stable and familiar** in that discipline (and not a
+  house-forbidden calque for a kept subject term), prefer Persian and
+  gloss the English once on first mention. Where the Academy form is
+  unused or ambiguous in the field, keep English — familiarity beats
+  novelty. Subject-lexicon tokens stay English at this level too.
+
+Announce level, jobs, subjects, and **genre** (`tutorial`, `reference`,
+`paper`) with the first terminology message. Genre only shifts tone
+(`scientific-style.md`); it does not move the keep-English boundary.
+
+## Concept-oriented `terms.tsv`
+
+Before drafting, lock designations in a working-tree `terms.tsv`
+(`long-documents.md`). Treat it as a **concept entry list**, not a flat
+word dump (ISO 704 / ISO 12616 practice, simplified for one job):
+
+| Column | Required | Meaning |
+| --- | --- | --- |
+| `source` | yes | English (or source-language) designation as it appears |
+| `output` | yes | Form that must appear in the translation |
+| `step` | yes | Decision step / reason (`subject-lexicon`, `job-lexicon`, `prose`, `chrome`, …) |
+| `count` | yes | Rough occurrence count in the source |
+| `forbidden_fa` | yes on keep-English rows | Persian calque that must never replace `output` |
+| `concept` | recommended | Short concept id shared by synonyms (`cfg-deploy`, `src-code`) |
+| `status` | recommended | `preferred` (default), `admitted`, or `deprecated` |
+| `admitted` | no | Pipe-separated alternate OK forms |
+| `deprecated` | no | Pipe-separated extra forms to avoid (checker also forbids these) |
+
+Rules:
+
+- One **preferred** designation per `concept` for the whole document.
+- Keep-English preferred rows must set `forbidden_fa` (and usually list
+  further junk forms in `deprecated`).
+- Persian-output prose/chrome rows leave `forbidden_fa` empty.
+- Never half-translate a concept. Never write two preferred forms for
+  one concept.
+- Discard `terms.tsv` with the job; do not merge it into `glossary.md`.
+
+Example:
+
+```text
+source	output	step	count	forbidden_fa	concept	status	admitted	deprecated
+source code	source code	3 job-lexicon	12	کد منبع	src-code	preferred		کد مبدأ|کد اصلی
+deployment	deployment	3 job-lexicon	22	استقرار	cfg-deploy	preferred		
+DataLoader	DataLoader	3 subject-lexicon	40	بارگذار داده	ml-dataloader	preferred		
+WAL	WAL	3 subject-lexicon	15	لاگ پیش‌نوشته	pg-wal	preferred		
+security	امنیت	5 prose	41		sec-generic	preferred		
+Introduction	مقدمه	0 chrome	1		chrome-intro	preferred		
+```
+
+## Infer jobs and subjects
 
 Before classifying tokens, read enough of the source to name these, and
-announce them with the level:
+announce them with the level. **Counts are not fixed** — choose how many
+jobs and how many subjects the source needs; do not pad to three and do
+not force a single subject when the document is clearly about more than
+one product.
 
-- **Jobs** — exactly **three** short practice labels, ranked by how much
-  of the source they cover (`DevOps`, `networking`, `Linux`). A book
-  often spans more than one profession; three is both the target and the
-  cap. Each label must be a real thread in the source (a chapter,
-  audience, or repeated terms of art). Do not invent a practice the
-  source does not use, and do not add a fourth. The **job lexicon** is
-  the union of those three.
-- **Subject** — one product, protocol, or corpus (`nginx`, Bitcoin,
-  ImageNet, …)
+- **Jobs** — one or more short practice labels, ranked by how much of the
+  source they cover (`software development`, `DevOps`, `networking`,
+  `Linux`, …). Include a broader practice when it supplies lexicon the
+  narrower ops labels miss (e.g. `software development` so `source code`
+  stays English in a Kubernetes book). Each label must be a real thread
+  in the source (a chapter, audience, or repeated terms of art). Do not
+  invent a practice the source does not use. The **job lexicon** is the
+  union of the jobs you named.
+- **Subjects** — one or more products, protocols, tools, or corpora the
+  document is about (`nginx`, `Kubernetes`, `Helm`, Bitcoin, ImageNet,
+  …). When two tools are co-equal topics, name both; when everything
+  orbits one product, name one. The **subject lexicon** is the union of
+  those subjects.
 
 Those names are not pack ids and are not looked up in this repository.
-Example: jobs DevOps, networking, Linux; subject nginx; level
-`system-docs`.
+Examples: jobs `software development`, `DevOps`; subjects `Kubernetes`,
+`Helm`; level `system-docs`. Or jobs `machine learning`, `Python`;
+subject `PyTorch`; level `system-docs`. Or jobs `databases`,
+`software development`; subject `PostgreSQL`; genre `reference`.
 
-Then every term that belongs to that job lexicon **or** that subject's
+Then every term that belongs to that job lexicon **or** that subject
 lexicon stays English: directives, modules, CLI flags, config keys,
 named blocks, operation verbs of those terms, and multi-word labels in
 that lexicon.
 
 A token belongs to the inferred lexicon when at least one of these holds:
 
-- it is a name, directive, module, flag, API, or config key of the subject
-  (`nginx`, `location`, `proxy_pass`, `worker_processes`);
-- it is a term of art of one of the three jobs as this document uses it
+- it is a name, directive, module, flag, API, or config key of a named
+  subject (`nginx` / `location`, `PyTorch` / `DataLoader`, `PostgreSQL` / `WAL`);
+- it is a term of art of one of the named jobs as this document uses it
   (the field-term test below);
-- it appears in the source's own glossary, or in that subject's man page,
-  `--help`, or spec index.
+- it appears in the source's own glossary, or in a named subject's man
+  page, `--help`, or spec index.
 
 It does **not** belong when it is ordinary dictionary use in a sentence
-about something else. In an nginx book, `location` as a block directive
-stays English; «if the file is missing» is ordinary prose (فایل / پرونده).
+about something else. In an nginx book, `location` as a block directive stays English; in a
+PyTorch book, `DataLoader` stays English; «if the file is missing» is
+ordinary prose (فایل / پرونده) unless `file` is locked as a term of art.
 In «increase security using firewalls», `security` is امنیت and
 `firewalls` stays English.
 
@@ -105,7 +176,7 @@ glossary.
 
 ## The field-term test
 
-A token is a field term of art of one of the three **jobs** when at least
+A token is a field term of art of one of the named **jobs** when at least
 one of these holds:
 
 - it appears in the source document's own glossary or terminology section;
@@ -133,14 +204,17 @@ terminology decisions, not layout:
 ## First mention and consistency
 
 At `system-docs`, no gloss on first mention. At `journal`, one gloss is
-allowed the first time a Persian term carries an English concept.
+allowed the first time a Persian **preferred** term carries an English
+concept (and only when that Persian form is the chosen `output`).
 
-One form per concept for the whole document, in both directions: never mix
-`location` and مکان, and never mix `location` with an unisolated bare
-`location`. For anything longer than a few pages, produce the `terms.tsv`
-described in `long-documents.md` **before** translating the body. That
-file is job memory, not a skill glossary. Pass it to the checker with
-`--terms terms.tsv` so a calque in chapter nine fails the build.
+One **preferred** form per `concept` for the whole document, in both
+directions: never mix `location` and مکان, never mix a preferred English
+form with an unisolated bare copy, and never silently upgrade an
+`admitted` synonym into a second preferred. For anything longer than a
+few pages, produce the concept-oriented `terms.tsv` in
+`long-documents.md` **before** translating the body. Pass it with
+`--terms terms.tsv` so a calque or deprecated form in chapter nine fails
+the build.
 
 ## Forbidden output
 
@@ -161,8 +235,10 @@ House `system-docs` rows today: `node`, `deployment`, `configuration`,
 Persian unless they are in the inferred subject lexicon. A kept-term
 plural is `\en{node}ها`, not `nodes` and not گره‌ها.
 
-`--terms FILE` reads this job's `terms.tsv` and forbids the required
-calque column on keep-English rows. An empty `forbidden_fa` on those
-rows is an error. `--pairs FILE` merges extra rows in
+`--terms FILE` reads this job's `terms.tsv` and forbids `forbidden_fa`
+plus any `deprecated` forms on keep-English rows. An empty
+`forbidden_fa` on those rows is an error. Optional columns (`concept`,
+`status`, `admitted`, `deprecated`) are ignored when absent so older
+five-column files still lint. `--pairs FILE` merges extra rows in
 term-pairs format. Neither is a reason to write a glossary file into the
 skill.

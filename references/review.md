@@ -15,52 +15,78 @@ that the check was visual and therefore partial.
 
 ## Order of work
 
-1. **Mechanical pass.** Run the checker over every source file:
+Follow Mossop-style layers. Finish each layer before the next. Do not
+silently rewrite until the report is accepted.
 
-   ```bash
-   scripts/check-fa.py parts/*.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
-   ```
+### L0 — Mechanical (machine)
 
-   This settles orthography, forbidden calques, half-translated noun
-   phrases, split isolates, English `-s` plurals of kept terms, leftover
-   Latin ezafe, listing direction,
-   and missing images. Do not spend review effort on anything in that list —
-   report the counts.
+Run the checker over every source file:
 
-2. **Visual pass.** Rasterise a spread of pages and look at them. Never
-   judge RTL correctness from `pdftotext`.
+```bash
+scripts/check-fa.py parts/*.tex --level system-docs --terms terms.tsv --manifest manifest.txt --strict
+```
 
-   ```bash
-   pdftoppm -png -r 110 -f 1 -l 4 out.pdf /tmp/rev-p
-   pdffonts out.pdf | head        # a real fa face, not a fallback box
-   pdfinfo out.pdf | grep Pages
-   ```
+This settles orthography, forbidden / deprecated calques, half-translated
+noun phrases, split isolates, English `-s` plurals of kept terms,
+leftover Latin ezafe, listing direction, and missing images. Report
+counts only — do not spend human review on this list.
 
-   Look for: sentence-final periods on the correct side, parentheses that
-   enclose the English rather than the Persian, numbered English headings
-   that still read `3.1 Title` (not `Title 3.1`), listings left-aligned,
-   figures matching the **artwork** on the source page (not black, not
-   mirrored, not a dump of the English page around the figure) and in
-   source order, tables whose headers repeat across pages, no
-   missing-glyph boxes. If a figure still shows a source running header
-   or an English body paragraph, the crop is wrong.
+### L1 — Transfer (claims and hedges)
 
-3. **Terminology consistency.** Compare the output against `terms.tsv` if
-   it exists, and confirm the announced jobs and subject lexicon stayed
-   English. Without `terms.tsv`, extract every isolate and look for two
-   forms of one concept, and for any term that appears both English and
-   Persian. This is where real reviews find their findings.
+Sample abstract / intro, one methods-heavy or procedure-heavy section,
+one hedged section, and the conclusion. Compare to the source for added,
+dropped, or hardened claims. Hedges (`may`, `might`, `suggest`, `remain
+unknown`) and negative results are the usual casualties.
 
-4. **Fidelity spot-check.** Sample sections — abstract, one methods-heavy
-   section, one section with hedging, the conclusion — and compare against
-   the source for added, dropped, or hardened claims. Hedges and negative
-   results are the usual casualties.
+**Back-translation spot-check:** pick about 1–2 % of sentences that
+carry hedges or numbers (cap 12). Mentally or on paper render them back
+to English and confirm the epistemic force and quantities match. Record
+mismatches as transfer findings, not as fluency nits.
 
-5. **Completeness.** Figure count against `manifest.txt`, section list
-   against `inventory.md`, page count sanity, and the deliverable actually
-   at `/home/$USER/Documents/books/<slug>.pdf`. For a book, the printed
-   pages must include `فهرست مطالب` matching the source contents — not
-   only a PDF outline, and not omitted because it looked like chrome.
+### L2 — Content / terminology
+
+Compare the output against concept-oriented `terms.tsv`: one preferred
+form per `concept`; jobs/subjects lexicon stayed English; no silent use
+of `deprecated` or `admitted` as a second preferred. Without `terms.tsv`,
+extract every isolate and look for two forms of one concept, and for any
+term that appears both English and Persian.
+
+### L3 — Language / fluency
+
+Run (or re-run) the fluency-reader brief in `ensemble.md` on running
+prose, scoring against Canonical manner and `fluency-gold.md` — default
+Grok when Composer wrote the text. Also flag over-English: Latin
+isolates that are ordinary dictionary words, not terms of art. Glance at
+ezafe chains, over-nominalisation, and passive piles. Do not "fix"
+fluency by softening hedges.
+
+### L4 — Presentation (visual / RTL)
+
+Rasterise a spread of pages and look at them. Never judge RTL from
+`pdftotext`.
+
+```bash
+pdftoppm -png -r 110 -f 1 -l 4 out.pdf /tmp/rev-p
+pdffonts out.pdf | head
+pdfinfo out.pdf | grep Pages
+```
+
+Look for: sentence-final periods on the correct side, parentheses that
+enclose the English rather than the Persian, numbered English headings
+that still read `3.1 Title` (not `Title 3.1`), listings left-aligned,
+figures matching the **artwork** on the source page (not black, not
+mirrored, not a dump of the English page around the figure) and in
+source order, tables whose headers repeat across pages, no missing-glyph
+boxes. If a figure still shows a source running header or an English
+body paragraph, the crop is wrong.
+
+### L5 — Completeness
+
+Figure count against `manifest.txt`, section list against `inventory.md`,
+page count sanity, and the deliverable actually at
+`/home/$USER/Documents/books/<slug>.pdf`. For a book, the printed pages
+must include `فهرست مطالب` matching the source contents — not only a PDF
+outline, and not omitted because it looked like chrome.
 
 ## Report shape
 
@@ -68,7 +94,7 @@ Lead with the verdict, then evidence. Four parts, in this order:
 
 - **Verdict** — is it usable as it stands, and if not, why.
 - **Findings that must be fixed** — each with a file and line, grouped by
-  cause rather than by location, so the fix is one edit per group.
+  Mossop layer (L0–L5) and cause rather than by location, so the fix is one edit per group. Put back-translation mismatches under L1.
 - **Borderline, not errors** — decisions that look wrong but follow the
   policy, named explicitly so they are not "fixed" later. Ordinary-prose
   «سرویس‌ها» without a preceding English name is the standard example.

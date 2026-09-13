@@ -1,4 +1,5 @@
-source	output	step	count	forbidden_fa
-location	location	3 subject-lexicon	2	مکان
-upstream	upstream	3 subject-lexicon	2	بالادست
-security	امنیت	5 prose	1
+source	output	step	count	forbidden_fa	concept	status	admitted	deprecated
+location	location	3 subject-lexicon	2	مکان	ngx-location	preferred		
+upstream	upstream	3 subject-lexicon	2	بالادست	ngx-upstream	preferred		بالا دست
+source code	source code	3 job-lexicon	1	کد منبع	src-code	preferred		کد مبدأ|کد اصلی
+security	امنیت	5 prose	1		sec-generic	preferred		

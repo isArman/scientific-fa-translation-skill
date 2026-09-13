@@ -50,15 +50,17 @@ Preferred engine XeLaTeX + `xepersian` (selectable text); Chromium then WeasyPri
 RTL HTML template when TeX is absent (display-correct; copy-paste reverses Persian). Run `scripts/preflight.sh` to see
 which of those exist on the machine before planning a build.
 
-**A job.** Infer **three jobs** and one **subject** from the source
-(DevOps, networking, Linux + nginx — not a pack). Lock keep-English
-calques in that tree's `terms.tsv` before drafting. Composer and Grok
-draft; Luna judges diffs only
+**A job.** Infer **jobs** and **subjects** from the source (counts are
+not fixed — e.g. software development + PyTorch, or DevOps +
+Kubernetes; any scientific/software book, not one product
+pack). Lock keep-English calques in that tree's `terms.tsv` before drafting.
+Composer and Grok draft; Luna judges diffs; a fluency reader (Grok by
+default) judges whether the Persian reads naturally
 ([`references/ensemble.md`](references/ensemble.md)). Then
 `scripts/build-pdf.sh` lints and will not copy a PDF if check, figure
 prep, or `--verify` fail.
 
-**Terminology.** Named artifacts, acronyms, formulas, the subject's
+**Terminology.** Named artifacts, acronyms, formulas, the subjects'
 lexicon at every level, and — at `system-docs` — those jobs' field terms
 and their operation verbs stay English in an LTR isolate. Generic
 document chrome, narrative verbs, and conceptual explanation are Persian.
@@ -100,8 +102,8 @@ meter than `wc -w` on the extracted text).
 
 **Rule of thumb**, following [`references/ensemble.md`](references/ensemble.md)
 (Composer + Grok bake-off on ~700 words, one primary for the rest,
-runner-up on ~10 % deltas, Luna on diffs only, parent agent loads
-`SKILL.md` once):
+runner-up on ~10 % deltas, Luna on diffs only, fluency reader on
+locked Persian, parent agent loads `SKILL.md` once):
 
 ```text
 Cursor tokens ≈ 7 × (English source words) + 15,000
@@ -136,7 +138,9 @@ references/rtl-bidi.md         isolation rules
 references/pdf-output.md       engines, fonts, verification
 references/source-ingest.md    fetching and extracting the source
 references/long-documents.md   sectioning, resume, ambiguity queue
-references/ensemble.md         Composer + Grok draft; Luna judges diffs
+references/ensemble.md         Composer + Grok draft; Luna judges diffs;
+                               fluency reader (model) for natural Persian
+references/fluency-gold.md     gold paragraphs for Canonical manner
 references/review.md           reviewing a finished translation
 scripts/preflight.sh           what this machine can build
 scripts/check-fa.py            mechanical checker

@@ -7,17 +7,21 @@ Usage:
 
 Accepts `.tex` and `.html`/`.htm` sources. Every rule here is one of the
 mechanical items from the skill's quality checklist, so the checklist that
-stays in SKILL.md is only the part a machine cannot judge.
+stays in SKILL.md is only the part a machine cannot judge. Register
+fluency (does the Persian read like normal formal prose?) is a model
+judgement in `references/ensemble.md`, not a pattern list here.
 
 `--level journal` drops one-word field-noun bans (`گره`, `پیاده‌سازی`,
 `مجموعه داده`, …) so a paper that follows terminology.md does not fail.
 `--pairs FILE` is added on top of `references/term-pairs.tsv`, never a
-replacement. `--terms FILE` reads a job `terms.tsv`. Keep-English rows
-must name a `forbidden_fa` calque; an empty calque column is an error,
-not a skip. `--strict` requires `--terms` and `--manifest` (or
-`terms.tsv` / `manifest.txt` next to the source). English `-s` plurals
-of kept terms (`services`, `APIs`) fail; the stem plus ها after the
-isolate is the surviving form.
+replacement. `--terms FILE` reads a job `terms.tsv` (concept-oriented:
+required `source/output/step/count/forbidden_fa`, optional
+`concept/status/admitted/deprecated`). Keep-English rows must name a
+`forbidden_fa` calque; an empty calque column is an error, not a skip.
+Pipe-separated `deprecated` forms are also forbidden. `--strict`
+requires `--terms` and `--manifest` (or `terms.tsv` / `manifest.txt`
+next to the source). English `-s` plurals of kept terms (`services`,
+`APIs`) fail; the stem plus ها after the isolate is the surviving form.
 
 Exit codes: 0 clean, 1 findings at error level, 2 usage error.
 
@@ -353,23 +357,29 @@ def load_pairs(paths: list[Path], level: str
 def load_terms_pairs(path: Path) -> tuple[list[tuple[str, str, str]], list[str]]:
     """Keep-English rows from a job terms.tsv.
 
-    Columns: source, output, step, count, forbidden_fa.
-    A keep-English row (Latin in *output*) must set *forbidden_fa*;
-    otherwise this is a contract error, not a silent skip. Persian-output
-    rows (prose / chrome) are not calque pairs.
+    Required columns: source, output, step, count, forbidden_fa.
+    Optional trailing columns (ignored when absent): concept, status,
+    admitted, deprecated. A keep-English row (Latin in *output*) must
+    set *forbidden_fa*; otherwise this is a contract error, not a silent
+    skip. Forms listed in *deprecated* (pipe-separated) are also
+    forbidden. Persian-output rows (prose / chrome) are not calque pairs.
     """
     rows: list[tuple[str, str, str]] = []
     errors: list[str] = []
     if not path.is_file():
         return rows, [f"no such file: {path}"]
     seen: set[tuple[str, str]] = set()
+    header_cols: list[str] | None = None
     for lineno, raw in enumerate(
             path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
         parts = [p.strip() for p in line.split("\t")]
-        if not parts or parts[0] in ("source", "english"):
+        if not parts:
+            continue
+        if parts[0] in ("source", "english"):
+            header_cols = [c.lower() for c in parts]
             continue
         if len(parts) < 2:
             errors.append(f"{path}:{lineno}: need source and output columns")
@@ -377,17 +387,28 @@ def load_terms_pairs(path: Path) -> tuple[list[tuple[str, str, str]], list[str]]
         en, output = parts[0], parts[1]
         if not re.search(r"[A-Za-z]", output):
             continue
-        forbidden = parts[4] if len(parts) > 4 else ""
+
+        def col(name: str, index: int) -> str:
+            if header_cols and name in header_cols:
+                i = header_cols.index(name)
+                return parts[i] if i < len(parts) else ""
+            return parts[index] if len(parts) > index else ""
+
+        forbidden = col("forbidden_fa", 4)
         if not forbidden:
             errors.append(
                 f"{path}:{lineno}: keep-English {en!r} has empty "
                 "forbidden_fa (terms-calque)")
             continue
-        key = (en, forbidden)
-        if key in seen:
-            continue
-        seen.add(key)
-        rows.append((en, forbidden, "job"))
+        deprecated = col("deprecated", 8)
+        forms = [forbidden] + [
+            f.strip() for f in deprecated.split("|") if f.strip()]
+        for form in forms:
+            key = (en, form)
+            if key in seen:
+                continue
+            seen.add(key)
+            rows.append((en, form, "job"))
     return rows, errors
 
 

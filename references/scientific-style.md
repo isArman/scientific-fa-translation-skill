@@ -6,11 +6,42 @@ here — `terminology.md` owns the keep-English split, and bidi is
 
 ## Register
 
-- Formal written Persian. No spoken reductions: not `میشه`, `می‌خواد`,
-  `چونکه` as a default, `اصلاً` as filler.
-- Prefer clear scientific prose over ornate or heavy diction. Short
-  verbs (`می‌دهد`, `نگاه کنید`, `لازم است`) beat elevated calques
-  (`فراهم می‌کنند`, `بنگرید`, `ایجاب می‌کند`) when both are accurate.
+Locked default voice for every draft (override only if the user asks).
+Target: clear formal Persian a careful non-specialist can read straight
+through, with field terms kept English per `terminology.md`.
+
+- Formal written Persian (`فارسی معیار`). No spoken reductions: not
+  `میشه`, `می‌خواد`, `چونکه` as a default, `اصلاً` as filler.
+- **Plain scholarly, not literary.** Prefer everyday verbs and short
+  clauses. When two accurate readings exist, take the one you would say
+  explaining the idea to a colleague — not the elevated synonym.
+
+  | Prefer | Avoid |
+  | --- | --- |
+  | می‌خواهد / می‌رسد / می‌دهد | تلاش می‌کند دسترسی یابد / برمی‌انگیزد / ارائه می‌کند |
+  | نشان بدهد / شروع می‌کند | ارائه کند / آغاز می‌کند |
+  | ولی / به‌جایش | اما … در عوض (when the soft pair reads finer) |
+  | می‌دهد / می‌دهند | فراهم می‌کند / فراهم می‌کنند |
+  | نگاه کنید | بنگرید، ملاحظه نمایید، ملاحظه فرمایید |
+  | لازم است | ایجاب می‌کند |
+  | مهم است | حائز اهمیت |
+  | باید گفت | لازم به ذکر است |
+  | ارزیابی می‌کنیم | انجام یک ارزیابی از |
+
+  Do **not** enforce this by grepping a fixed list. The fluency reader
+  in `ensemble.md` judges the whole sentence.
+- **Split long English sentences.** One English period may become two
+  Persian sentences (or a short clause after `؛`). Do not keep a
+  parenthesis-stuffed English mega-sentence as one Persian blob.
+- **Lead with a Persian frame, keep terms English.** Prefer «وقتی
+  `\en{client}` می‌خواهد به یک `\en{URI}` برسد…» or «وقتی مدل را
+  `\en{train}` می‌کنید…» over calqued order or Persianising the field
+  noun. Do not invent calques for job/subject terms of art — keep them
+  English. Ordinary dictionary words stay Persian (`terminology.md`).
+- **Avoid ugly Latin+Persian glue.** Prefer «یک `\en{URI}`» / «آن
+  `\en{API}`» / «یک `\en{tensor}`» over bare «`…`ای» when the sentence
+  allows. Never attach ezafe or ی to a Latin isolate (`Goی`, `URIی`).
+  Plurals are still `\en{Pod}ها`, `\en{tensor}ها`.
 - Prefer clear scientific prose over sentence-level calques. Do not copy
   English *clause* order when it produces unreadable Persian.
 - Keep the author's epistemic stance. `may` / `might` / `suggest` /
@@ -18,6 +49,86 @@ here — `terminology.md` owns the keep-English split, and bidi is
 - Do not add background, examples, or conclusions the source lacks.
 - Do not drop hedges, limitations, negative results, or sample-size
   caveats to sound smoother.
+
+### Canonical manner (always)
+
+Default voice for every translator brief. Same claim, clearer wording.
+The skill is **not** tied to one product — subjects are whatever the
+book is about (web servers, libraries, databases, ML systems, compilers,
+protocol specs, papers, …). The paragraphs below only illustrate the
+*voice*.
+
+**Tutorial / system-docs (tooling):**
+
+> وقتی `\en{client}` می‌خواهد به یک `\en{URI}` برسد که یکی از این
+> خطاها را می‌دهد (مثلاً `\en{file}`ای که روی `\en{server}` نیست و
+> خطای `\en{404}` می‌گیرد)، برنامه باید صفحهٔ مربوط به آن کد خطا را
+> نشان بدهد. ولی `\en{error page}` را مستقیم برای `\en{client}`
+> نمی‌فرستد؛ به‌جایش با `\en{URI}` جدید یک `\en{request}` کاملاً تازه
+> شروع می‌کند.
+
+**Library / API docs:**
+
+> اگر آرگومان `\en{None}` باشد، تابع `\en{ValueError}` می‌دهد. برای
+> ادامه، `\en{batch}` را به `\en{DataLoader}` بدهید و یک `\en{epoch}`
+> `\en{train}` کنید.
+
+**Paper (hedged):**
+
+> این تفاوت ممکن است به اندازهٔ نمونه بستگی داشته باشد و هنوز
+> نمی‌توان `\en{causal effect}` را قطعی دانست.
+
+Reject drafts that sound like: برمی‌انگیزد، ارائه کند، آغاز می‌کند،
+سندی یا پرونده‌ای (when the source means a kept `file`), or one
+unbroken calqued sentence where the exemplar would have split.
+
+### Genre → tone
+
+Announce one genre with terminology. It does **not** change keep-English
+rules; it only shifts connectors and density:
+
+| Genre | Tone |
+| --- | --- |
+| `tutorial` | Canonical manner as written: short clauses, `ولی` / `به‌جایش`, direct address OK when the source uses it |
+| `reference` | Same plain verbs; fewer soft connectors; tighter, definition-like sentences |
+| `paper` | Same plain verbs; hedges preserved densely; slightly more nominal abstracts OK if the source is nominal — still split mega-sentences |
+
+### Collocations (preferred patterns)
+
+Lock recurring verb+term patterns when both readings are accurate.
+Write close calls into `terms.tsv` `admitted` / notes if needed. Defaults
+for software and scientific tooling prose (any stack — not one product):
+
+| English pattern | Prefer | Avoid |
+| --- | --- | --- |
+| send / issue a `request` | `\en{request}` بفرستد / بدهد | درخواست را ارسال نماید |
+| return `404` / an error / raise | `\en{404}` / خطا بدهد / `\en{Exception}` بدهد | مبادرت به بازگرداندن خطا کند |
+| call / invoke a `function` | `\en{function}` را صدا بزند / فراخوانی کند | مبادرت به فراخوانی تابع نماید |
+| train a `model` | `\en{model}` را `\en{train}` کند | مدل را تحت آموزش قرار دهد |
+| start / begin a `request` / job | `\en{request}` / کار را شروع کند | `\en{request}` را آغاز نماید |
+| access a `URI` / endpoint | به `\en{URI}` برسد / دسترسی پیدا کند | به `\en{URI}` نایل شود |
+| show / serve a page / result | نشان بدهد | ارائه کند |
+| configure `X` | `\en{X}` را `\en{configure}` کند when the verb is kept; otherwise پیکربندی کند | اقدام به پیکربندی `X` نماید |
+
+### Do not over-English
+
+Keep isolates for **terms of art**, not for ordinary dictionary words.
+If a Latin isolate is just a common noun the job/subject lexicon does
+not claim (`security` → امنیت, narrative `file` when not the tooling
+sense), write Persian. Fluency reader must FLAG spans that feel like
+English stuffed into Persian function words without a terminology
+reason.
+
+### Fluency pass
+
+After terminology is locked in `terms.tsv` and a part is drafted and
+lint-clean, run the **fluency reader** step in `ensemble.md` (default
+Grok when Composer wrote the part). Gold standard is the Canonical
+manner above **and** the paragraphs in `fluency-gold.md`. The model
+decides whether the Persian matches that voice; the primary revises
+only flagged spans. Also fix the five EN→FA structure failures below
+when they show up. Do not use that pass to soften hedges or invent
+glosses.
 
 ## Common EN→FA failures
 
@@ -60,8 +171,10 @@ is technically accurate and still unreadable.
 
 `scripts/check-fa.py` fails the build on the letters, ZWNJ verbs and
 plurals, Latin comma/semicolon/question mark, Eastern digits, and Arabic
-decimal separators in this section. SI unit conversion, hedges, and
-register are judgement — `review.md`.
+decimal separators in this section. Register fluency is a model
+judgement (`ensemble.md` fluency reader), not a pattern match. SI unit
+conversion, hedges, ezafe chains, and the rest of register beyond that
+pass are judgement — `review.md`.
 
 ## Dates and numerals
 

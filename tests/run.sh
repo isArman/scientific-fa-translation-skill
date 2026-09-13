@@ -162,6 +162,18 @@ else
   echo "$terms_out" | sed 's/^/    /'
   fail=1
 fi
+
+# Optional deprecated column forms are also forbidden.
+dep_out=$(python3 "$lint" "$fixtures/terms-deprecated.tex" \
+  --terms "$fixtures/terms-nginx.tsv" \
+  --manifest "$empty_manifest" 2>&1) || true
+if grep -qE 'کد مبدأ|بالادست|مکان' <<<"$dep_out"; then
+  echo "ok   --terms forbids deprecated column forms"
+else
+  echo "FAIL deprecated column not enforced"
+  echo "$dep_out" | sed 's/^/    /'
+  fail=1
+fi
 house_out=$(python3 "$lint" "$fixtures/journal.tex" \
   --terms "$fixtures/terms-nginx.tsv" 2>&1) || true
 if grep -q گره <<<"$house_out"; then
