@@ -67,15 +67,51 @@ Reject drafts that sound like: برمی‌انگیزد، ارائه کند، آ�
 سندی یا پرونده‌ای (when the source means `file`), or one unbroken
 calqued sentence where the exemplar would have split.
 
+### Genre → tone
+
+Announce one genre with terminology. It does **not** change keep-English
+rules; it only shifts connectors and density:
+
+| Genre | Tone |
+| --- | --- |
+| `tutorial` | Canonical manner as written: short clauses, `ولی` / `به‌جایش`, direct address OK when the source uses it |
+| `reference` | Same plain verbs; fewer soft connectors; tighter, definition-like sentences |
+| `paper` | Same plain verbs; hedges preserved densely; slightly more nominal abstracts OK if the source is nominal — still split mega-sentences |
+
+### Collocations (preferred patterns)
+
+Lock recurring verb+term patterns when both readings are accurate.
+Write close calls into `terms.tsv` notes or `admitted` if needed. Default
+preferences for `system-docs` / tooling prose:
+
+| English pattern | Prefer | Avoid |
+| --- | --- | --- |
+| send / issue a `request` | `\en{request}` بفرستد / بدهد | درخواست را ارسال نماید |
+| return `404` / an error | `\en{404}` / خطا بدهد / برگرداند | مبادرت به بازگرداندن خطا کند |
+| start / begin a `request` | `\en{request}` شروع کند | `\en{request}` را آغاز نماید |
+| access a `URI` | به `\en{URI}` برسد / دسترسی پیدا کند | به `\en{URI}` نایل شود |
+| show / serve a page | صفحه را نشان بدهد | صفحه را ارائه کند |
+| configure `X` | `\en{X}` را `\en{configure}` کند (if verb kept) / پیکربندی کند only when `configure` is not kept English | اقدام به پیکربندی `X` نماید |
+
+### Do not over-English
+
+Keep isolates for **terms of art**, not for ordinary dictionary words.
+If a Latin isolate is just a common noun the job/subject lexicon does
+not claim (`security` → امنیت, narrative `file` when not the tooling
+sense), write Persian. Fluency reader must FLAG spans that feel like
+English stuffed into Persian function words without a terminology
+reason.
+
 ### Fluency pass
 
 After terminology is locked in `terms.tsv` and a part is drafted and
 lint-clean, run the **fluency reader** step in `ensemble.md` (default
 Grok when Composer wrote the part). Gold standard is the Canonical
-manner above. The model decides whether the Persian matches that voice;
-the primary revises only flagged spans. Also fix the five EN→FA
-structure failures below when they show up. Do not use that pass to
-soften hedges or invent glosses.
+manner above **and** the paragraphs in `fluency-gold.md`. The model
+decides whether the Persian matches that voice; the primary revises
+only flagged spans. Also fix the five EN→FA structure failures below
+when they show up. Do not use that pass to soften hedges or invent
+glosses.
 
 ## Common EN→FA failures
 

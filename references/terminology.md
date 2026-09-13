@@ -27,6 +27,63 @@ stays English at both levels. The level only moves the boundary for the
 **job** lexicon — ordinary one-word terms of the practice — and their
 operation verbs. The user switches with «سطح journal» or «سطح system-docs».
 
+### Audience (do not collapse these)
+
+- **`system-docs`.** Write for practitioners who already live in the
+  English tooling lexicon. Prefer the community designation (`deployment`,
+  `source code`, `request`) over Academy neologisms that specialists do
+  not actually use. Unfamiliar coined Persian that forces the reader to
+  re-translate mentally is a terminology failure, not a patriotic success.
+- **`journal`.** Write for a general scientific reader. Where a Persian
+  designation is **stable and familiar** in that discipline (and not a
+  house-forbidden calque for a kept subject term), prefer Persian and
+  gloss the English once on first mention. Where the Academy form is
+  unused or ambiguous in the field, keep English — familiarity beats
+  novelty. Subject-lexicon tokens stay English at this level too.
+
+Announce level, jobs, subjects, and **genre** (`tutorial`, `reference`,
+`paper`) with the first terminology message. Genre only shifts tone
+(`scientific-style.md`); it does not move the keep-English boundary.
+
+## Concept-oriented `terms.tsv`
+
+Before drafting, lock designations in a working-tree `terms.tsv`
+(`long-documents.md`). Treat it as a **concept entry list**, not a flat
+word dump (ISO 704 / ISO 12616 practice, simplified for one job):
+
+| Column | Required | Meaning |
+| --- | --- | --- |
+| `source` | yes | English (or source-language) designation as it appears |
+| `output` | yes | Form that must appear in the translation |
+| `step` | yes | Decision step / reason (`subject-lexicon`, `job-lexicon`, `prose`, `chrome`, …) |
+| `count` | yes | Rough occurrence count in the source |
+| `forbidden_fa` | yes on keep-English rows | Persian calque that must never replace `output` |
+| `concept` | recommended | Short concept id shared by synonyms (`cfg-deploy`, `src-code`) |
+| `status` | recommended | `preferred` (default), `admitted`, or `deprecated` |
+| `admitted` | no | Pipe-separated alternate OK forms |
+| `deprecated` | no | Pipe-separated extra forms to avoid (checker also forbids these) |
+
+Rules:
+
+- One **preferred** designation per `concept` for the whole document.
+- Keep-English preferred rows must set `forbidden_fa` (and usually list
+  further junk forms in `deprecated`).
+- Persian-output prose/chrome rows leave `forbidden_fa` empty.
+- Never half-translate a concept. Never write two preferred forms for
+  one concept.
+- Discard `terms.tsv` with the job; do not merge it into `glossary.md`.
+
+Example:
+
+```text
+source	output	step	count	forbidden_fa	concept	status	admitted	deprecated
+source code	source code	3 job-lexicon	12	کد منبع	src-code	preferred		کد مبدأ|کد اصلی
+deployment	deployment	3 job-lexicon	22	استقرار	cfg-deploy	preferred		
+location	location	3 subject-lexicon	84	مکان	ngx-location	preferred		
+security	امنیت	5 prose	41		sec-generic	preferred		
+Introduction	مقدمه	0 chrome	1		chrome-intro	preferred		
+```
+
 ## Infer jobs and subjects
 
 Before classifying tokens, read enough of the source to name these, and
@@ -141,14 +198,17 @@ terminology decisions, not layout:
 ## First mention and consistency
 
 At `system-docs`, no gloss on first mention. At `journal`, one gloss is
-allowed the first time a Persian term carries an English concept.
+allowed the first time a Persian **preferred** term carries an English
+concept (and only when that Persian form is the chosen `output`).
 
-One form per concept for the whole document, in both directions: never mix
-`location` and مکان, and never mix `location` with an unisolated bare
-`location`. For anything longer than a few pages, produce the `terms.tsv`
-described in `long-documents.md` **before** translating the body. That
-file is job memory, not a skill glossary. Pass it to the checker with
-`--terms terms.tsv` so a calque in chapter nine fails the build.
+One **preferred** form per `concept` for the whole document, in both
+directions: never mix `location` and مکان, never mix a preferred English
+form with an unisolated bare copy, and never silently upgrade an
+`admitted` synonym into a second preferred. For anything longer than a
+few pages, produce the concept-oriented `terms.tsv` in
+`long-documents.md` **before** translating the body. Pass it with
+`--terms terms.tsv` so a calque or deprecated form in chapter nine fails
+the build.
 
 ## Forbidden output
 
@@ -169,8 +229,10 @@ House `system-docs` rows today: `node`, `deployment`, `configuration`,
 Persian unless they are in the inferred subject lexicon. A kept-term
 plural is `\en{node}ها`, not `nodes` and not گره‌ها.
 
-`--terms FILE` reads this job's `terms.tsv` and forbids the required
-calque column on keep-English rows. An empty `forbidden_fa` on those
-rows is an error. `--pairs FILE` merges extra rows in
+`--terms FILE` reads this job's `terms.tsv` and forbids `forbidden_fa`
+plus any `deprecated` forms on keep-English rows. An empty
+`forbidden_fa` on those rows is an error. Optional columns (`concept`,
+`status`, `admitted`, `deprecated`) are ignored when absent so older
+five-column files still lint. `--pairs FILE` merges extra rows in
 term-pairs format. Neither is a reason to write a glossary file into the
 skill.

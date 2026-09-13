@@ -139,6 +139,7 @@ references/source-ingest.md    fetching and extracting the source
 references/long-documents.md   sectioning, resume, ambiguity queue
 references/ensemble.md         Composer + Grok draft; Luna judges diffs;
                                fluency reader (model) for natural Persian
+references/fluency-gold.md     gold paragraphs for Canonical manner
 references/review.md           reviewing a finished translation
 scripts/preflight.sh           what this machine can build
 scripts/check-fa.py            mechanical checker

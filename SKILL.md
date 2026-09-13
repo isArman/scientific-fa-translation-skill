@@ -36,7 +36,7 @@ Override only when the user says so.
 | --- | --- |
 | Direction | English → فارسی علمی |
 | Register | Formal فارسی معیار in the Canonical manner (`references/scientific-style.md`): short everyday scholarly verbs, split long sentences, field terms kept English; not ornate, not translationese, no colloquial forms. |
-| Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level, the **jobs**, and the **subjects** (counts chosen from the source). Checker `--level` must match. |
+| Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce level, **jobs**, **subjects** (counts from the source), and **genre** (`tutorial` / `reference` / `paper`). Concept-oriented `terms.tsv`. Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
 | PDF engine | XeLaTeX + `xepersian` (selectable text). Chromium then WeasyPrint only when TeX is absent — those engines store visual order, so copy-paste reverses Persian |
@@ -70,22 +70,26 @@ Override only when the user says so.
    (practices it actually covers — include a broader one like software
    development when ops-only labels would miss lexicon such as
    `source code`) and the **subjects** (products or protocols: Kubernetes,
-   Helm, nginx, …). Counts are not fixed; announce whatever you chose
-   with the level. Keep those jobs' and subjects' lexicon English
-   (`location`, `proxy_pass`, `deployment`, `source code` — not مکان /
-   گذرگاه پیش‌رو / استقرار / کد منبع). Ordinary prose stays Persian. Apply
-   `references/terminology.md`. Do not write `glossary.local.md` and do
-   not append to `glossary.md`. Write `terms.tsv` in the working tree
-   (discarded with the job) **before** drafting — keep-English rows must
-   include `forbidden_fa`. Show close calls to the user first. Lint
-   always with `--terms terms.tsv`.
-4. **Read** `references/scientific-style.md` and `references/rtl-bidi.md`.
-   For anything past ~15 pages also `references/long-documents.md`.
+   Helm, nginx, …). Counts are not fixed. Announce level, jobs, subjects,
+   and **genre** (`tutorial` / `reference` / `paper`). Keep those jobs'
+   and subjects' lexicon English (`location`, `proxy_pass`, `deployment`,
+   `source code` — not مکان / گذرگاه پیش‌رو / استقرار / کد منبع).
+   Ordinary prose stays Persian. Apply `references/terminology.md`. Do
+   not write `glossary.local.md` and do not append to `glossary.md`.
+   Write concept-oriented `terms.tsv` in the working tree (discarded
+   with the job) **before** drafting — keep-English rows must include
+   `forbidden_fa`; add `concept` / `status` / `deprecated` when synonyms
+   exist. Show close calls to the user first. Lint always with
+   `--terms terms.tsv`.
+4. **Read** `references/scientific-style.md` (Canonical manner,
+   collocations, genre tone, `fluency-gold.md`) and
+   `references/rtl-bidi.md`. For anything past ~15 pages also
+   `references/long-documents.md`.
 5. **Translate** with the ensemble in `references/ensemble.md`: Composer
    and Grok draft, Luna judges diffs only, then a fluency reader (Grok
-   by default when Composer wrote the part) flags unnatural Persian for
-   the primary to revise. Do not add, omit, or soften claims; preserve
-   hedges (`may`, `might`, `suggest`, `remain unknown`).
+   by default when Composer wrote the part) scores against Canonical
+   manner and `fluency-gold.md`. Do not add, omit, or soften claims;
+   preserve hedges (`may`, `might`, `suggest`, `remain unknown`).
 6. **Isolate** every LTR run in the print source — whole clusters, one
    isolate each (`references/rtl-bidi.md`).
 7. **Lint.** `scripts/check-fa.py doc.tex --level <level> --terms terms.tsv
@@ -98,7 +102,9 @@ Override only when the user says so.
    not copy a PDF if lint, figure check, or `--verify` fail. `--verify`
    also rejects an HTML-engine PDF when XeLaTeX is installed (copy-paste
    would reverse Persian). Look at the rasterised pages. Run the
-   judgement checklist below.
+   judgement checklist below. For formal review of a finished PDF, use
+   the Mossop-style layers in `references/review.md` (including the
+   hedge back-translation spot-check).
 
 If the user asks for HTML only, use `assets/rtl-document.html`. If they ask
 for Markdown, wrap the body in `<div lang="fa" dir="rtl">`, still isolate
@@ -197,17 +203,18 @@ Register fluency is **not** machine-checked — see judgement and
 - [ ] No added, omitted, or softened scientific claim; hedges intact
 - [ ] Terminology consistent: one form per concept; inferred jobs and
       subject lexicon stayed English; consistent with `terms.tsv`
-- [ ] Register matches the Canonical manner in
-      `references/scientific-style.md`: fluency reader in `ensemble.md`
-      returned `OK` or flagged spans were revised without softening
-      claims; field terms stayed English
+- [ ] Register matches the Canonical manner and `fluency-gold.md`:
+      fluency reader in `ensemble.md` returned `OK` or flagged spans
+      were revised without softening claims; no over-English of ordinary
+      prose; field terms stayed English
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)
 - [ ] Rasterised pages actually read correctly (periods, parentheses,
       listings, no missing-glyph boxes) — not judged from `pdftotext`
 - [ ] Claim-changing ambiguities were asked, not guessed; the rest are
-      reported
+      reported. Hedge/number sentences got a back-translation spot-check
+      when `references/review.md` was used.
 
 **Delivery** — final PDF at `/home/$USER/Documents/books/<slug>.pdf`, chat is a short
 pointer with the path, page count, engine, and queued questions.

@@ -17,26 +17,30 @@ Before drafting any body text:
 2. Scan the whole source for candidate terms. Classify each with the
    decision procedure in `terminology.md`. The inferred job and subject
    lexicons stay English.
-3. Write `terms.tsv` in the working tree — source term, chosen output
-   form, decision step, occurrence count, forbidden calque. Keep-English
-   rows must fill `forbidden_fa`; the checker rejects an empty calque
-   column.
+3. Write concept-oriented `terms.tsv` in the working tree (see
+   `terminology.md`). Required columns: `source`, `output`, `step`,
+   `count`, `forbidden_fa`. Recommended: `concept`, `status`,
+   `admitted`, `deprecated`. Keep-English rows must fill
+   `forbidden_fa`; the checker also forbids `deprecated` forms.
 
    ```text
-   source	output	step	count	forbidden_fa
-   location	location	3 subject-lexicon	84	مکان
-   proxy_pass	proxy_pass	3 subject-lexicon	40	گذرگاه پیش‌رو
-   deployment	deployment	3 job-lexicon	22	استقرار
-   security	امنیت	5 prose	41
-   Introduction	مقدمه	0 chrome	1
+   source	output	step	count	forbidden_fa	concept	status	admitted	deprecated
+   location	location	3 subject-lexicon	84	مکان	ngx-location	preferred		
+   proxy_pass	proxy_pass	3 subject-lexicon	40	گذرگاه پیش‌رو	ngx-proxy	preferred		
+   deployment	deployment	3 job-lexicon	22	استقرار	cfg-deploy	preferred		
+   source code	source code	3 job-lexicon	12	کد منبع	src-code	preferred		کد مبدأ|کد اصلی
+   security	امنیت	5 prose	41		sec-generic	preferred		
+   Introduction	مقدمه	0 chrome	1		chrome-intro	preferred		
    ```
 
    Do not write
    `glossary.local.md`. Do not append to `glossary.md`. `terms.tsv` is
    job memory and is discarded with the working tree.
-4. Show the user the rows that were close calls, then translate with
-   the ensemble in `ensemble.md` (Composer and Grok draft; Luna judges
-   diffs; fluency reader flags unnatural Persian).
+4. Show the user the rows that were close calls, announce **genre**
+   (`tutorial` / `reference` / `paper`), then translate with the
+   ensemble in `ensemble.md` (Composer and Grok draft; Luna judges
+   diffs; fluency reader flags unnatural Persian against
+   `fluency-gold.md`).
 
 This step is the fix for the recorded `password` / گذرواژه drift: the body
 kept `password` while a caption used گذرواژه, because the decision was

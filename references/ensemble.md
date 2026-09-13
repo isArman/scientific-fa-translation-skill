@@ -59,19 +59,23 @@ three times.
 ```text
 Translate this English span into academic Persian for a print .tex
 (or .html) part. Follow terms.tsv exactly: keep-English output stays
-in one \en{…} / dir=ltr isolate; forbidden_fa strings must not appear.
-Locked voice (scientific-style.md Canonical manner): clear فارسی معیار
-a colleague would actually read — short everyday verbs (می‌خواهد،
-می‌دهد، نشان بدهد، شروع می‌کند), not elevated ones (برمی‌انگیزد،
-ارائه کند، آغاز می‌کند). Split long English sentences. Lead with a
-Persian frame; keep job/subject terms English (client, URI, file,
-server, request, error page — not کارخواه/سند/پرونده when those are
-the terms of art). Prefer «یک URI» over awkward URIای glue; never
-Latin+ی ezafe. Do not add, omit, or soften claims; keep hedges (may,
-might, suggest, remain unknown). Western digits. Write only the
-translation for this span, not a glossary and not a chat essay. If a
-claim-changing ambiguity would change the meaning, leave
-% TODO(ambiguity): … and do not guess.
+in one \en{…} / dir=ltr isolate; forbidden_fa and deprecated forms
+must not appear; honour preferred status per concept.
+Context already announced: level, jobs, subjects, genre
+(tutorial|reference|paper).
+Locked voice (scientific-style.md Canonical manner + fluency-gold.md):
+clear فارسی معیار — short everyday verbs (می‌خواهد، می‌دهد، نشان بدهد،
+شروع می‌کند), not elevated ones (برمی‌انگیزد، ارائه کند، آغاز می‌کند).
+Split long English sentences. Lead with a Persian frame; keep
+job/subject terms English; do not Persianise them and do not
+over-English ordinary prose (امنیت not \en{security} unless locked).
+Prefer collocations in scientific-style.md (\en{request} بفرستد,
+404 بدهد). Prefer «یک URI» over awkward URIای glue; never Latin+ی
+ezafe. Do not add, omit, or soften claims; keep hedges (may, might,
+suggest, remain unknown). Western digits. Write only the translation
+for this span, not a glossary and not a chat essay. If a claim-changing
+ambiguity would change the meaning, leave % TODO(ambiguity): … and do
+not guess.
 ```
 
 ## Brief for Luna (paste as-is)
@@ -82,24 +86,27 @@ Each row is English plus Composer vs Grok (only the rows that differ,
 and only candidates that already passed check-fa.py). For this
 document's six judgement items, pick winner: composer, grok, or mix
 with explicit sentence ranges. Prefer the reading that does not add,
-drop, or harden a claim and that keeps terms.tsv. When both readings
-are equally faithful, prefer the Canonical manner in scientific-style.md:
-shorter clauses, everyday scholarly verbs, English field terms kept,
-no ornate or translationese Persian. One short reason per contested
-row. Output only the decision.
+drop, or harden a claim and that keeps terms.tsv preferred forms.
+When both readings are equally faithful, prefer Canonical manner +
+fluency-gold.md: shorter clauses, everyday scholarly verbs, English
+field terms kept, no ornate or translationese Persian, no over-English
+of ordinary words. One short reason per contested row. Output only
+the decision.
 ```
 
 ## Brief for fluency reader (paste as-is)
 
 ```text
 You are a fluency reader, not a translator and not a terminology
-checker. Read the Persian prose only. Gold standard: the Canonical
-manner in scientific-style.md — plain formal فارسی معیار with short
-verbs (نشان بدهد / شروع می‌کند, not ارائه کند / آغاز می‌کند), split
-sentences, English field terms left as ‹EN›, no literary padding.
-Flag awkward, ornate, or translationese Persian; also flag Persian
-calques of kept terms (سند/پرونده for file, etc.) and ugly Latin+ی
-glue. Do not hunt only a fixed word list — judge the whole sentence.
+checker. Read the Persian prose only. Gold standard: Canonical manner
+in scientific-style.md and the paragraphs in fluency-gold.md — plain
+formal فارسی معیار with short verbs (نشان بدهد / شروع می‌کند, not
+ارائه کند / آغاز می‌کند), split sentences, English field terms left
+as ‹EN›, collocations like ‹EN› بفرستد / 404 بدهد, no literary padding.
+FLAG awkward, ornate, or translationese Persian; FLAG Persian calques
+of kept terms; FLAG ugly Latin+ی glue; FLAG over-English (ordinary
+dictionary words left as ‹EN› without a terms.tsv reason).
+Do not hunt only a fixed word list — judge the whole sentence.
 For each problem span, output one line:
   FLAG | <exact Persian span> | <why it feels unnatural> | <optional simpler Persian that keeps the same claim>
 If nothing is wrong, output only: OK
@@ -134,7 +141,7 @@ kept English terms (shown as ‹EN›). Do not invent science.
 4. **Fluency read (required).** After the part is chosen and lints
    clean, send its Persian prose (or, for long parts, every Nth
    paragraph plus any paragraph the orchestrator finds dense — at least
-   ~400 words, cap ~1200) to the fluency reader with the brief above.
+   ~400 words, cap ~1200) to the fluency reader with the brief above (gold: fluency-gold.md).
    The reader returns `OK` or `FLAG` lines. The **primary** revises only
    flagged spans, keeping claims and hedges intact; preferred simpler
    Persian from the FLAG line is a suggestion, not an order. Re-lint.
