@@ -34,15 +34,14 @@ through, with field terms kept English per `terminology.md`.
   Persian sentences (or a short clause after `؛`). Do not keep a
   parenthesis-stuffed English mega-sentence as one Persian blob.
 - **Lead with a Persian frame, keep terms English.** Prefer «وقتی
-  `\en{client}` می‌خواهد به یک `\en{URI}` برسد…» over calqued order or
-  Persianising the field noun. Do not invent calques for `file`,
-  `server`, `request`, `error page`, and the like when they sit in the
-  job/subject lexicon — keep them English; do not write سند / پرونده /
-  کارخواه when `file` / `client` is the term of art.
+  `\en{client}` می‌خواهد به یک `\en{URI}` برسد…» or «وقتی مدل را
+  `\en{train}` می‌کنید…» over calqued order or Persianising the field
+  noun. Do not invent calques for job/subject terms of art — keep them
+  English. Ordinary dictionary words stay Persian (`terminology.md`).
 - **Avoid ugly Latin+Persian glue.** Prefer «یک `\en{URI}`» / «آن
-  `\en{URI}`» over bare «`\en{URI}`ای» when the sentence allows. Never
-  attach ezafe or ی to a Latin isolate (`Goی`, `URIی`). Plurals are
-  still `\en{Pod}ها`.
+  `\en{API}`» / «یک `\en{tensor}`» over bare «`…`ای» when the sentence
+  allows. Never attach ezafe or ی to a Latin isolate (`Goی`, `URIی`).
+  Plurals are still `\en{Pod}ها`, `\en{tensor}ها`.
 - Prefer clear scientific prose over sentence-level calques. Do not copy
   English *clause* order when it produces unreadable Persian.
 - Keep the author's epistemic stance. `may` / `might` / `suggest` /
@@ -53,19 +52,35 @@ through, with field terms kept English per `terminology.md`.
 
 ### Canonical manner (always)
 
-This is the default shape every translator brief aims at. Same claim,
-clearer voice:
+Default voice for every translator brief. Same claim, clearer wording.
+The skill is **not** tied to one product — subjects are whatever the
+book is about (web servers, libraries, databases, ML systems, compilers,
+protocol specs, papers, …). The paragraphs below only illustrate the
+*voice*.
+
+**Tutorial / system-docs (tooling):**
 
 > وقتی `\en{client}` می‌خواهد به یک `\en{URI}` برسد که یکی از این
 > خطاها را می‌دهد (مثلاً `\en{file}`ای که روی `\en{server}` نیست و
-> خطای `\en{404}` می‌گیرد)، `\en{NGINX}` باید صفحهٔ مربوط به آن کد
-> خطا را نشان بدهد. ولی `\en{error page}` را مستقیم برای `\en{client}`
+> خطای `\en{404}` می‌گیرد)، برنامه باید صفحهٔ مربوط به آن کد خطا را
+> نشان بدهد. ولی `\en{error page}` را مستقیم برای `\en{client}`
 > نمی‌فرستد؛ به‌جایش با `\en{URI}` جدید یک `\en{request}` کاملاً تازه
 > شروع می‌کند.
 
+**Library / API docs:**
+
+> اگر آرگومان `\en{None}` باشد، تابع `\en{ValueError}` می‌دهد. برای
+> ادامه، `\en{batch}` را به `\en{DataLoader}` بدهید و یک `\en{epoch}`
+> `\en{train}` کنید.
+
+**Paper (hedged):**
+
+> این تفاوت ممکن است به اندازهٔ نمونه بستگی داشته باشد و هنوز
+> نمی‌توان `\en{causal effect}` را قطعی دانست.
+
 Reject drafts that sound like: برمی‌انگیزد، ارائه کند، آغاز می‌کند،
-سندی یا پرونده‌ای (when the source means `file`), or one unbroken
-calqued sentence where the exemplar would have split.
+سندی یا پرونده‌ای (when the source means a kept `file`), or one
+unbroken calqued sentence where the exemplar would have split.
 
 ### Genre → tone
 
@@ -81,17 +96,19 @@ rules; it only shifts connectors and density:
 ### Collocations (preferred patterns)
 
 Lock recurring verb+term patterns when both readings are accurate.
-Write close calls into `terms.tsv` notes or `admitted` if needed. Default
-preferences for `system-docs` / tooling prose:
+Write close calls into `terms.tsv` `admitted` / notes if needed. Defaults
+for software and scientific tooling prose (any stack — not one product):
 
 | English pattern | Prefer | Avoid |
 | --- | --- | --- |
 | send / issue a `request` | `\en{request}` بفرستد / بدهد | درخواست را ارسال نماید |
-| return `404` / an error | `\en{404}` / خطا بدهد / برگرداند | مبادرت به بازگرداندن خطا کند |
-| start / begin a `request` | `\en{request}` شروع کند | `\en{request}` را آغاز نماید |
-| access a `URI` | به `\en{URI}` برسد / دسترسی پیدا کند | به `\en{URI}` نایل شود |
-| show / serve a page | صفحه را نشان بدهد | صفحه را ارائه کند |
-| configure `X` | `\en{X}` را `\en{configure}` کند (if verb kept) / پیکربندی کند only when `configure` is not kept English | اقدام به پیکربندی `X` نماید |
+| return `404` / an error / raise | `\en{404}` / خطا بدهد / `\en{Exception}` بدهد | مبادرت به بازگرداندن خطا کند |
+| call / invoke a `function` | `\en{function}` را صدا بزند / فراخوانی کند | مبادرت به فراخوانی تابع نماید |
+| train a `model` | `\en{model}` را `\en{train}` کند | مدل را تحت آموزش قرار دهد |
+| start / begin a `request` / job | `\en{request}` / کار را شروع کند | `\en{request}` را آغاز نماید |
+| access a `URI` / endpoint | به `\en{URI}` برسد / دسترسی پیدا کند | به `\en{URI}` نایل شود |
+| show / serve a page / result | نشان بدهد | ارائه کند |
+| configure `X` | `\en{X}` را `\en{configure}` کند when the verb is kept; otherwise پیکربندی کند | اقدام به پیکربندی `X` نماید |
 
 ### Do not over-English
 

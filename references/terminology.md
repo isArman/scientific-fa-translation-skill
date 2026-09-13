@@ -7,10 +7,12 @@ infrastructure nouns), and `term-pairs.tsv` is the machine-readable half
 that `scripts/check-fa.py` enforces. Do not restate this policy anywhere
 else.
 
-There is no per-field glossary in this skill. Infer the **jobs** and the
-**subjects** from the source in hand. Counts are not fixed — choose how
-many of each the source needs. Do not look up a pack name, and do not
-write terms into `glossary.md`.
+There is no per-field glossary in this skill. It covers **any** scientific
+or technical book—especially software—not a single product stack. Infer
+the **jobs** and the **subjects** from the source in hand (library
+manuals, database guides, ML texts, compilers, papers, web-server books,
+…). Counts are not fixed — choose how many of each the source needs. Do
+not look up a pack name, and do not write terms into `glossary.md`.
 
 ## Level
 
@@ -79,7 +81,8 @@ Example:
 source	output	step	count	forbidden_fa	concept	status	admitted	deprecated
 source code	source code	3 job-lexicon	12	کد منبع	src-code	preferred		کد مبدأ|کد اصلی
 deployment	deployment	3 job-lexicon	22	استقرار	cfg-deploy	preferred		
-location	location	3 subject-lexicon	84	مکان	ngx-location	preferred		
+DataLoader	DataLoader	3 subject-lexicon	40	بارگذار داده	ml-dataloader	preferred		
+WAL	WAL	3 subject-lexicon	15	لاگ پیش‌نوشته	pg-wal	preferred		
 security	امنیت	5 prose	41		sec-generic	preferred		
 Introduction	مقدمه	0 chrome	1		chrome-intro	preferred		
 ```
@@ -107,8 +110,10 @@ one product.
   those subjects.
 
 Those names are not pack ids and are not looked up in this repository.
-Example: jobs `software development`, `DevOps`; subjects `Kubernetes`,
-`Helm`; level `system-docs`.
+Examples: jobs `software development`, `DevOps`; subjects `Kubernetes`,
+`Helm`; level `system-docs`. Or jobs `machine learning`, `Python`;
+subject `PyTorch`; level `system-docs`. Or jobs `databases`,
+`software development`; subject `PostgreSQL`; genre `reference`.
 
 Then every term that belongs to that job lexicon **or** that subject
 lexicon stays English: directives, modules, CLI flags, config keys,
@@ -118,15 +123,16 @@ that lexicon.
 A token belongs to the inferred lexicon when at least one of these holds:
 
 - it is a name, directive, module, flag, API, or config key of a named
-  subject (`nginx`, `location`, `proxy_pass`, `worker_processes`);
+  subject (`nginx` / `location`, `PyTorch` / `DataLoader`, `PostgreSQL` / `WAL`);
 - it is a term of art of one of the named jobs as this document uses it
   (the field-term test below);
 - it appears in the source's own glossary, or in a named subject's man
   page, `--help`, or spec index.
 
 It does **not** belong when it is ordinary dictionary use in a sentence
-about something else. In an nginx book, `location` as a block directive
-stays English; «if the file is missing» is ordinary prose (فایل / پرونده).
+about something else. In an nginx book, `location` as a block directive stays English; in a
+PyTorch book, `DataLoader` stays English; «if the file is missing» is
+ordinary prose (فایل / پرونده) unless `file` is locked as a term of art.
 In «increase security using firewalls», `security` is امنیت and
 `firewalls` stays English.
 

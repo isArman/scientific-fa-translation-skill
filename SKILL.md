@@ -2,12 +2,12 @@
 name: scientific-fa-translation-skill
 description: >
   Translate scientific documents, papers, articles, books, and technical
-  docs into academic Persian (Farsi) with strict RTL/bidi and untranslated
-  English technical terms. Also reviews an existing Persian translation
-  against these rules. Use when the user asks to ترجمه, translate a
-  paper/article/book/docs, راست‌چین, RTL, PDF, چاپ, Persian scientific
-  translation, or invokes scientific-fa-translation /
-  scientific-fa-translation-skill.
+  docs (any software/science stack—not tied to one product) into academic
+  Persian (Farsi) with strict RTL/bidi and untranslated English technical
+  terms. Also reviews an existing Persian translation against these rules.
+  Use when the user asks to ترجمه, translate a paper/article/book/docs,
+  راست‌چین, RTL, PDF, چاپ, Persian scientific translation, or invokes
+  scientific-fa-translation / scientific-fa-translation-skill.
   Do NOT use for coding, explaining code, commit messages, UI copy,
   literary translation, or casual Persian chat.
 ---
@@ -15,7 +15,8 @@ description: >
 # Scientific Persian translation
 
 English → academic Persian for papers, articles, books, and technical
-documentation. Accuracy, consistent terminology, and print-ready RTL outrank
+documentation—any scientific or software stack, not one product
+(nginx, PyTorch, PostgreSQL, … are examples, not limits). Accuracy, consistent terminology, and print-ready RTL outrank
 literary fluency. Cursor chat is not the RTL surface.
 
 ## When to use
@@ -70,10 +71,11 @@ Override only when the user says so.
    (practices it actually covers — include a broader one like software
    development when ops-only labels would miss lexicon such as
    `source code`) and the **subjects** (products or protocols: Kubernetes,
-   Helm, nginx, …). Counts are not fixed. Announce level, jobs, subjects,
-   and **genre** (`tutorial` / `reference` / `paper`). Keep those jobs'
-   and subjects' lexicon English (`location`, `proxy_pass`, `deployment`,
-   `source code` — not مکان / گذرگاه پیش‌رو / استقرار / کد منبع).
+   Helm, PyTorch, PostgreSQL, nginx, … — whatever the book is about).
+   Counts are not fixed. Announce level, jobs, subjects, and **genre**
+   (`tutorial` / `reference` / `paper`). Keep those jobs' and subjects'
+   lexicon English (`DataLoader`, `deployment`, `source code`, `WAL` —
+   not invented calques).
    Ordinary prose stays Persian. Apply `references/terminology.md`. Do
    not write `glossary.local.md` and do not append to `glossary.md`.
    Write concept-oriented `terms.tsv` in the working tree (discarded
@@ -120,20 +122,21 @@ there is no domain pack). Ordered, first match wins: generic document
 chrome (`Abstract`, `Figure`) is always Persian; named artifacts and
 acronyms are English; a 2–5 word technical label is English as **one
 whole isolate**; the inferred subjects' lexicon is English at every
-level (`nginx`, `location`, `proxy_pass`); the jobs' lexicon is English
-at `system-docs` (`deployment`, `reverse proxy`, `source code`) and
-Persian at `journal` unless it is also a subject. Everything else is
-Persian. Never half-translate (`خوشه Kubernetes`, `بلوک location`).
+level (`PyTorch` / `DataLoader`, `PostgreSQL` / `WAL`, `nginx` /
+`location`); the jobs' lexicon is English at `system-docs`
+(`deployment`, `source code`) and Persian at `journal` unless it is also
+a subject. Everything else is Persian. Never half-translate
+(`خوشه Kubernetes`, `بلوک location`, `بارگذار DataLoader`).
 A kept-term plural is the singular stem plus `ها` (`\en{service}ها`,
-`\en{location}ها`, `\en{API}ها`), never `services` / `locations` / `APIs`;
+`\en{API}ها`, `\en{tensor}ها`), never `services` / `APIs` / `tensors`;
 ezafe on Latin is still forbidden (`Goی`). Never mix two forms of one
 concept in a document. Forbidden calques are enforced from
 `references/term-pairs.tsv` plus this job's `terms.tsv`.
 
-Example (`system-docs`, jobs software development / DevOps, subjects
-Kubernetes / Helm): «برای `\en{proxy_pass}` در هر `\en{location}` از یک
-`\en{upstream}` استفاده کنید.» — not «برای گذرگاه پیش‌رو در هر مکان».
-Also keep `\en{source code}` English — not کد منبع.
+Example (`system-docs`, ML library): «اگر آرگومان `\en{None}` باشد، تابع
+`\en{ValueError}` می‌دهد.» Example (ops): «برای هر `\en{deployment}` یک
+`\en{replica}` جدا `\en{configure}` کنید.» Keep `\en{source code}`
+English — not کد منبع.
 
 Example (`journal`): «این پیاده‌سازی از \en{gradient descent} برای کمینه
 کردن تابع هزینه استفاده می‌کند.»

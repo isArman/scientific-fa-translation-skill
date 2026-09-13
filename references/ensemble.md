@@ -5,7 +5,8 @@ full drafts of the same book. Terminology still belongs only in
 `terminology.md`. Mechanical checks still belong only in `check-fa.py`.
 This file owns **who writes**, **who picks**, and **who reads for
 fluency**. Register fluency is a model judgement — never a fixed word
-list in the checker.
+list in the checker. The skill is stack-agnostic: infer jobs/
+subjects from each book (libraries, databases, ML, systems, …).
 
 Override the model slugs only when the user names different ones.
 
@@ -70,7 +71,7 @@ Split long English sentences. Lead with a Persian frame; keep
 job/subject terms English; do not Persianise them and do not
 over-English ordinary prose (امنیت not \en{security} unless locked).
 Prefer collocations in scientific-style.md (\en{request} بفرستد,
-404 بدهد). Prefer «یک URI» over awkward URIای glue; never Latin+ی
+404 بدهد، ValueError بدهد، model را train کند). Prefer «یک URI» over awkward URIای glue; never Latin+ی
 ezafe. Do not add, omit, or soften claims; keep hedges (may, might,
 suggest, remain unknown). Western digits. Write only the translation
 for this span, not a glossary and not a chat essay. If a claim-changing

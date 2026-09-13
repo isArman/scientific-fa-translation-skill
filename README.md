@@ -51,7 +51,8 @@ RTL HTML template when TeX is absent (display-correct; copy-paste reverses Persi
 which of those exist on the machine before planning a build.
 
 **A job.** Infer **jobs** and **subjects** from the source (counts are
-not fixed — e.g. software development, DevOps + Kubernetes, Helm; not a
+not fixed — e.g. software development + PyTorch, or DevOps +
+Kubernetes; any scientific/software book, not one product
 pack). Lock keep-English calques in that tree's `terms.tsv` before drafting.
 Composer and Grok draft; Luna judges diffs; a fluency reader (Grok by
 default) judges whether the Persian reads naturally
