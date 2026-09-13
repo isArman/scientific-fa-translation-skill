@@ -10,12 +10,13 @@ set of decisions. Everything here exists to make those three impossible.
 
 Before drafting any body text:
 
-1. Read enough of the source to name **three jobs** and the **subject**
-   (DevOps, networking, Linux + nginx). Announce all four with the
-   level. There is no domain pack to select.
+1. Read enough of the source to name the **jobs** and the **subjects**
+   (counts are not fixed — e.g. software development, DevOps +
+   Kubernetes, Helm). Announce them with the level. There is no domain
+   pack to select.
 2. Scan the whole source for candidate terms. Classify each with the
    decision procedure in `terminology.md`. The inferred job and subject
-   lexicon stays English.
+   lexicons stay English.
 3. Write `terms.tsv` in the working tree — source term, chosen output
    form, decision step, occurrence count, forbidden calque. Keep-English
    rows must fill `forbidden_fa`; the checker rejects an empty calque

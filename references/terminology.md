@@ -8,8 +8,9 @@ that `scripts/check-fa.py` enforces. Do not restate this policy anywhere
 else.
 
 There is no per-field glossary in this skill. Infer the **jobs** and the
-**subject** from the source in hand. Do not look up a pack name, and do
-not write terms into `glossary.md`.
+**subjects** from the source in hand. Counts are not fixed — choose how
+many of each the source needs. Do not look up a pack name, and do not
+write terms into `glossary.md`.
 
 ## Level
 
@@ -21,43 +22,50 @@ the same treatment. Announce the level in the first chat message.
 | `system-docs` (default) | books, install guides, protocol specs, product docs, RFC/BIP, runbooks | English (`deployment`, `upstream`, `configure`) |
 | `journal` | papers, theses, review articles for a general scientific audience | Persian, unless the token is in the subject lexicon |
 
-The **subject** lexicon (product, protocol, tool the document is about) stays
-English at both levels. The level only moves the boundary for the **job**
-lexicon — ordinary one-word terms of the practice — and their operation
-verbs. The user switches with «سطح journal» or «سطح system-docs».
+The **subject** lexicon (products, protocols, tools the document is about)
+stays English at both levels. The level only moves the boundary for the
+**job** lexicon — ordinary one-word terms of the practice — and their
+operation verbs. The user switches with «سطح journal» or «سطح system-docs».
 
-## Infer job and subject
+## Infer jobs and subjects
 
 Before classifying tokens, read enough of the source to name these, and
-announce them with the level:
+announce them with the level. **Counts are not fixed** — choose how many
+jobs and how many subjects the source needs; do not pad to three and do
+not force a single subject when the document is clearly about more than
+one product.
 
-- **Jobs** — exactly **three** short practice labels, ranked by how much
-  of the source they cover (`DevOps`, `networking`, `Linux`). A book
-  often spans more than one profession; three is both the target and the
-  cap. Each label must be a real thread in the source (a chapter,
-  audience, or repeated terms of art). Do not invent a practice the
-  source does not use, and do not add a fourth. The **job lexicon** is
-  the union of those three.
-- **Subject** — one product, protocol, or corpus (`nginx`, Bitcoin,
-  ImageNet, …)
+- **Jobs** — one or more short practice labels, ranked by how much of the
+  source they cover (`software development`, `DevOps`, `networking`,
+  `Linux`, …). Include a broader practice when it supplies lexicon the
+  narrower ops labels miss (e.g. `software development` so `source code`
+  stays English in a Kubernetes book). Each label must be a real thread
+  in the source (a chapter, audience, or repeated terms of art). Do not
+  invent a practice the source does not use. The **job lexicon** is the
+  union of the jobs you named.
+- **Subjects** — one or more products, protocols, tools, or corpora the
+  document is about (`nginx`, `Kubernetes`, `Helm`, Bitcoin, ImageNet,
+  …). When two tools are co-equal topics, name both; when everything
+  orbits one product, name one. The **subject lexicon** is the union of
+  those subjects.
 
 Those names are not pack ids and are not looked up in this repository.
-Example: jobs DevOps, networking, Linux; subject nginx; level
-`system-docs`.
+Example: jobs `software development`, `DevOps`; subjects `Kubernetes`,
+`Helm`; level `system-docs`.
 
-Then every term that belongs to that job lexicon **or** that subject's
+Then every term that belongs to that job lexicon **or** that subject
 lexicon stays English: directives, modules, CLI flags, config keys,
 named blocks, operation verbs of those terms, and multi-word labels in
 that lexicon.
 
 A token belongs to the inferred lexicon when at least one of these holds:
 
-- it is a name, directive, module, flag, API, or config key of the subject
-  (`nginx`, `location`, `proxy_pass`, `worker_processes`);
-- it is a term of art of one of the three jobs as this document uses it
+- it is a name, directive, module, flag, API, or config key of a named
+  subject (`nginx`, `location`, `proxy_pass`, `worker_processes`);
+- it is a term of art of one of the named jobs as this document uses it
   (the field-term test below);
-- it appears in the source's own glossary, or in that subject's man page,
-  `--help`, or spec index.
+- it appears in the source's own glossary, or in a named subject's man
+  page, `--help`, or spec index.
 
 It does **not** belong when it is ordinary dictionary use in a sentence
 about something else. In an nginx book, `location` as a block directive
@@ -105,7 +113,7 @@ glossary.
 
 ## The field-term test
 
-A token is a field term of art of one of the three **jobs** when at least
+A token is a field term of art of one of the named **jobs** when at least
 one of these holds:
 
 - it appears in the source document's own glossary or terminology section;

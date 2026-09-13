@@ -41,7 +41,7 @@ three times.
   translator, judge, or fluency-reader prompt. They get: the English
   span they must translate or compare (translators/Luna), or the
   Persian prose under review (fluency reader), plus `terms.tsv`, the
-  level, the three jobs and subject, and the short brief below.
+  level, the jobs and subjects, and the short brief below.
 - `check-fa.py --strict --terms --manifest` runs on every candidate
   **before** Luna sees it. A failing candidate is out. Luna does not
   re-check orthography, calques, isolates, or figures.

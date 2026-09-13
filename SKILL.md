@@ -36,7 +36,7 @@ Override only when the user says so.
 | --- | --- |
 | Direction | English → فارسی علمی |
 | Register | Formal فارسی معیار. Clear and readable, not ornate or heavy. Everyday scholarly words over literary synonyms; no colloquial forms. |
-| Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level, **three jobs**, and the **subject**. Checker `--level` must match. |
+| Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level, the **jobs**, and the **subjects** (counts chosen from the source). Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
 | PDF engine | XeLaTeX + `xepersian` (selectable text). Chromium then WeasyPrint only when TeX is absent — those engines store visual order, so copy-paste reverses Persian |
@@ -55,7 +55,7 @@ Override only when the user says so.
 
 1. **Preflight.** `scripts/preflight.sh` — know which engine and fonts
    exist before promising a build. Confirm source, target, and level.
-   Jobs and subject are inferred from the source in step 3, not chosen
+   Jobs and subjects are inferred from the source in step 3, not chosen
    from a list.
 2. **Ingest.** `references/source-ingest.md`: fetch the source, extract
    figures, run `scripts/crop-source-figures.py`, flatten with
@@ -66,12 +66,14 @@ Override only when the user says so.
    pdfimages dump. Never ship a full source-page raster as a figure.
    A book `contents` / `brief contents` page is inventory chrome, not
    optional: translate it and print it.
-3. **Terminology first.** Read enough of the source to name **three jobs**
-   (practices the source actually covers: DevOps, networking, Linux, …)
-   and the **subject** (the product or protocol: nginx, …). Announce all
-   four with the level. Keep those jobs' and that subject's lexicon
-   English (`location`, `proxy_pass`, `deployment` — not مکان /
-   گذرگاه پیش‌رو / استقرار). Ordinary prose stays Persian. Apply
+3. **Terminology first.** Read enough of the source to name the **jobs**
+   (practices it actually covers — include a broader one like software
+   development when ops-only labels would miss lexicon such as
+   `source code`) and the **subjects** (products or protocols: Kubernetes,
+   Helm, nginx, …). Counts are not fixed; announce whatever you chose
+   with the level. Keep those jobs' and subjects' lexicon English
+   (`location`, `proxy_pass`, `deployment`, `source code` — not مکان /
+   گذرگاه پیش‌رو / استقرار / کد منبع). Ordinary prose stays Persian. Apply
    `references/terminology.md`. Do not write `glossary.local.md` and do
    not append to `glossary.md`. Write `terms.tsv` in the working tree
    (discarded with the job) **before** drafting — keep-English rows must
@@ -107,13 +109,14 @@ terms in English.
 ## Terminology in one paragraph
 
 Full policy and the field-term test: `references/terminology.md`. Infer
-**three jobs** and one **subject** from the source; there is no domain pack. Ordered,
-first match wins: generic document chrome (`Abstract`, `Figure`) is always
-Persian; named artifacts and acronyms are English; a 2–5 word technical
-label is English as **one whole isolate**; the inferred subject's lexicon
-is English at every level (`nginx`, `location`, `proxy_pass`); the jobs'
-lexicon is English at `system-docs` (`deployment`, `reverse proxy`) and
-Persian at `journal` unless it is also the subject. Everything else is
+**jobs** and **subjects** from the source (counts chosen by the agent;
+there is no domain pack). Ordered, first match wins: generic document
+chrome (`Abstract`, `Figure`) is always Persian; named artifacts and
+acronyms are English; a 2–5 word technical label is English as **one
+whole isolate**; the inferred subjects' lexicon is English at every
+level (`nginx`, `location`, `proxy_pass`); the jobs' lexicon is English
+at `system-docs` (`deployment`, `reverse proxy`, `source code`) and
+Persian at `journal` unless it is also a subject. Everything else is
 Persian. Never half-translate (`خوشه Kubernetes`, `بلوک location`).
 A kept-term plural is the singular stem plus `ها` (`\en{service}ها`,
 `\en{location}ها`, `\en{API}ها`), never `services` / `locations` / `APIs`;
@@ -121,9 +124,10 @@ ezafe on Latin is still forbidden (`Goی`). Never mix two forms of one
 concept in a document. Forbidden calques are enforced from
 `references/term-pairs.tsv` plus this job's `terms.tsv`.
 
-Example (`system-docs`, jobs DevOps / networking / Linux, subject nginx): «برای \en{proxy_pass}
-در هر \en{location} از یک \en{upstream} استفاده کنید.» — not «برای گذرگاه
-پیش‌رو در هر مکان».
+Example (`system-docs`, jobs software development / DevOps, subjects
+Kubernetes / Helm): «برای `\en{proxy_pass}` در هر `\en{location}` از یک
+`\en{upstream}` استفاده کنید.» — not «برای گذرگاه پیش‌رو در هر مکان».
+Also keep `\en{source code}` English — not کد منبع.
 
 Example (`journal`): «این پیاده‌سازی از \en{gradient descent} برای کمینه
 کردن تابع هزینه استفاده می‌کند.»
