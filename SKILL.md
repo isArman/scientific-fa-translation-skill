@@ -35,7 +35,7 @@ Override only when the user says so.
 | Decision | Default |
 | --- | --- |
 | Direction | English → فارسی علمی |
-| Register | Formal فارسی معیار. Clear and readable, not ornate or heavy. Everyday scholarly words over literary synonyms; no colloquial forms. |
+| Register | Formal فارسی معیار in the Canonical manner (`references/scientific-style.md`): short everyday scholarly verbs, split long sentences, field terms kept English; not ornate, not translationese, no colloquial forms. |
 | Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce the level, the **jobs**, and the **subjects** (counts chosen from the source). Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |

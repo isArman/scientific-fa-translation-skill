@@ -6,20 +6,21 @@ here — `terminology.md` owns the keep-English split, and bidi is
 
 ## Register
 
+Locked default voice for every draft (override only if the user asks).
+Target: clear formal Persian a careful non-specialist can read straight
+through, with field terms kept English per `terminology.md`.
+
 - Formal written Persian (`فارسی معیار`). No spoken reductions: not
   `میشه`, `می‌خواد`, `چونکه` as a default, `اصلاً` as filler.
-- Clear and readable, not ornate. Formal means no colloquial forms —
-  not heavy literary synonyms that make ordinary prose hard to read.
-  Prefer the everyday scholarly word when two readings are equally
-  accurate. Hard Persian for ordinary dictionary meanings is a register
-  failure; field terms of art stay English under `terminology.md`, not
-  as invented Persian calques.
-- Short verbs and everyday scholarly phrasing beat elevated or
-  translationese wording when both are accurate. Examples of the *kind*
-  of contrast (not a checklist for `check-fa.py`):
+- **Plain scholarly, not literary.** Prefer everyday verbs and short
+  clauses. When two accurate readings exist, take the one you would say
+  explaining the idea to a colleague — not the elevated synonym.
 
   | Prefer | Avoid |
   | --- | --- |
+  | می‌خواهد / می‌رسد / می‌دهد | تلاش می‌کند دسترسی یابد / برمی‌انگیزد / ارائه می‌کند |
+  | نشان بدهد / شروع می‌کند | ارائه کند / آغاز می‌کند |
+  | ولی / به‌جایش | اما … در عوض (when the soft pair reads finer) |
   | می‌دهد / می‌دهند | فراهم می‌کند / فراهم می‌کنند |
   | نگاه کنید | بنگرید، ملاحظه نمایید، ملاحظه فرمایید |
   | لازم است | ایجاب می‌کند |
@@ -27,9 +28,21 @@ here — `terminology.md` owns the keep-English split, and bidi is
   | باید گفت | لازم به ذکر است |
   | ارزیابی می‌کنیم | انجام یک ارزیابی از |
 
-  Do **not** enforce register by grepping a fixed word list. A model
-  fluency reader in `ensemble.md` judges whether the prose reads like
-  normal formal Persian.
+  Do **not** enforce this by grepping a fixed list. The fluency reader
+  in `ensemble.md` judges the whole sentence.
+- **Split long English sentences.** One English period may become two
+  Persian sentences (or a short clause after `؛`). Do not keep a
+  parenthesis-stuffed English mega-sentence as one Persian blob.
+- **Lead with a Persian frame, keep terms English.** Prefer «وقتی
+  `\en{client}` می‌خواهد به یک `\en{URI}` برسد…» over calqued order or
+  Persianising the field noun. Do not invent calques for `file`,
+  `server`, `request`, `error page`, and the like when they sit in the
+  job/subject lexicon — keep them English; do not write سند / پرونده /
+  کارخواه when `file` / `client` is the term of art.
+- **Avoid ugly Latin+Persian glue.** Prefer «یک `\en{URI}`» / «آن
+  `\en{URI}`» over bare «`\en{URI}`ای» when the sentence allows. Never
+  attach ezafe or ی to a Latin isolate (`Goی`, `URIی`). Plurals are
+  still `\en{Pod}ها`.
 - Prefer clear scientific prose over sentence-level calques. Do not copy
   English *clause* order when it produces unreadable Persian.
 - Keep the author's epistemic stance. `may` / `might` / `suggest` /
@@ -38,14 +51,31 @@ here — `terminology.md` owns the keep-English split, and bidi is
 - Do not drop hedges, limitations, negative results, or sample-size
   caveats to sound smoother.
 
+### Canonical manner (always)
+
+This is the default shape every translator brief aims at. Same claim,
+clearer voice:
+
+> وقتی `\en{client}` می‌خواهد به یک `\en{URI}` برسد که یکی از این
+> خطاها را می‌دهد (مثلاً `\en{file}`ای که روی `\en{server}` نیست و
+> خطای `\en{404}` می‌گیرد)، `\en{NGINX}` باید صفحهٔ مربوط به آن کد
+> خطا را نشان بدهد. ولی `\en{error page}` را مستقیم برای `\en{client}`
+> نمی‌فرستد؛ به‌جایش با `\en{URI}` جدید یک `\en{request}` کاملاً تازه
+> شروع می‌کند.
+
+Reject drafts that sound like: برمی‌انگیزد، ارائه کند، آغاز می‌کند،
+سندی یا پرونده‌ای (when the source means `file`), or one unbroken
+calqued sentence where the exemplar would have split.
+
 ### Fluency pass
 
 After terminology is locked in `terms.tsv` and a part is drafted and
 lint-clean, run the **fluency reader** step in `ensemble.md` (default
-Grok when Composer wrote the part). The model decides whether the
-Persian sounds like ordinary formal writing; the primary revises only
-flagged spans. Also fix the five EN→FA structure failures below when
-they show up. Do not use that pass to soften hedges or invent glosses.
+Grok when Composer wrote the part). Gold standard is the Canonical
+manner above. The model decides whether the Persian matches that voice;
+the primary revises only flagged spans. Also fix the five EN→FA
+structure failures below when they show up. Do not use that pass to
+soften hedges or invent glosses.
 
 ## Common EN→FA failures
 

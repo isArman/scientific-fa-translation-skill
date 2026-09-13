@@ -60,13 +60,18 @@ three times.
 Translate this English span into academic Persian for a print .tex
 (or .html) part. Follow terms.tsv exactly: keep-English output stays
 in one \en{…} / dir=ltr isolate; forbidden_fa strings must not appear.
-Register: clear فارسی معیار that a careful non-specialist can read
-straight through — ordinary scholarly wording, not heavy literary
-synonyms or English-calqued sentence shape. Do not add, omit, or
-soften claims; keep hedges (may, might, suggest, remain unknown).
-Western digits. Write only the translation for this span, not a
-glossary and not a chat essay. If a claim-changing ambiguity would
-change the meaning, leave % TODO(ambiguity): … and do not guess.
+Locked voice (scientific-style.md Canonical manner): clear فارسی معیار
+a colleague would actually read — short everyday verbs (می‌خواهد،
+می‌دهد، نشان بدهد، شروع می‌کند), not elevated ones (برمی‌انگیزد،
+ارائه کند، آغاز می‌کند). Split long English sentences. Lead with a
+Persian frame; keep job/subject terms English (client, URI, file,
+server, request, error page — not کارخواه/سند/پرونده when those are
+the terms of art). Prefer «یک URI» over awkward URIای glue; never
+Latin+ی ezafe. Do not add, omit, or soften claims; keep hedges (may,
+might, suggest, remain unknown). Western digits. Write only the
+translation for this span, not a glossary and not a chat essay. If a
+claim-changing ambiguity would change the meaning, leave
+% TODO(ambiguity): … and do not guess.
 ```
 
 ## Brief for Luna (paste as-is)
@@ -78,21 +83,23 @@ and only candidates that already passed check-fa.py). For this
 document's six judgement items, pick winner: composer, grok, or mix
 with explicit sentence ranges. Prefer the reading that does not add,
 drop, or harden a claim and that keeps terms.tsv. When both readings
-are equally faithful, prefer the one that sounds more like natural
-formal Persian. One short reason per contested row. Output only the
-decision.
+are equally faithful, prefer the Canonical manner in scientific-style.md:
+shorter clauses, everyday scholarly verbs, English field terms kept,
+no ornate or translationese Persian. One short reason per contested
+row. Output only the decision.
 ```
 
 ## Brief for fluency reader (paste as-is)
 
 ```text
 You are a fluency reader, not a translator and not a terminology
-checker. Read the Persian prose only. Decide whether it reads like
-normal formal فارسی معیار that an educated non-specialist would find
-natural — or like awkward, ornate, or translationese Persian.
-Do not hunt a fixed word list. Judge the whole sentence: wording,
-rhythm, ezafe load, and whether a simpler everyday scholarly phrasing
-would say the same thing.
+checker. Read the Persian prose only. Gold standard: the Canonical
+manner in scientific-style.md — plain formal فارسی معیار with short
+verbs (نشان بدهد / شروع می‌کند, not ارائه کند / آغاز می‌کند), split
+sentences, English field terms left as ‹EN›, no literary padding.
+Flag awkward, ornate, or translationese Persian; also flag Persian
+calques of kept terms (سند/پرونده for file, etc.) and ugly Latin+ی
+glue. Do not hunt only a fixed word list — judge the whole sentence.
 For each problem span, output one line:
   FLAG | <exact Persian span> | <why it feels unnatural> | <optional simpler Persian that keeps the same claim>
 If nothing is wrong, output only: OK
