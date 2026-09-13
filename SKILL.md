@@ -197,9 +197,10 @@ Register fluency is **not** machine-checked — see judgement and
 - [ ] No added, omitted, or softened scientific claim; hedges intact
 - [ ] Terminology consistent: one form per concept; inferred jobs and
       subject lexicon stayed English; consistent with `terms.tsv`
-- [ ] Register reads like natural formal فارسی معیار: fluency reader
-      in `ensemble.md` returned `OK` or flagged spans were revised
-      without softening claims; field terms stayed English
+- [ ] Register matches the Canonical manner in
+      `references/scientific-style.md`: fluency reader in `ensemble.md`
+      returned `OK` or flagged spans were revised without softening
+      claims; field terms stayed English
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)
