@@ -36,14 +36,15 @@ tell the user which engine will be used and what that costs.
 
 | Priority | Engine | When |
 | --- | --- | --- |
-| 1 | XeLaTeX + `xepersian` | best Persian print RTL; **logical** text order (copy-paste works); needs a TeX install |
-| 2 | Headless Chromium print of the RTL HTML | no TeX; display RTL is correct; **visual** text order (copy-paste reverses Persian) |
-| 3 | WeasyPrint on the same HTML | no TeX and no Chrome; same visual-order copy-paste limit |
+| 1 | XeLaTeX + `xepersian` | best Persian print RTL; preferred when TeX exists |
+| 2 | Headless Chromium print of the RTL HTML | no TeX; display RTL is correct; `--allow-visual-order` needed if XeLaTeX is also installed |
+| 3 | WeasyPrint on the same HTML | no TeX and no Chrome; same `--allow-visual-order` rule |
 
 Do not use pdfLaTeX. Do not use pandoc's default PDF engine without
 `xepersian` / `bidi`. Do not ship a Chromium/WeasyPrint PDF when XeLaTeX
-is installed — `--verify` will refuse it. CSS `dir="rtl"`, tagged-PDF
-flags, and `unicode-bidi` do not fix extraction.
+is installed — `--verify` will refuse it unless `--allow-visual-order`.
+CSS `dir="rtl"`, tagged-PDF flags, and `unicode-bidi` do not change how
+Chrome's built-in viewer copies text.
 
 Debian/Ubuntu install for the preferred path:
 
@@ -130,18 +131,23 @@ preference, it is the difference between right and wrong output. The
 checker's `split-isolate` rule exists for this, and Chromium is preferred
 over WeasyPrint when both are present.
 
-**Copy-paste is a separate property from display.** Chromium
-`--print-to-pdf` (and typical WeasyPrint) paint Persian on the page in
-the right direction, then write the *visual* glyph order into the PDF
-text stream. Selecting a line and pasting into an editor yields reversed
-characters (`پیش از آنکه` → `هکنآ زا شیپ`). The caret can also jump from
-the right of one line to the left of the next. XeLaTeX + xepersian writes
-logical order; that is the only selectable-text engine this skill uses.
+**Copy-paste is a viewer property, not only an engine property.** Chromium
+`--print-to-pdf`, WeasyPrint, and XeLaTeX + xepersian all draw Persian
+glyphs in visual order on the page. Poppler-based tools (Evince,
+`pdftotext` without `-raw`) and Adobe Reader usually reconstruct
+logical reading order on copy. Chrome and Edge built-in PDF viewers
+often paste visual/reversed Persian — including mixed lines with English
+isolates — from **both** HTML and XeLaTeX PDFs. Selecting a line in those
+viewers can also advance left-to-right.
+
 `scripts/check-pdf-text-order.py` compares Persian phrases from the print
-source with `pdftotext -raw` (content-stream order). `--verify` runs it
-and fails a visual-order PDF when XeLaTeX is installed — rebuild from
-the `.tex`. When TeX is missing, verify still copies the PDF after the
-raster checks but logs a warning; tell the user copy-paste will reverse.
+source with `pdftotext -raw` (content-stream order). `--verify` fails a
+visual-order HTML PDF when XeLaTeX is installed — rebuild from the
+`.tex` (or pass `--allow-visual-order` for a draft). Every successful
+`build-pdf.sh` also writes
+`/home/$USER/Documents/books/<slug>.txt` via `pdftotext` + NFKC so the
+user has a logical-order copy without fighting the viewer. Tell the user
+which viewer to use when they report reversed paste.
 
 Surface WeasyPrint's warnings instead of discarding them; `build-pdf.sh`
 keeps them.
@@ -204,11 +210,12 @@ directory as cwd — the build script does this.
 A PDF that exists is not a PDF that is correct. `build-pdf.sh --verify`
 runs all of this and **exits non-zero** if poppler tools are missing, the
 page count cannot be read, no font is embedded, a raster file was not
-written, or (when XeLaTeX is installed) the text stream is visual-order
-Persian. First, last, and (when there are more than two pages) a middle
-page are sampled. Do it every time. The script will not copy the PDF to
-`$HOME/Documents/books` until lint, figure check, compile, and this
-verification have succeeded.
+written, or (when XeLaTeX is installed) an HTML-engine PDF is
+visual-order without `--allow-visual-order`. First, last, and (when there
+are more than two pages) a middle page are sampled. Do it every time. The
+script will not copy the PDF to `$HOME/Documents/books` until lint, figure
+check, compile, and this verification have succeeded. On success it also
+writes `<slug>.txt` next to the PDF.
 
 ```bash
 pdfinfo out.pdf | grep -E 'Pages|Page size'

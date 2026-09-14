@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Compile a Persian print document and copy the PDF to $HOME/Documents/books.
 #
-#   build-pdf.sh <file.tex|file.html> [slug] [--verify] [--engine ENGINE]
+#   build-pdf.sh <file.tex|file.html> [slug] [--verify] [--allow-visual-order]
+#                [--engine ENGINE]
 #                [--level system-docs|journal] [--terms FILE] [--manifest FILE]
 #
 # Lints with check-fa.py --strict before any engine runs, and will not copy
@@ -13,14 +14,19 @@
 # quietly downgraded.
 #
 # Chromium and WeasyPrint paint RTL correctly but store visual order in the
-# text stream; copy-paste reverses Persian. Selectable text requires XeLaTeX.
-# --verify fails an HTML-engine PDF when XeLaTeX is installed.
+# text stream. XeLaTeX + xepersian does the same for drawing. Copy-paste
+# correctness depends on the *viewer*: Evince/Okular/Adobe/Firefox reconstruct
+# logical order; Chrome/Edge built-in viewers often paste visual/reversed
+# Persian from either engine. --verify refuses an HTML-engine PDF when
+# XeLaTeX is installed (prefer the .tex). A logical-order .txt sidecar is
+# always written next to the PDF for copy-friendly extraction.
 set -uo pipefail
 
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 usage() {
   echo "usage: build-pdf.sh <file.tex|file.html> [slug] [--verify]" \
+       "[--allow-visual-order]" \
        "[--engine tex|chromium|weasyprint]" \
        "[--level system-docs|journal] [--terms FILE] [--manifest FILE]" >&2
   exit 2
@@ -31,6 +37,7 @@ usage() {
 src=""
 slug=""
 verify=0
+allow_visual_order=0
 engine=""
 used_engine=""
 level=system-docs
@@ -39,6 +46,7 @@ manifest=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --verify) verify=1; shift ;;
+    --allow-visual-order) allow_visual_order=1; shift ;;
     --engine)
       [[ $# -ge 2 ]] || usage
       engine=$2; shift 2 ;;
@@ -123,8 +131,9 @@ find_chrome() {
 }
 
 warn_html_copy_order() {
-  log "HTML engine stores RTL in visual order; copy-paste will reverse Persian"
-  log "  Selectable text requires XeLaTeX + xepersian"
+  log "HTML engine OK for display; Chrome/Edge PDF viewers often paste"
+  log "  reversed Persian (XeLaTeX has the same Chrome limit)."
+  log "  Prefer Evince/Okular/Adobe/Firefox, or the .txt sidecar."
 }
 
 show_tex_error() {
@@ -206,14 +215,19 @@ HTML(sys.argv[1]).write_pdf(sys.argv[2])' "$html" "$out" || return 2
   return 1
 }
 
-_first_glob() {
-  local f
-  for f in "$@"; do
-    if [[ -e "$f" && -s "$f" ]]; then
+# pdftoppm names outputs with the *page number* (-f 2 → prefix-2.png), not
+# always -1. Accept any non-empty prefix-*.png.
+_any_raster() {
+  local prefix=$1 f
+  shopt -s nullglob
+  for f in "${prefix}"-*.png; do
+    if [[ -s $f ]]; then
       printf '%s\n' "$f"
+      shopt -u nullglob
       return 0
     fi
   done
+  shopt -u nullglob
   return 1
 }
 
@@ -250,14 +264,14 @@ verify_pdf() {
   fi
 
   local out_prefix="${src_dir}/verify-${stem}"
-  rm -f -- "${out_prefix}-first-1.png" "${out_prefix}-first-01.png" \
-           "${out_prefix}-last-1.png" "${out_prefix}-last-01.png" \
-           "${out_prefix}-mid-1.png" "${out_prefix}-mid-01.png"
+  rm -f -- "${out_prefix}"-first-*.png \
+           "${out_prefix}"-last-*.png \
+           "${out_prefix}"-mid-*.png
   pdftoppm -png -r 110 -f 1 -l 1 "$pdf" "${out_prefix}-first" || {
     log "VERIFY FAIL: pdftoppm first page failed"
     return 1
   }
-  if ! _first_glob "${out_prefix}-first-1.png" "${out_prefix}-first-01.png"; then
+  if ! _any_raster "${out_prefix}-first"; then
     log "VERIFY FAIL: first-page raster was not written"
     return 1
   fi
@@ -267,7 +281,7 @@ verify_pdf() {
       log "VERIFY FAIL: pdftoppm last page failed"
       return 1
     }
-    if ! _first_glob "${out_prefix}-last-1.png" "${out_prefix}-last-01.png"; then
+    if ! _any_raster "${out_prefix}-last"; then
       log "VERIFY FAIL: last-page raster was not written"
       return 1
     fi
@@ -279,7 +293,7 @@ verify_pdf() {
       log "VERIFY FAIL: pdftoppm middle page failed"
       return 1
     }
-    if ! _first_glob "${out_prefix}-mid-1.png" "${out_prefix}-mid-01.png"; then
+    if ! _any_raster "${out_prefix}-mid"; then
       log "VERIFY FAIL: middle-page raster was not written"
       return 1
     fi
@@ -307,19 +321,36 @@ verify_pdf() {
   grep -q 'check-pdf-text-order: logical' <<<"$order_out" && logical=1
 
   if [[ $visual -eq 1 ]]; then
-    if have_xelatex; then
-      log "VERIFY FAIL: PDF text stream is visual order (copy-paste reverses Persian)"
-      log "  Rebuild from the .tex with XeLaTeX. HTML engines cannot store logical RTL."
+    if have_xelatex && [[ $allow_visual_order -eq 0 ]]; then
+      log "VERIFY FAIL: PDF text stream is visual order"
+      log "  Rebuild from the .tex with XeLaTeX when it is installed."
+      log "  Or pass --allow-visual-order for an HTML draft."
       return 1
     fi
-    log "VERIFY WARN: copy-paste will reverse Persian (HTML engine, no XeLaTeX)"
+    log "VERIFY WARN: content stream is visual-order Persian"
+    log "  Chrome/Edge built-in PDF viewers often paste reversed text."
+    log "  Open in Evince, Okular, Adobe Reader, or Firefox — or use the .txt sidecar."
   elif [[ $logical -eq 0 && ( $used_engine == chromium || $used_engine == weasyprint ) ]] \
-      && have_xelatex; then
+      && have_xelatex && [[ $allow_visual_order -eq 0 ]]; then
     log "VERIFY FAIL: HTML-engine PDF while XeLaTeX is installed"
-    log "  Chromium/WeasyPrint store visual order. Build the .tex instead."
+    log "  Prefer the .tex build. Pass --allow-visual-order only for a draft."
     return 1
   fi
   return 0
+}
+
+write_copy_txt() {
+  local pdf=$1 txt=$2
+  if ! command -v pdftotext >/dev/null 2>&1; then
+    log "no pdftotext; skipping copy-friendly .txt sidecar"
+    return 0
+  fi
+  # Default pdftotext (not -raw) matches Evince-style bidi reconstruction.
+  python3 "$here/write-copy-txt.py" "$pdf" "$txt" >/dev/null || {
+    log "copy-txt sidecar failed"
+    return 1
+  }
+  log "wrote copy-friendly text: $txt"
 }
 
 rc=0
@@ -373,5 +404,6 @@ fi
 
 mkdir -p "$dest_dir"
 cp -f "$local_pdf" "$dest" || exit 1
+write_copy_txt "$local_pdf" "${dest_dir}/${stem}.txt" || true
 
 echo "$dest"

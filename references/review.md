@@ -100,8 +100,9 @@ Lead with the verdict, then evidence. Four parts, in this order:
   «سرویس‌ها» without a preceding English name is the standard example.
 - **Engine limits** — anything caused by the PDF engine rather than the
   translation, e.g. WeasyPrint's partial `unicode-bidi: isolate` support,
-  or copy-paste reversing Persian on a Chromium/WeasyPrint PDF (visual
-  text order). Do not report an engine limit as a translation error.
+  or copy-paste reversing Persian in Chrome/Edge built-in PDF viewers
+  (viewer limit — Evince/Adobe usually fine; use the `.txt` sidecar).
+  Do not report an engine limit as a translation error.
 
 Say which checks were mechanical and which were judgement. A review that
 cannot distinguish the two invites a second review of the same file.

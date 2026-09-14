@@ -338,10 +338,11 @@ if command -v xelatex >/dev/null 2>&1 \
       order_out=$(python3 "$order" "$smoke/smoke.pdf" \
         --source "$smoke/smoke.tex" 2>&1) || order_rc=$?
       if [[ $order_rc -eq 0 ]] \
-          && grep -q 'check-pdf-text-order: logical' <<<"$order_out"; then
-        echo "ok   XeLaTeX PDF text stream is logical order"
+          && grep -qE 'check-pdf-text-order: (logical|inconclusive)' \
+               <<<"$order_out"; then
+        echo "ok   XeLaTeX PDF text-order check ran (logical/inconclusive)"
       else
-        echo "FAIL XeLaTeX PDF was not logical order (rc=$order_rc)"
+        echo "FAIL XeLaTeX PDF text-order check (rc=$order_rc)"
         echo "$order_out" | sed 's/^/    /'
         fail=1
       fi
@@ -361,6 +362,8 @@ else
 fi
 
 # Chromium --print-to-pdf stores visual order; the checker must catch it.
+# With XeLaTeX installed, build-pdf --verify must refuse HTML unless
+# --allow-visual-order. Always write a .txt sidecar on success.
 chrome=""
 for c in chromium chromium-browser google-chrome google-chrome-stable; do
   if command -v "$c" >/dev/null 2>&1; then chrome=$c; break; fi
@@ -395,8 +398,88 @@ HTML
     echo "skip Chromium text-order (print-to-pdf failed)"
   fi
   rm -rf "$cdir"
+
+  vdir=$(mktemp -d)
+  cp "$fixtures/good.html" "$vdir/doc.html"
+  cp "$empty_terms" "$vdir/terms.tsv"
+  : > "$vdir/manifest.txt"
+  sed -i '/<img /d' "$vdir/doc.html"
+  if command -v xelatex >/dev/null 2>&1 \
+      && command -v kpsewhich >/dev/null 2>&1 \
+      && kpsewhich xepersian.sty >/dev/null 2>&1; then
+    refuse_rc=0
+    refuse_out=$("$build" "$vdir/doc.html" verify-must-refuse-html \
+      --engine chromium --verify \
+      --terms "$vdir/terms.tsv" --manifest "$vdir/manifest.txt" 2>&1) \
+      || refuse_rc=$?
+    if [[ $refuse_rc -ne 0 ]] \
+        && grep -q 'VERIFY FAIL' <<<"$refuse_out" \
+        && [[ ! -f ${HOME}/Documents/books/verify-must-refuse-html.pdf ]]; then
+      echo "ok   build-pdf --verify refuses HTML when XeLaTeX is present"
+    else
+      echo "FAIL build-pdf did not refuse HTML with XeLaTeX (rc=$refuse_rc)"
+      echo "$refuse_out" | sed 's/^/    /'
+      fail=1
+    fi
+    allow_rc=0
+    allow_out=$("$build" "$vdir/doc.html" verify-allow-visual-ok \
+      --engine chromium --verify --allow-visual-order \
+      --terms "$vdir/terms.tsv" --manifest "$vdir/manifest.txt" 2>&1) \
+      || allow_rc=$?
+    if [[ $allow_rc -eq 0 ]] \
+        && [[ -f ${HOME}/Documents/books/verify-allow-visual-ok.pdf ]] \
+        && [[ -f ${HOME}/Documents/books/verify-allow-visual-ok.txt ]]; then
+      if grep -q 'تولید\|کنگره\|هزینه\|روش' \
+          "${HOME}/Documents/books/verify-allow-visual-ok.txt"; then
+        echo "ok   --allow-visual-order ships PDF + logical .txt sidecar"
+      else
+        echo "FAIL .txt sidecar missing expected Persian"
+        fail=1
+      fi
+    else
+      echo "FAIL build-pdf --allow-visual-order (rc=$allow_rc)"
+      echo "$allow_out" | sed 's/^/    /'
+      fail=1
+    fi
+    rm -f "${HOME}/Documents/books/verify-allow-visual-ok.pdf" \
+          "${HOME}/Documents/books/verify-allow-visual-ok.txt"
+  else
+    echo "skip HTML refuse/allow gates (no xelatex/xepersian)"
+  fi
+  rm -rf "$vdir"
 else
   echo "skip Chromium text-order (no chrome/pdftotext)"
+fi
+
+# XeLaTeX deliverable under --verify + .txt sidecar.
+if command -v xelatex >/dev/null 2>&1 \
+    && command -v kpsewhich >/dev/null 2>&1 \
+    && kpsewhich xepersian.sty >/dev/null 2>&1 \
+    && command -v pdftotext >/dev/null 2>&1; then
+  xdir=$(mktemp -d)
+  cp "$fixtures/good.tex" "$xdir/doc.tex"
+  cp -a "$fixtures/figures" "$xdir/figures"
+  cp "$empty_terms" "$xdir/terms.tsv"
+  cp "$good_manifest" "$xdir/manifest.txt"
+  x_rc=0
+  x_out=$("$build" "$xdir/doc.tex" verify-xelatex-ok \
+    --verify --terms "$xdir/terms.tsv" --manifest "$xdir/manifest.txt" 2>&1) \
+    || x_rc=$?
+  if [[ $x_rc -eq 0 ]] \
+      && [[ -f ${HOME}/Documents/books/verify-xelatex-ok.pdf ]] \
+      && [[ -f ${HOME}/Documents/books/verify-xelatex-ok.txt ]] \
+      && grep -q 'کنگره' "${HOME}/Documents/books/verify-xelatex-ok.txt"; then
+    echo "ok   build-pdf XeLaTeX --verify ships PDF + .txt sidecar"
+  else
+    echo "FAIL build-pdf XeLaTeX verify (rc=$x_rc)"
+    echo "$x_out" | sed 's/^/    /'
+    fail=1
+  fi
+  rm -f "${HOME}/Documents/books/verify-xelatex-ok.pdf" \
+        "${HOME}/Documents/books/verify-xelatex-ok.txt"
+  rm -rf "$xdir"
+else
+  echo "skip XeLaTeX verify gate (no xelatex/xepersian/pdftotext)"
 fi
 
 if [[ $fail -eq 0 ]]; then

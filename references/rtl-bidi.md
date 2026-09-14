@@ -27,9 +27,11 @@ actually does the work there; keep the CSS property as well for Chromium
 and browsers. See the measured cases in `pdf-output.md`.
 
 HTML engines also store Persian in **visual** order in the PDF text
-stream: the page looks right, copy-paste comes out reversed. Selectable
-text requires XeLaTeX. `build-pdf.sh --verify` fails an HTML-engine PDF
-when XeLaTeX is installed.
+stream (XeLaTeX draws the same way). Evince/Okular/Adobe/Firefox usually
+copy in logical order; Chrome/Edge built-in viewers often reverse.
+`build-pdf.sh --verify` fails an HTML-engine PDF when XeLaTeX is
+installed unless `--allow-visual-order` is set, and always writes a
+`.txt` sidecar for copy-friendly text.
 
 ## Document root
 

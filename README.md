@@ -45,10 +45,12 @@ formal scientific Persian, and reviews finished translations against the
 same rules. Cursor chat is only a short status note plus the output path;
 it is not the RTL surface.
 
-**Deliverable.** A printable PDF at `/home/$USER/Documents/books/<slug>.pdf`.
-Preferred engine XeLaTeX + `xepersian` (selectable text); Chromium then WeasyPrint on the
-RTL HTML template when TeX is absent (display-correct; copy-paste reverses Persian). Run `scripts/preflight.sh` to see
-which of those exist on the machine before planning a build.
+**Deliverable.** A printable PDF at `/home/$USER/Documents/books/<slug>.pdf`
+plus a logical-order `<slug>.txt` sidecar. Preferred engine XeLaTeX +
+`xepersian`; Chromium/WeasyPrint when TeX is absent. Copy-paste in
+Chrome/Edge built-in viewers often reverses Persian from either engine —
+use Evince/Okular/Adobe/Firefox or the `.txt`. Run `scripts/preflight.sh`
+before planning a build.
 
 **A job.** Infer **jobs** and **subjects** from the source (counts are
 not fixed — e.g. software development + PyTorch, or DevOps +
@@ -144,11 +146,12 @@ references/fluency-gold.md     gold paragraphs for Canonical manner
 references/review.md           reviewing a finished translation
 scripts/preflight.sh           what this machine can build
 scripts/check-fa.py            mechanical checker
-scripts/check-pdf-text-order.py  copy-paste order (pdftotext -raw)
+scripts/check-pdf-text-order.py  content-stream order (pdftotext -raw)
+scripts/write-copy-txt.py        logical .txt sidecar (pdftotext + NFKC)
 scripts/prepare-figures.py     flatten alpha; catch pdfimages negatives
 scripts/crop-source-figures.py crop artwork; never embed a full source page
 scripts/extract-pdf-pages.py   page-range PDF without duplicating XObjects
-scripts/build-pdf.sh           lint, compile, and verify (fails closed)
+scripts/build-pdf.sh           lint, compile, verify, .txt sidecar
 scripts/fetch-vazirmatn.sh     font for the HTML path
 tests/                         checker regression tests
 ```
