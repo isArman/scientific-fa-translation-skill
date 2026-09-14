@@ -1,0 +1,341 @@
+                                                                                                 8
+                                 NGINX within a Cloud
+                                       Infrastructure
+In the evolving landscape of web infrastructure, the shift from traditional server configurations to
+cloud architectures is undeniable. Traditional deployments, where servers were manually configured
+to host multiple sites or applications, are now giving way to more agile and scalable cloud-based
+methods. This chapter looks at the practical aspects of adopting a cloud infrastructure, highlighting
+the resource management efficiencies, enhanced security, and improved management of high traffic
+demands it offers.
+In this chapter, we will focus on the role of NGINX within a cloud infrastructure, using Docker as the
+platform of choice. By integrating NGINX with Docker, we’ll demonstrate how to orchestrate multiple
+services seamlessly, fostering a resilient and adaptable environment. Whether Docker is a new concept
+to you or not, rest assured that we’ll guide you through your first Docker experience, with NGINX as
+a common thread, ensuring a smooth and understandable journey into containerized deployment.
+This chapter covers the following topics:
+
+   • Understanding cloud infrastructure
+   • Using Docker
+   • Setting up NGINX inside Docker
+   • Setting up NGINX inside Docker to proxy host applications
+190   NGINX within a Cloud Infrastructure
+
+
+      Understanding cloud infrastructure
+      Cloud services are an integral part of our online existence. Our mobile applications synchronize
+      seamlessly with their desktop counterparts, and the server once familiar to us has transformed into
+      today’s cloud—a concept that simplifies life for users while making web infrastructure more complex.
+      This digital metamorphosis has revolutionized the way we store and interact with our data, moving
+      us toward an always-connected, cloud-centric reality.
+
+      The traditional approach
+      To comprehend the intricacies of cloud infrastructure, let’s revisit traditional setups with a modern
+      cloud lens. Consider the case of WordPress, the renowned open source platform for website creation,
+      which runs on a web server, a PHP server, and a database server. The classic method is to install each
+      component on a single machine—a simple solution for hosting a solitary blog:
+
+
+
+
+                           Figure 8.1: A traditional approach to running your web project
+
+      However, scaling this model reveals its limitations. Various software dependencies may require
+      multiple, sometimes contradictory versions, making coexistence difficult. What’s more, as services
+      expand, managing them on a single server becomes more and more complicated.
+
+      The cloud approach
+      In the pursuit of hosting multiple services on a single server, we often encounter a common problem:
+      conflicting software dependencies. Imagine needing to run two applications, one requiring PHP 7.4
+      and the other PHP 8.3. Docker addresses this by encapsulating applications in containers, isolated
+      environments that operate independently of the underlying Linux distribution’s software versions.
+      Advantages of using Docker containers include the following:
+
+         • Version management: Docker containers simplify the process of maintaining and changing
+           software versions, making it easy to go back if necessary
+         • Isolation and efficiency: Containers isolate applications, which not only improves portability for
+           easier migration but also ensures that the resource consumption of one doesn’t affect the others
+         • Deployment streamlining: By overcoming the Docker learning curve, deployment and scaling
+           become easier to manage, offering a degree of flexibility not found in traditional configurations
+                                                                    Understanding cloud infrastructure   191
+
+
+Let’s revisit the blog hosting scenario, now using Docker:
+
+
+
+
+              Figure 8.2: An example of how it would look running WordPress with Docker
+
+The server runs a Linux distribution and, on top of this, two separate containers act as minimal Linux
+environments, each carrying only what’s needed to run its respective applications.
+The addition of a service such as Nextcloud, which could run PHP 8.3, alongside WordPress on
+PHP 7.4, demonstrates the ability of Docker:
+
+
+
+
+          Figure 8.3: An example of how it would look running multiple containers with Docker
+
+As shown, this configuration allows many Docker images, each with its own specific software version,
+to run simultaneously in an isolated environment. If a security problem occurs in one container, its
+effects are confined, protecting the rest of the system.
+This chapter won’t cover advanced topics such as Docker Swarm for high availability (HA) or Kubernetes
+for scalability, but these are important areas to explore for the advancement of cloud infrastructure.
+192   NGINX within a Cloud Infrastructure
+
+
+      Using Docker
+      In the previous section, we explored the fundamentals of cloud architectures. We’re now going to
+      move on from theory to practice by installing and configuring Docker step by step to launch our
+      first container.
+      Docker is not just a tool but a paradigm shift—a new era where software can be packaged and isolated,
+      ensuring consistency across environments. By the end of this section, Docker will be more than a
+      concept; it will be an integral part of your toolbox, starting with the deployment of an NGINX container.
+
+      Installing Docker
+      Fortunately for us, the Docker team has provided a script that simplifies the installation process. This
+      script is compatible with a range of Linux distributions, including Red Hat Enterprise Linux (RHEL),
+      CentOS, Fedora, Debian, Ubuntu, and their derivatives.
+      To install Docker, you will need to run the script with root privileges. Open your terminal and enter
+      the following command:
+
+        # curl -s https://get.docker.com | bash
+
+      With this single command, Docker will be installed natively on your system using custom repositories
+      adapted to your Linux distribution’s package manager. This means that updating Docker will be as
+      easy as updating any other package on your system.
+
+      Your first Docker container
+      There are many ways to operate Docker containers. For instance, you can launch a container using
+      a simple command:
+
+        root@docker:~# docker run -d nginx
+        latest: Pulling from library/nginx
+        e1caac4eb9d2: Pull complete
+
+      This command pulls the NGINX image from Docker Hub and starts a new container in detached
+      mode. However, this container runs with default settings and isn’t yet configured for specific use.
+      To customize the container, you can pass additional parameters. For example, to map the container’s
+      port 80 to the host’s port 80, allowing web traffic to reach the container, you would run the following:
+
+        root@docker:~# docker run -d nginx -p 80:80
+
+      The first command launches the NGINX container with the default configuration. The second
+      command runs the same container, but now it is accessible via the host machine’s port 80. But what if
+      you require a more advanced and complete configuration? This is where Docker Compose steps in,
+      offering a solution for managing multi-container Docker applications with ease.
+                                                                                        Using Docker    193
+
+
+In the context of this book, the NGINX image serves as an excellent example of Docker’s capabilities
+as it showcases how containerization simplifies the deployment of services that traditionally require
+dedicated servers.
+As we explore deeper, we’ll see how to tailor an NGINX container to serve static content or act as
+a reverse proxy, introducing the concept of Docker volumes and how to use them to serve custom
+configuration files and content.
+
+Simplifying with Docker Compose
+After running our first Docker container, it became clear that managing a container’s parameters
+directly from the command line can quickly become cumbersome. Docker Compose simplifies this
+process by allowing us to define and run multi-container Docker applications using a YAML file
+for configuration.
+Let’s create an equivalent setup to the one we ran in the previous section—an NGINX container with
+port 80 exposed to the host machine:
+
+  1.   Begin by creating a /root/nginx directory, and within that directory, save a file named
+       docker-compose.yml with the following content:
+          version: '3'
+          services:
+            nginx:
+              image: nginx:latest
+              ports:
+                - "80:80"
+
+
+   A reminder
+   Although the file format is called YAML, the extension needs to be .yml.
+
+       In this docker-compose.yml file, we’ve defined a service named nginx, using the official
+       nginx image tagged with latest, which means it will be updated every time we pull it
+       from Docker Hub. If you wish, you can specify a fixed version, such as nginx:1.25.4.
+       More details can be found on the Docker Hub for NGINX page (https://hub.docker.
+       com/_/nginx/).
+  2.   Now, with the Docker Compose file saved, run the following command in the same directory:
+          root@nginx:~/nginx# docker compose up
+          [+] Running 1/1
+           ✔ Container nginx-nginx-1  Created
+194   NGINX within a Cloud Infrastructure
+
+
+        3.   You’ve just launched your first container using Docker Compose. To stop this container, simply
+             use the Ctrl + C shortcut (^C). Alternatively, you can start the container in detached mode
+             with up -d and stop it with down:
+                root@nginx:~/nginx# docker compose up -d
+                root@nginx:~/nginx# docker compose down
+
+      With Docker Compose, running NGINX in Docker becomes a matter of defining the desired state
+      in a file, which is easier to manage and read than standalone commands. In the next section, we’ll
+      explore how to further configure NGINX in Docker, tailoring it to our specific needs.
+
+      Setting up NGINX inside Docker
+      Having become familiar with Docker Compose, we’re set to advance our container usage. In this
+      section, we’ll improve our NGINX container by adding personalized configurations and website content.
+      Let’s begin by revisiting the docker-compose.yml file we created earlier. This file already specifies
+      the NGINX service and maps the container’s port 80 to port 80 on the host machine, making the web
+      server accessible from the host.
+      Next, we want our NGINX container to serve our website using the actual configuration files and
+      content from our host machine. To achieve this, we’ll use Docker volumes. Volumes are the preferred
+      mechanism for persisting data generated and used by Docker containers. Here’s how you can modify
+      the docker-compose.yml file to mount a volume:
+
+        version: '3'
+        services:
+          nginx:
+            image: nginx:latest
+            ports:
+              - «80:80»
+            volumes:
+              - ./config/nginx.conf:/etc/nginx/nginx.conf
+              - ./html:/usr/share/nginx/html
+
+      In this setup, ./config/nginx.conf is the path to your custom NGINX configuration file on
+      your host machine. /etc/nginx/nginx.conf is the path where the NGINX container expects
+      to find the configuration file. The second volume, ./html, is the directory on your host machine that
+      contains your website’s content, mounted into /usr/share/nginx/html/ in the Docker container.
+      This approach ensures that you can edit your NGINX configuration or website content directly on
+      your host machine, and those changes will be reflected inside the container.
+                                                                      Setting up NGINX inside Docker   195
+
+
+   A note
+   NGINX is preconfigured; therefore, you can skip mounting the nginx.conf volume and
+   use the default settings. Do mount the html directory as it is where NGINX expects to find
+   web content to serve.
+
+
+Integrating PHP with NGINX using Docker Compose
+As we progress, our next step is to elevate our NGINX server to handle dynamic content with PHP.
+This combination is common in the web development world, and Docker Compose makes it easy
+to implement.
+We’ll start by extending our existing docker-compose.yml file to include a PHP service, and
+then we will ensure NGINX can communicate with the PHP service using FastCGI:
+
+  1.   First, we need to add a PHP service that runs FastCGI Process Manager (php-fpm). Here’s
+       how the updated docker-compose.yml file might look:
+          version: '3'
+          services:
+            nginx:
+              image: nginx:latest
+              ports:
+                - "80:80"
+              volumes:
+                - ./config/nginx.conf:/etc/nginx/nginx.conf
+                - ./html:/usr/share/nginx/html
+              depends_on:
+                - php
+            php:
+              image: php:8.3-fpm
+              volumes:
+                - ./html:/usr/share/nginx/html
+
+       In this setup, the php service uses the official PHP image with php-fpm. We also mount the
+       html directory into the PHP container to ensure it has access to the same web files as NGINX.
+  2.   Before starting the Docker containers, we need to make sure NGINX and PHP communicate.
+       Let’s edit the nginx.conf file to include FastCGI parameters. Here’s an example of nginx.
+       conf with included FastCGI parameters:
+          events {}
+          http {
+            server {
+              listen 80;
+196   NGINX within a Cloud Infrastructure
+
+
+                    server_name localhost;
+
+                    root /usr/share/nginx/html;
+                    index index.php index.html index.htm;
+
+                    location / {
+                        try_files $uri $uri/ =404;
+                    }
+
+                    location ~ \.php$ {
+                      try_files $uri =404;
+                      fastcgi_pass php:9000;
+                      fastcgi_index index.php;
+                      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_
+                script_name;
+                      include fastcgi_params;
+                    }
+                  }
+                }
+
+             This configuration instructs NGINX to forward requests for PHP files to the PHP-FPM service
+             running in the php container.
+
+         Note
+         NGINX resolves the php service name using Docker’s internal DNS to communicate with the
+         php-fpm service. If you rename the service in your docker-compose.yml file, remember
+         to update the nginx.conf file accordingly to match the new service name.
+
+
+        3.   With this docker-compose.yml and nginx.conf configuration, you can run docker
+             compose up, and NGINX will serve both your static content and your dynamic PHP pages:
+                root@nginx:~/nginx# docker compose up
+                [+] Running 2/0
+                 ✔ Container docker-php-1    Created
+                 ✔ Container docker-nginx-1  Created
+                Attaching to nginx-1, php-1
+                php-1 [02-Mar-2024 11:42:30] NOTICE: fpm is running, pid 1
+
+        4.   After launching your containers, to check that NGINX and PHP are interacting correctly, create
+             a PHP file containing <?php phpinfo(); ?>. This will display a PHP information page
+             when accessed, confirming successful communication between the containers:
+                                             Setting up NGINX inside Docker to proxy host applications   197
+
+
+
+
+                              Figure 8.4: phpinfo running within Docker
+
+This subsection has guided you through adding a PHP service to your Docker environment and
+configuring NGINX to process PHP scripts via FastCGI. This configuration mimics a production
+environment, providing a solid foundation for building and deploying PHP applications with Docker.
+In the next section, we’ll explore how to configure a Docker-contained NGINX to proxy applications
+running directly on the host server.
+
+Setting up NGINX inside Docker to proxy host applications
+Fortunately for us, Docker is built with inherent support for container-to-host connections. When
+setting up NGINX inside a container, a special host.docker.internal hostname is used to
+target the host machine.
+Here’s a sample NGINX proxy configuration for interfacing with a web application hosted on the server:
+
+  server {
+      listen 80;
+
+      location /hostapp {
+          proxy_pass http://host.docker.internal:4000;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+      }
+  }
+198   NGINX within a Cloud Infrastructure
+
+
+      To ensure NGINX can communicate with the host server’s web application, check that the host’s
+      firewall allows incoming traffic on the specified ports.
+      Concluding this section, we’ve successfully bridged the containerized NGINX with host-resident
+      applications, leveraging Docker’s internal networking features.
+      In the next section, we’ll recap what we learned in this book.
+
+      Summary
+      In this chapter, we’ve taken our first steps with Docker and Docker Compose, set up an NGINX
+      container, added PHP, and learned to proxy traffic to a web app on the host server.
+      Combined with the knowledge from the previous chapters, the exercises in this chapter have highlighted
+      NGINX’s potential as a key asset in cloud infrastructure, strengthening security and managing traffic
+      efficiently, well suited for SSL handling, load balancing, and content caching.
+      In the next chapter, we’ll learn how to deploy and update NGINX with automated tasks using
+      orchestration tools.
+

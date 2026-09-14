@@ -1,0 +1,41 @@
+source	output	step	count	forbidden_fa	concept	status	admitted	deprecated
+NGINX	NGINX	subject-lexicon	40	انجین‌اکس	nginx	preferred		انجینکس|nginx
+Docker	Docker	subject-lexicon	55	داکر	docker	preferred		
+Docker Compose	Docker Compose	subject-lexicon	18	داکر کامپوز	docker-compose	preferred		Docker-Compose
+Docker Hub	Docker Hub	subject-lexicon	4	داکر هاب	docker-hub	preferred		
+PHP	PHP	subject-lexicon	25	پی‌اچ‌پی	php	preferred		
+php-fpm	php-fpm	subject-lexicon	8	پی‌اچ‌پی-اف‌پی‌ام	php-fpm	preferred		PHP-FPM|phpfpm
+FastCGI	FastCGI	subject-lexicon	6	فست‌سی‌جی‌آی	fastcgi	preferred		
+WordPress	WordPress	subject-lexicon	5	وردپرس	wordpress	preferred		
+Nextcloud	Nextcloud	subject-lexicon	2	نکست‌کلود	nextcloud	preferred		
+Linux	Linux	subject-lexicon	6	لینوکس	linux	preferred		
+YAML	YAML	subject-lexicon	4	یامل	yaml	preferred		
+SSL	SSL	subject-lexicon	1	اس‌اس‌ال	ssl	preferred		
+container	container	job-lexicon	20	کانتینر	ctr	preferred		
+image	image	job-lexicon	8	ایمیج	img	preferred		
+volume	volume	job-lexicon	8	والیوم	vol	preferred		
+deployment	deployment	job-lexicon	4	استقرار	deploy	preferred		
+proxy	proxy	job-lexicon	6	پروکسی	proxy	preferred		
+reverse proxy	reverse proxy	job-lexicon	2	پروکسی معکوس	rev-proxy	preferred		
+load balancing	load balancing	job-lexicon	1	توازن بار	lb	preferred		
+orchestration	orchestration	job-lexicon	2	ارکستراسیون	orch	preferred		
+configure	configure	job-lexicon	3	پیکربندی‌کردن	cfg-verb	preferred		
+host	host	job-lexicon	12	میزبان	host	preferred		
+port	port	job-lexicon	10	پورت	port	preferred		
+firewall	firewall	job-lexicon	2	دیواره آتش	fw	preferred		
+source code	source code	job-lexicon	1	کد منبع	src	preferred		
+cloud infrastructure	cloud infrastructure	job-lexicon	8	زیرساخت ابری	cloud-infra	preferred		زیرساخت کلود
+containerized	containerized	job-lexicon	2	کانتینری‌شده	ctrized	preferred		
+detached mode	detached mode	job-lexicon	3	حالت جدا	detach	preferred		
+docker compose up	docker compose up	job-lexicon	4	داکر کامپوز آپ	dc-up	preferred		
+docker compose down	docker compose down	job-lexicon	2	داکر کامپوز داون	dc-down	preferred		
+host.docker.internal	host.docker.internal	subject-lexicon	3	هاست‌داکر‌اینترنال	hdinternal	preferred		
+nginx.conf	nginx.conf	subject-lexicon	8	انجین‌اکس‌کانف	nginx-conf	preferred		
+docker-compose.yml	docker-compose.yml	subject-lexicon	10	داکر-کامپوز-یامل	dc-yml	preferred		
+phpinfo	phpinfo	subject-lexicon	2	پی‌اچ‌پی‌اینفو	phpinfo	preferred		
+Kubernetes	Kubernetes	subject-lexicon	1	کوبرنتیز	k8s	preferred		
+Docker Swarm	Docker Swarm	subject-lexicon	1	داکر سوارم	swarm	preferred		
+high availability	high availability	job-lexicon	1	دسترس‌پذیری بالا	ha	preferred		HA
+security	امنیت	prose	3		sec	preferred		
+traffic	ترافیک	prose	3		traf	preferred		
+Summary	خلاصه	chrome	1		chrome-sum	preferred		
