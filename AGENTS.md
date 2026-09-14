@@ -63,10 +63,13 @@ loop is lint → test → build a PDF; there is nothing to keep running.
   Termes: xepersian 25+ errors if that font lacks U+06F0. Western
   digits come from `\lr` / `\en` isolates. If XeLaTeX is missing,
   use the HTML path (`scripts/build-pdf.sh doc.html <slug> --verify`,
-  Chromium) and tell the user copy-paste will reverse Persian. `--verify`
-  refuses an HTML-engine PDF when XeLaTeX is installed. Do not treat a
-  digit-font error as a missing TeX install. Do not treat a failing
-  `.tex` compile as a reason to silently ship Chromium.
+  Chromium). `--verify` refuses an HTML-engine PDF when XeLaTeX is
+  installed unless `--allow-visual-order`. Every successful build also
+  writes `<slug>.txt` beside the PDF. Chrome/Edge built-in PDF viewers
+  often paste reversed Persian from either engine — tell the user to
+  use Evince, Okular, Adobe Reader, Firefox, or the `.txt` sidecar. Do
+  not treat a digit-font error as a missing TeX install. Do not treat a
+  failing `.tex` compile as a reason to silently ship Chromium.
 - Headless `google-chrome` prints harmless `dbus`/`UPower` errors to
   stderr in this VM; the PDF is still written — look for the
   "bytes written to file …" line, not the noise.

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Detect visual-order (reversed) Persian in a PDF text stream.
 
-Chromium --print-to-pdf and typical WeasyPrint runs paint RTL correctly
-but write the *visual* glyph order into the content stream. Copy-paste
-and `pdftotext -raw` then reverse the Persian. XeLaTeX + xepersian writes
-logical order.
+Chromium --print-to-pdf, WeasyPrint, and XeLaTeX all draw RTL glyphs in
+visual order. `pdftotext -raw` reads that stream. Chromium typically
+stores nominal Arabic letters reversed; XeLaTeX often stores Arabic
+presentation forms, so probes may be inconclusive.
 
-CSS dir=rtl does not fix extraction. This script compares Persian phrases
-from the print source with `pdftotext -raw` (content-stream order, not the
-default bidi "reading order").
+This script compares Persian phrases from the print source with
+`pdftotext -raw`. It flags Chromium-style visual dumps. Copy-paste in
+real viewers is separate: Evince/Adobe often reconstruct logical order;
+Chrome/Edge often do not — see pdf-output.md and the .txt sidecar.
 
 Usage:
     check-pdf-text-order.py doc.pdf --source doc.tex
@@ -16,7 +17,7 @@ Usage:
 
 Exit 0: logical order, or not enough evidence.
 Exit 1: usage / missing tools.
-Exit 2: visual order — copy-paste will reverse Persian.
+Exit 2: visual order in the content stream.
 """
 from __future__ import annotations
 
@@ -194,8 +195,9 @@ def main() -> int:
     )
     if kind == "visual":
         print(
-            "check-pdf-text-order: PDF text stream is visual order; "
-            "copy-paste will reverse Persian. Rebuild with XeLaTeX.",
+            "check-pdf-text-order: PDF text stream is visual order. "
+            "Prefer XeLaTeX when installed; Chrome/Edge may still paste "
+            "reversed — use Evince/Adobe/Firefox or the .txt sidecar.",
             file=sys.stderr,
         )
         return 2

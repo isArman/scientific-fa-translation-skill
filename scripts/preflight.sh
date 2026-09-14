@@ -85,14 +85,15 @@ fi
 echo
 echo "Verdict"
 if [[ $tex -eq 1 ]]; then
-  echo "  build .tex with XeLaTeX — best print RTL, selectable text"
+  echo "  build .tex with XeLaTeX — best print RTL"
 elif [[ $chrome -eq 1 ]]; then
-  echo "  no TeX: build .html with Chromium (display RTL only;"
-  echo "  copy-paste will reverse Persian)"
+  echo "  no TeX: build .html with Chromium (display RTL)."
+  echo "  Chrome/Edge PDF viewers often reverse copy — use Evince,"
+  echo "  Okular, Adobe, Firefox, or the .txt sidecar from build-pdf."
 elif [[ $weasy -eq 1 ]]; then
-  echo "  no TeX and no Chromium: build .html with WeasyPrint, and keep"
-  echo "  every English cluster in a single dir=\"ltr\" isolate"
-  echo "  (copy-paste will reverse Persian)"
+  echo "  no TeX and no Chromium: build .html with WeasyPrint; keep"
+  echo "  every English cluster in a single dir=\"ltr\" isolate."
+  echo "  Same copy-viewer caveat as Chromium."
 else
   echo "  no engine can produce a PDF — stop and tell the user"
 fi

@@ -40,7 +40,7 @@ Override only when the user says so.
 | Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce level, **jobs**, **subjects** (counts from the source), and **genre** (`tutorial` / `reference` / `paper`). Concept-oriented `terms.tsv`. Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
-| PDF engine | XeLaTeX + `xepersian` (selectable text). Chromium then WeasyPrint only when TeX is absent — those engines store visual order, so copy-paste reverses Persian |
+| PDF engine | XeLaTeX + `xepersian` (preferred print). Chromium/WeasyPrint when TeX is absent. Copy-paste: use Evince/Okular/Adobe/Firefox — Chrome/Edge built-in viewers often reverse Persian from *either* engine; `build-pdf.sh` also writes a logical `.txt` sidecar |
 | HTML | Only on request, or as that fallback |
 | Digits | Western (`3.14`, not `۳٫۱۴`) |
 | Dates | Source calendar and format, one isolate. No Jalali conversion unless asked. |
@@ -102,11 +102,16 @@ Override only when the user says so.
 8. **Build and verify.** `scripts/build-pdf.sh doc.tex <slug> --verify`
    lints again, checks `figures/` when that directory exists, and will
    not copy a PDF if lint, figure check, or `--verify` fail. `--verify`
-   also rejects an HTML-engine PDF when XeLaTeX is installed (copy-paste
-   would reverse Persian). Look at the rasterised pages. Run the
-   judgement checklist below. For formal review of a finished PDF, use
-   the Mossop-style layers in `references/review.md` (including the
-   hedge back-translation spot-check).
+   rejects an HTML-engine PDF when XeLaTeX is installed (prefer `.tex`);
+   pass `--allow-visual-order` only for an HTML draft. It also writes
+   `/home/$USER/Documents/books/<slug>.txt` (logical order) beside the
+   PDF. **Copy-paste:** Chrome/Edge built-in PDF viewers often paste
+   reversed Persian from both engines — tell the user to open the PDF in
+   Evince, Okular, Adobe Reader, or Firefox, or to use the `.txt`
+   sidecar. Look at the rasterised pages. Run the judgement checklist
+   below. For formal review of a finished PDF, use the Mossop-style
+   layers in `references/review.md` (including the hedge
+   back-translation spot-check).
 
 If the user asks for HTML only, use `assets/rtl-document.html`. If they ask
 for Markdown, wrap the body in `<div lang="fa" dir="rtl">`, still isolate
@@ -182,9 +187,11 @@ page count, and the engine used.
 6. `scripts/build-pdf.sh path/to/doc.tex <slug> --verify`. Without TeX the
    same script takes the filled-in `assets/rtl-document.html`; embed
    Vazirmatn with `scripts/fetch-vazirmatn.sh` and never the UI-FD cut.
-   That HTML PDF displays correctly but copy-paste reverses Persian —
-   say so. A page-range PDF is `scripts/extract-pdf-pages.py in.pdf out.pdf 1-20`
-   — one range, never a per-page loop (`references/pdf-output.md`).
+   Say that Chrome/Edge PDF viewers often reverse copy from either
+   engine — use Evince/Okular/Adobe/Firefox or the `.txt` sidecar the
+   build writes beside the PDF. A page-range PDF is
+   `scripts/extract-pdf-pages.py in.pdf out.pdf 1-20` — one range, never
+   a per-page loop (`references/pdf-output.md`).
 
 ## Quality gate
 
@@ -219,5 +226,7 @@ Register fluency is **not** machine-checked — see judgement and
       reported. Hedge/number sentences got a back-translation spot-check
       when `references/review.md` was used.
 
-**Delivery** — final PDF at `/home/$USER/Documents/books/<slug>.pdf`, chat is a short
-pointer with the path, page count, engine, and queued questions.
+**Delivery** — final PDF at `/home/$USER/Documents/books/<slug>.pdf`, plus
+`<slug>.txt` for copy-friendly text. Chat is a short pointer with the path,
+page count, engine, copy hint (not Chrome’s built-in viewer), and queued
+questions.

@@ -1,2 +1,13 @@
 __pycache__/
 *.pyc
+
+# local translation work products
+work/**/*.aux
+work/**/*.log
+work/**/*.out
+work/**/*.toc
+work/**/*.fls
+work/**/*.fdb_latexmk
+work/**/*.xdv
+work/**/*.pdf
+work/**/verify-*.png
