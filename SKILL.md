@@ -36,7 +36,7 @@ Override only when the user says so.
 | Decision | Default |
 | --- | --- |
 | Direction | English → فارسی علمی |
-| Register | Formal فارسی معیار in the Canonical manner (`references/scientific-style.md`): short everyday scholarly verbs, split long sentences, field terms kept English; not ornate, not translationese, no colloquial forms. |
+| Register | Formal فارسی معیار in the Canonical manner (`references/scientific-style.md`): locked band — human-like technical Persian (not MT, not literary); short everyday scholarly verbs; split long sentences; field terms kept English; **fail closed** on colloquial **and** ornate/literary fillers. |
 | Terminology | `journal` for papers, theses, review articles; `system-docs` (default) for books, install guides, specs, RFCs, runbooks. Announce level, **jobs**, **subjects** (counts from the source), and **genre** (`tutorial` / `reference` / `paper`). Concept-oriented `terms.tsv`. Checker `--level` must match. |
 | First mention | No gloss for English terms unless the level says otherwise |
 | Output | Printable PDF at `/home/$USER/Documents/books/<slug>.pdf`. Chat is a short pointer, not RTL. |
@@ -150,10 +150,11 @@ Example (`journal`): «این پیاده‌سازی از \en{gradient descent} �
 
 Full rules: `references/scientific-style.md`. UTF-8; `ک` not `ك`, `ی` not
 `ي`; نیم‌فاصله in `می‌شود`, `می‌توان`, `نمی‌کند`, `داده‌ها`; punctuation
-`،` `؛` `؟` `«»`. Clear فارسی معیار, judged by the ensemble fluency
-reader (not a word-list grep). Letters, ZWNJ on the listed verbs and
-plurals, Western digits, Latin punct, and unisolated number clusters are
-machine-checked.
+`،` `؛` `؟` `«»`. Clear فارسی معیار in the locked Canonical band
+(human-like technical Persian — not colloquial, not literary), judged
+by the ensemble fluency reader (not a word-list grep). Letters, ZWNJ on
+the listed verbs and plurals, Western digits, Latin punct, and
+unisolated number clusters are machine-checked.
 
 ## RTL
 
@@ -213,10 +214,12 @@ Register fluency is **not** machine-checked — see judgement and
 - [ ] No added, omitted, or softened scientific claim; hedges intact
 - [ ] Terminology consistent: one form per concept; inferred jobs and
       subject lexicon stayed English; consistent with `terms.tsv`
-- [ ] Register matches the Canonical manner and `fluency-gold.md`:
-      fluency reader in `ensemble.md` returned `OK` or flagged spans
-      were revised without softening claims; no over-English of ordinary
-      prose; field terms stayed English
+- [ ] Register matches the Canonical manner and `fluency-gold.md`
+      (locked band: human-like, not colloquial, not literary): fluency
+      reader in `ensemble.md` returned `OK` or flagged spans were
+      revised without softening claims; no over-English of ordinary
+      prose; field terms stayed English; sentences still read as Persian
+      with English terms inside, not the reverse
 - [ ] Every source figure present, unmirrored, in source order, with a
       translated caption, showing the artwork (not a black box, not a dump
       of the English source page around it)

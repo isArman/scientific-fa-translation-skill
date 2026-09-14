@@ -54,9 +54,12 @@ term that appears both English and Persian.
 ### L3 — Language / fluency
 
 Run (or re-run) the fluency-reader brief in `ensemble.md` on running
-prose, scoring against Canonical manner and `fluency-gold.md` — default
-Grok when Composer wrote the text. Also flag over-English: Latin
-isolates that are ordinary dictionary words, not terms of art. Glance at
+prose, scoring against Canonical manner and `fluency-gold.md` (including
+G8 for web/HTML docs) — default Grok when Composer wrote the text. Fail
+closed on colloquial **and** literary/ornate Persian; require human-like
+short clauses, not translationese. Also flag over-English: Latin
+isolates that are ordinary dictionary words, not terms of art, or a
+sentence that is mostly `\en{…}` with almost no Persian frame. Glance at
 ezafe chains, over-nominalisation, and passive piles. Do not "fix"
 fluency by softening hedges.
 

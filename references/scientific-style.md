@@ -52,11 +52,54 @@ through, with field terms kept English per `terminology.md`.
 
 ### Canonical manner (always)
 
-Default voice for every translator brief. Same claim, clearer wording.
+Default voice for every translator brief — **every** document the user
+hands over, not one sample. Same claim, clearer wording. Goal: Persian
+a careful human technical writer would publish, not machine translation
+and not literary rewriting.
+
 The skill is **not** tied to one product — subjects are whatever the
 book is about (web servers, libraries, databases, ML systems, compilers,
-protocol specs, papers, …). The paragraphs below only illustrate the
-*voice*.
+protocol specs, papers, HTML/CSS docs, …). The paragraphs below only
+illustrate the *voice*.
+
+#### Locked register (band)
+
+Target is a narrow band of **formal فارسی معیار**:
+
+| Stay here | Fail closed |
+| --- | --- |
+| Plain scholarly: می‌خواهد، می‌دهد، نشان بدهد، شروع می‌کند، بفرستد | Colloquial chat: می‌خواد، می‌گه، خیلی خفنه، … |
+| Short clauses a human would speak when explaining a tool | Ornate / literary: برمی‌انگیزد، می‌نماید، نایل شود، مبادرت کند، ارائه نماید، آغاز می‌کند (as elevated filler) |
+| Field terms English per `terms.tsv` | Translationese: English clause order with Persian glue words |
+| Western digits; `\en` / `\lr` isolates | Decorative synonyms that add no meaning |
+
+Genre (`tutorial` / `reference` / `paper`) only shifts connectors and
+density — **never** slides the draft into colloquial **or** literary
+Persian.
+
+#### Human-like translation (required)
+
+Write as if the Persian were authored for this audience, not converted
+word-by-word:
+
+1. Lead with a Persian frame; put kept English terms where a Persian
+   engineer would leave them.
+2. Prefer the shortest accurate clause. Split when English piles
+   relatives; do not keep one long calqued sentence.
+3. Prefer collocations in this file over “formal” synonyms.
+4. Do not pad with literary rhythm, archaic verbs, or essay style.
+5. Do not “fix” hedges or add warmth the source lacks.
+
+**Before → after (anti-patterns):**
+
+| Reject (translationese / ornate) | Prefer (Canonical) |
+| --- | --- |
+| `\en{client}` مبادرت به ارسال `\en{request}` می‌نماید | `\en{client}` یک `\en{request}` می‌فرستد |
+| صفحه را ارائه کند | صفحه را نشان بدهد |
+| `\en{request}` را آغاز می‌کند | `\en{request}` را شروع می‌کند |
+| به `\en{URI}` نایل شود | به `\en{URI}` برسد |
+| سندی که روی سرور موجود نیست (when source means kept `file`) | `\en{file}`ای که روی `\en{server}` نیست |
+| یک جملهٔ طولانی با چند «که» پشت‌سرهم که ترتیب انگلیسی را نگه می‌دارد | دو یا سه جملهٔ کوتاه با `ولی` / `به‌جایش` |
 
 **Tutorial / system-docs (tooling):**
 
@@ -79,8 +122,9 @@ protocol specs, papers, …). The paragraphs below only illustrate the
 > نمی‌توان `\en{causal effect}` را قطعی دانست.
 
 Reject drafts that sound like: برمی‌انگیزد، ارائه کند، آغاز می‌کند،
-سندی یا پرونده‌ای (when the source means a kept `file`), or one
-unbroken calqued sentence where the exemplar would have split.
+می‌نماید، نایل شود، مبادرت کند، سندی یا پرونده‌ای (when the source
+means a kept `file`), colloquial chat voice, or one unbroken calqued
+sentence where the exemplar would have split.
 
 ### Genre → tone
 
@@ -118,6 +162,12 @@ not claim (`security` → امنیت, narrative `file` when not the tooling
 sense), write Persian. Fluency reader must FLAG spans that feel like
 English stuffed into Persian function words without a terminology
 reason.
+
+**Isolate density:** a paragraph should still read as Persian with
+English terms inside it — not English with Persian glue. If more than
+about half the content words in a sentence are `\en{…}` and they are
+not all locked concepts, rewrite ordinary nouns to Persian. Mark
+borderline keepers in `terms.tsv` rather than leaving every Latin token.
 
 ### Fluency pass
 
