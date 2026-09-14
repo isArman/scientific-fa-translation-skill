@@ -35,7 +35,10 @@ Do not use that skill for coding, commits, UI copy, or casual chat.
   triggers; detail belongs in `references/`. Ensemble roles (Composer
   and Grok translate, Luna judges, fluency reader flags unnatural
   Persian) live in `references/ensemble.md`;
-  do not restate them here.
+  do not restate them here. Register voice (human-like technical
+  Persian — not colloquial, not literary) lives in
+  `references/scientific-style.md` and `references/fluency-gold.md`;
+  do not add a literary-word greplist to `check-fa.py`.
 
 ## Cursor Cloud specific instructions
 
